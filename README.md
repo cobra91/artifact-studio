@@ -61,7 +61,7 @@ Transform natural language into fully functional components:
 
 ### Prerequisites
 - Node.js 18+ 
-- npm or yarn
+- pnpm or yarn
 
 ### Installation
 
@@ -71,10 +71,10 @@ git clone https://github.com/your-username/visual-artifact-studio.git
 cd visual-artifact-studio
 
 # Install dependencies
-npm install
+pnpm install
 
 # Start development server
-npm run dev
+pnpm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to see the Visual Artifact Studio in action.

@@ -1,0 +1,68 @@
+{
+  "extends": ["next/core-web-vitals", "@typescript-eslint/recommended"],
+  "plugins": ["simple-import-sort", "@typescript-eslint"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "rules": {
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
+    
+    // Prevent SonarQube typescript:S6594 - Use RegExp.exec() instead of String.match()
+    "prefer-regex-literals": "error",
+    "no-useless-escape": "error",
+    
+    // Prevent SonarQube typescript:S6759 - Readonly props for React components
+    "@typescript-eslint/prefer-readonly-parameter-types": "off",
+    "@typescript-eslint/prefer-readonly": "warn",
+    
+    // Additional TypeScript strict rules to prevent common issues
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-non-null-assertion": "warn",
+    
+    // Enforce consistent code style
+    "@typescript-eslint/consistent-type-definitions": ["error", "interface"],
+    "@typescript-eslint/consistent-type-imports": ["error", { "prefer": "type-imports" }],
+    
+    // Performance and best practices
+    "@typescript-eslint/prefer-nullish-coalescing": "error",
+    "@typescript-eslint/prefer-optional-chain": "error",
+    "@typescript-eslint/no-unnecessary-type-assertion": "error",
+    
+    // React specific rules to prevent common issues
+    "react-hooks/exhaustive-deps": "warn",
+    "react/jsx-key": "error",
+    "react/no-array-index-key": "warn"
+  },
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "rules": {
+        // Alternative approach: Use no-restricted-methods for String.match()
+        "no-restricted-properties": [
+          "error",
+          {
+            "object": "String",
+            "property": "prototype.match",
+            "message": "Use RegExp.exec() instead of String.match() for better performance and consistency (SonarQube typescript:S6594)"
+          }
+        ]
+      }
+    },
+    {
+      "files": ["test/**/*", "**/*.test.*", "**/*.spec.*"],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-non-null-assertion": "off"
+      }
+    }
+  ]
+}

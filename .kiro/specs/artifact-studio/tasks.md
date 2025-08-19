@@ -3,6 +3,8 @@
 - [ ] 1. Set up enhanced type system and core interfaces
 
 
+
+
   - Update ComponentNode interface with metadata and validation
   - Create PropertyDefinition and StyleProperty interfaces
   - Add ComponentDefinition type system for extensible components
