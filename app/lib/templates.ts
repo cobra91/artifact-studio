@@ -1,12 +1,13 @@
-import { ArtifactTemplate, ComponentNode } from '../types/artifact'
+import { ArtifactTemplate, ComponentNode } from "../types/artifact";
 
 export const artifactTemplates: ArtifactTemplate[] = [
   {
-    id: 'calculator',
-    name: 'Loan Calculator',
-    description: 'Interactive loan calculator with sliders and real-time calculations',
-    category: 'Finance',
-    preview: '🧮',
+    id: "calculator",
+    name: "Loan Calculator",
+    description:
+      "Interactive loan calculator with sliders and real-time calculations",
+    category: "Finance",
+    preview: "🧮",
     code: `// Loan Calculator Component
 export const LoanCalculator = () => {
   const [amount, setAmount] = useState(100000)
@@ -22,14 +23,25 @@ export const LoanCalculator = () => {
     </div>
   )
 }`,
-    components: []
+    components: [],
+    tags: ["calculator", "finance", "interactive"],
+    rating: 4.5,
+    downloads: 1250,
+    author: "Visual Artifact Studio",
+    license: "MIT",
+    created: new Date("2024-01-01"),
+    modified: new Date("2024-01-15"),
+    isPublic: true,
+    framework: "react",
+    styling: "tailwindcss",
   },
   {
-    id: 'dashboard',
-    name: 'Analytics Dashboard',
-    description: 'Modern dashboard with charts, metrics, and data visualization',
-    category: 'Analytics',
-    preview: '📊',
+    id: "dashboard",
+    name: "Analytics Dashboard",
+    description:
+      "Modern dashboard with charts, metrics, and data visualization",
+    category: "Analytics",
+    preview: "📊",
     code: `// Analytics Dashboard Component
 export const Dashboard = () => {
   return (
@@ -39,14 +51,25 @@ export const Dashboard = () => {
     </div>
   )
 }`,
-    components: []
+    components: [],
+    tags: ["dashboard", "analytics", "charts"],
+    rating: 4.8,
+    downloads: 2100,
+    author: "Visual Artifact Studio",
+    license: "MIT",
+    created: new Date("2024-01-02"),
+    modified: new Date("2024-01-20"),
+    isPublic: true,
+    framework: "react",
+    styling: "tailwindcss",
   },
   {
-    id: 'form',
-    name: 'Contact Form',
-    description: 'Responsive contact form with validation and submission handling',
-    category: 'Forms',
-    preview: '📝',
+    id: "form",
+    name: "Contact Form",
+    description:
+      "Responsive contact form with validation and submission handling",
+    category: "Forms",
+    preview: "📝",
     code: `// Contact Form Component
 export const ContactForm = () => {
   const [formData, setFormData] = useState({})
@@ -58,14 +81,24 @@ export const ContactForm = () => {
     </form>
   )
 }`,
-    components: []
+    components: [],
+    tags: ["form", "contact", "validation"],
+    rating: 4.3,
+    downloads: 890,
+    author: "Visual Artifact Studio",
+    license: "MIT",
+    created: new Date("2024-01-03"),
+    modified: new Date("2024-01-18"),
+    isPublic: true,
+    framework: "react",
+    styling: "tailwindcss",
   },
   {
-    id: 'quiz',
-    name: 'Interactive Quiz',
-    description: 'Multi-question quiz with scoring and progress tracking',
-    category: 'Education',
-    preview: '🎯',
+    id: "quiz",
+    name: "Interactive Quiz",
+    description: "Multi-question quiz with scoring and progress tracking",
+    category: "Education",
+    preview: "🎯",
     code: `// Interactive Quiz Component
 export const Quiz = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0)
@@ -78,14 +111,24 @@ export const Quiz = () => {
     </div>
   )
 }`,
-    components: []
+    components: [],
+    tags: ["quiz", "education", "interactive"],
+    rating: 4.6,
+    downloads: 1560,
+    author: "Visual Artifact Studio",
+    license: "MIT",
+    created: new Date("2024-01-04"),
+    modified: new Date("2024-01-22"),
+    isPublic: true,
+    framework: "react",
+    styling: "tailwindcss",
   },
   {
-    id: 'pricing',
-    name: 'Pricing Table',
-    description: 'Responsive pricing table with feature comparison and CTAs',
-    category: 'Marketing',
-    preview: '💰',
+    id: "pricing",
+    name: "Pricing Table",
+    description: "Responsive pricing table with feature comparison and CTAs",
+    category: "Marketing",
+    preview: "💰",
     code: `// Pricing Table Component
 export const PricingTable = () => {
   return (
@@ -95,14 +138,24 @@ export const PricingTable = () => {
     </div>
   )
 }`,
-    components: []
+    components: [],
+    tags: ["pricing", "marketing", "table"],
+    rating: 4.4,
+    downloads: 1780,
+    author: "Visual Artifact Studio",
+    license: "MIT",
+    created: new Date("2024-01-05"),
+    modified: new Date("2024-01-25"),
+    isPublic: true,
+    framework: "react",
+    styling: "tailwindcss",
   },
   {
-    id: 'todo',
-    name: 'Todo List',
-    description: 'Task management app with drag & drop and local storage',
-    category: 'Productivity',
-    preview: '✅',
+    id: "todo",
+    name: "Todo List",
+    description: "Task management app with drag & drop and local storage",
+    category: "Productivity",
+    preview: "✅",
     code: `// Todo List Component
 export const TodoList = () => {
   const [todos, setTodos] = useState([])
@@ -114,15 +167,25 @@ export const TodoList = () => {
     </div>
   )
 }`,
-    components: []
-  }
-]
+    components: [],
+    tags: ["todo", "productivity", "tasks"],
+    rating: 4.2,
+    downloads: 950,
+    author: "Visual Artifact Studio",
+    license: "MIT",
+    created: new Date("2024-01-06"),
+    modified: new Date("2024-01-28"),
+    isPublic: true,
+    framework: "react",
+    styling: "tailwindcss",
+  },
+];
 
 export const getTemplatesByCategory = (category?: string) => {
-  if (!category) return artifactTemplates
-  return artifactTemplates.filter(template => template.category === category)
-}
+  if (!category) return artifactTemplates;
+  return artifactTemplates.filter((template) => template.category === category);
+};
 
 export const getTemplateById = (id: string) => {
-  return artifactTemplates.find(template => template.id === id)
-}
+  return artifactTemplates.find((template) => template.id === id);
+};

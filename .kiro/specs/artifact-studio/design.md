@@ -16,11 +16,11 @@ graph TB
     Core[Core Application Layer]
     Services[Services Layer]
     Storage[Storage Layer]
-    
+
     UI --> Core
     Core --> Services
     Services --> Storage
-    
+
     subgraph UI
         Canvas[Visual Canvas]
         Library[Component Library]
@@ -28,13 +28,13 @@ graph TB
         Preview[Live Preview]
         AI[AI Prompt Panel]
     end
-    
+
     subgraph Core
         State[State Management]
         Events[Event Handling]
         Validation[Data Validation]
     end
-    
+
     subgraph Services
         AIGen[AI Generation Service]
         Sandbox[Sandbox Execution]
@@ -42,7 +42,7 @@ graph TB
         Templates[Template Service]
         Version[Version Control]
     end
-    
+
     subgraph Storage
         Local[Local Storage]
         Cloud[Cloud Storage]
@@ -76,39 +76,42 @@ The application follows a hierarchical component structure:
 ### Core Data Models
 
 #### ComponentNode Interface
+
 ```typescript
 interface ComponentNode {
-  id: string                           // Unique identifier
-  type: ComponentType                  // Component category
-  props: Record<string, any>           // Component properties
-  children?: ComponentNode[]           // Nested components
-  position: { x: number; y: number }   // Canvas position
-  size: { width: number; height: number } // Dimensions
-  styles: Record<string, string>       // CSS styles
-  metadata?: {                         // Additional metadata
-    version: string
-    created: Date
-    modified: Date
-    author?: string
-  }
+  id: string; // Unique identifier
+  type: ComponentType; // Component category
+  props: Record<string, any>; // Component properties
+  children?: ComponentNode[]; // Nested components
+  position: { x: number; y: number }; // Canvas position
+  size: { width: number; height: number }; // Dimensions
+  styles: Record<string, string>; // CSS styles
+  metadata?: {
+    // Additional metadata
+    version: string;
+    created: Date;
+    modified: Date;
+    author?: string;
+  };
 }
 ```
 
 #### ArtifactTemplate Interface
+
 ```typescript
 interface ArtifactTemplate {
-  id: string
-  name: string
-  description: string
-  category: string
-  preview: string                      // Base64 or URL
-  code: string                        // Generated React code
-  components: ComponentNode[]         // Component tree
-  tags: string[]                      // Search tags
-  rating: number                      // Community rating
-  downloads: number                   // Usage statistics
-  author: string                      // Creator info
-  license: string                     // Usage license
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  preview: string; // Base64 or URL
+  code: string; // Generated React code
+  components: ComponentNode[]; // Component tree
+  tags: string[]; // Search tags
+  rating: number; // Community rating
+  downloads: number; // Usage statistics
+  author: string; // Creator info
+  license: string; // Usage license
 }
 ```
 
@@ -117,6 +120,7 @@ interface ArtifactTemplate {
 The VisualCanvas handles the interactive editing experience:
 
 **Key Features:**
+
 - Drag and drop component placement
 - Visual selection with handles
 - Real-time position and size updates
@@ -125,6 +129,7 @@ The VisualCanvas handles the interactive editing experience:
 - Undo/redo functionality
 
 **Interaction Patterns:**
+
 - Click to select components
 - Drag to move components
 - Resize handles for dimension changes
@@ -136,12 +141,14 @@ The VisualCanvas handles the interactive editing experience:
 The AI service transforms natural language prompts into ComponentNode structures:
 
 **Input Processing:**
+
 - Parse user prompt for intent and requirements
 - Extract component types and relationships
 - Identify styling and interaction requirements
 - Determine appropriate framework patterns
 
 **Generation Pipeline:**
+
 1. **Prompt Analysis**: NLP processing to understand requirements
 2. **Component Planning**: Determine component hierarchy and types
 3. **Code Generation**: Create React component code
@@ -150,6 +157,7 @@ The AI service transforms natural language prompts into ComponentNode structures
 6. **Result Packaging**: Return ComponentNode structure
 
 **Example Transformations:**
+
 - "Create a loan calculator" → Calculator component with inputs, sliders, and result display
 - "Make a quiz about React" → Quiz component with questions, answers, and scoring
 - "Design a pricing table" → Responsive grid with pricing tiers and features
@@ -159,12 +167,14 @@ The AI service transforms natural language prompts into ComponentNode structures
 The sandbox provides safe code execution and preview generation:
 
 **Security Features:**
+
 - Isolated execution context
 - Resource limitations (memory, CPU, network)
 - Restricted API access
 - Timeout protection
 
 **Execution Process:**
+
 1. Receive generated component code
 2. Create isolated execution environment
 3. Load required dependencies (React, styling libraries)
@@ -175,12 +185,14 @@ The sandbox provides safe code execution and preview generation:
 ### Template Management System
 
 **Template Storage:**
+
 - Local templates stored in browser storage
 - Cloud templates synchronized across devices
 - Community marketplace with public templates
 - Version control for template evolution
 
 **Template Operations:**
+
 - Save current canvas as template
 - Load template into canvas
 - Share templates with community
@@ -196,57 +208,57 @@ The application uses React's built-in state management with the following struct
 ```typescript
 interface AppState {
   canvas: {
-    components: ComponentNode[]
-    selectedNodes: string[]
-    clipboard: ComponentNode[]
-    history: CanvasSnapshot[]
-    historyIndex: number
-  }
-  
+    components: ComponentNode[];
+    selectedNodes: string[];
+    clipboard: ComponentNode[];
+    history: CanvasSnapshot[];
+    historyIndex: number;
+  };
+
   ui: {
-    activePanel: 'library' | 'properties' | 'ai' | 'templates'
-    previewMode: 'desktop' | 'tablet' | 'mobile'
-    gridVisible: boolean
-    snapToGrid: boolean
-  }
-  
+    activePanel: "library" | "properties" | "ai" | "templates";
+    previewMode: "desktop" | "tablet" | "mobile";
+    gridVisible: boolean;
+    snapToGrid: boolean;
+  };
+
   generation: {
-    isGenerating: boolean
-    currentRequest?: AIGenerationRequest
-    generationHistory: GenerationResult[]
-  }
-  
+    isGenerating: boolean;
+    currentRequest?: AIGenerationRequest;
+    generationHistory: GenerationResult[];
+  };
+
   templates: {
-    local: ArtifactTemplate[]
-    community: ArtifactTemplate[]
-    favorites: string[]
-    searchQuery: string
-    selectedCategory: string
-  }
+    local: ArtifactTemplate[];
+    community: ArtifactTemplate[];
+    favorites: string[];
+    searchQuery: string;
+    selectedCategory: string;
+  };
 }
 ```
 
 ### Component Type System
 
 ```typescript
-type ComponentType = 
-  | 'container'    // Layout containers
-  | 'text'         // Text elements
-  | 'button'       // Interactive buttons
-  | 'input'        // Form inputs
-  | 'image'        // Images and media
-  | 'chart'        // Data visualizations
-  | 'custom'       // User-defined components
+type ComponentType =
+  | "container" // Layout containers
+  | "text" // Text elements
+  | "button" // Interactive buttons
+  | "input" // Form inputs
+  | "image" // Images and media
+  | "chart" // Data visualizations
+  | "custom"; // User-defined components
 
 interface ComponentDefinition {
-  type: ComponentType
-  name: string
-  icon: string
-  defaultProps: Record<string, any>
-  editableProps: PropertyDefinition[]
-  supportedStyles: StyleProperty[]
-  canHaveChildren: boolean
-  category: string
+  type: ComponentType;
+  name: string;
+  icon: string;
+  defaultProps: Record<string, any>;
+  editableProps: PropertyDefinition[];
+  supportedStyles: StyleProperty[];
+  canHaveChildren: boolean;
+  category: string;
 }
 ```
 
@@ -254,21 +266,21 @@ interface ComponentDefinition {
 
 ```typescript
 interface PropertyDefinition {
-  key: string
-  label: string
-  type: 'string' | 'number' | 'boolean' | 'color' | 'select' | 'textarea'
-  defaultValue: any
-  options?: string[]        // For select type
-  validation?: ValidationRule[]
-  description?: string
+  key: string;
+  label: string;
+  type: "string" | "number" | "boolean" | "color" | "select" | "textarea";
+  defaultValue: any;
+  options?: string[]; // For select type
+  validation?: ValidationRule[];
+  description?: string;
 }
 
 interface StyleProperty {
-  property: string
-  label: string
-  type: 'length' | 'color' | 'select' | 'number'
-  category: 'layout' | 'typography' | 'appearance' | 'spacing'
-  responsive: boolean
+  property: string;
+  label: string;
+  type: "length" | "color" | "select" | "number";
+  category: "layout" | "typography" | "appearance" | "spacing";
+  responsive: boolean;
 }
 ```
 
@@ -277,17 +289,20 @@ interface StyleProperty {
 ### Client-Side Error Handling
 
 **Component Errors:**
+
 - Invalid property values → Show validation messages
 - Rendering failures → Display error boundaries
 - Drag/drop issues → Reset to last valid state
 
 **AI Generation Errors:**
+
 - Network failures → Retry with exponential backoff
 - Invalid prompts → Provide suggestions and examples
 - Generation timeouts → Cancel and show timeout message
 - Malformed responses → Parse and extract valid components
 
 **Sandbox Errors:**
+
 - Execution failures → Display error details and suggestions
 - Security violations → Block execution and warn user
 - Resource limits → Show performance optimization tips
@@ -304,12 +319,14 @@ interface StyleProperty {
 ### Unit Testing
 
 **Component Testing:**
+
 - Test individual React components in isolation
 - Mock external dependencies and services
 - Verify prop handling and event emission
 - Test error states and edge cases
 
 **Service Testing:**
+
 - Test AI generation service with various prompts
 - Validate code generation output
 - Test sandbox execution with different component types
@@ -318,12 +335,14 @@ interface StyleProperty {
 ### Integration Testing
 
 **User Workflow Testing:**
+
 - Complete component creation workflows
 - AI generation to canvas integration
 - Template save and load operations
 - Multi-component interactions
 
 **Cross-Browser Testing:**
+
 - Ensure compatibility across modern browsers
 - Test drag and drop functionality
 - Verify canvas rendering performance
@@ -332,12 +351,14 @@ interface StyleProperty {
 ### Performance Testing
 
 **Canvas Performance:**
+
 - Test with large numbers of components (100+)
 - Measure rendering performance during interactions
 - Test memory usage during extended sessions
 - Verify smooth animations and transitions
 
 **AI Generation Performance:**
+
 - Measure response times for different prompt types
 - Test concurrent generation requests
 - Monitor resource usage during generation
@@ -346,6 +367,7 @@ interface StyleProperty {
 ### End-to-End Testing
 
 **Complete User Journeys:**
+
 - New user onboarding flow
 - Component creation and customization
 - AI-assisted component generation
@@ -353,6 +375,7 @@ interface StyleProperty {
 - Export and deployment workflows
 
 **Accessibility Testing:**
+
 - Keyboard navigation support
 - Screen reader compatibility
 - Color contrast compliance

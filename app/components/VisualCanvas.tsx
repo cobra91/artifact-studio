@@ -1,73 +1,78 @@
-'use client'
+"use client";
 
-import { useState, useRef } from 'react'
-import { ComponentNode } from '../types/artifact'
+import { useState, useRef } from "react";
+import { ComponentNode } from "../types/artifact";
 
 interface VisualCanvasProps {
-  components: ComponentNode[]
-  selectedNode: ComponentNode | null
-  onSelectNode: (node: ComponentNode | null) => void
-  onUpdateComponent: (id: string, updates: Partial<ComponentNode>) => void
+  components: ComponentNode[];
+  selectedNode: ComponentNode | null;
+  onSelectNode: (node: ComponentNode | null) => void;
+  onUpdateComponent: (id: string, updates: Partial<ComponentNode>) => void;
 }
 
-export const VisualCanvas = ({ 
-  components, 
-  selectedNode, 
-  onSelectNode, 
-  onUpdateComponent 
+export const VisualCanvas = ({
+  components,
+  selectedNode,
+  onSelectNode,
+  onUpdateComponent,
 }: VisualCanvasProps) => {
-  const [isDragging, setIsDragging] = useState(false)
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
-  const canvasRef = useRef<HTMLDivElement>(null)
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   const handleMouseDown = (e: React.MouseEvent, node: ComponentNode) => {
-    e.stopPropagation()
-    onSelectNode(node)
-    setIsDragging(true)
-    
-    const rect = e.currentTarget.getBoundingClientRect()
+    e.stopPropagation();
+    onSelectNode(node);
+    setIsDragging(true);
+
+    const rect = e.currentTarget.getBoundingClientRect();
     setDragOffset({
       x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    })
-  }
+      y: e.clientY - rect.top,
+    });
+  };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !selectedNode || !canvasRef.current) return
+    if (!isDragging || !selectedNode || !canvasRef.current) return;
 
-    const canvasRect = canvasRef.current.getBoundingClientRect()
-    const newX = e.clientX - canvasRect.left - dragOffset.x
-    const newY = e.clientY - canvasRect.top - dragOffset.y
+    const canvasRect = canvasRef.current.getBoundingClientRect();
+    const newX = e.clientX - canvasRect.left - dragOffset.x;
+    const newY = e.clientY - canvasRect.top - dragOffset.y;
 
     onUpdateComponent(selectedNode.id, {
-      position: { x: Math.max(0, newX), y: Math.max(0, newY) }
-    })
-  }
+      position: { x: Math.max(0, newX), y: Math.max(0, newY) },
+    });
+  };
 
   const handleMouseUp = () => {
-    setIsDragging(false)
-  }
+    setIsDragging(false);
+  };
 
   const renderComponent = (node: ComponentNode) => {
-    const isSelected = selectedNode?.id === node.id
-    
+    const isSelected = selectedNode?.id === node.id;
+
     return (
       <div
         key={node.id}
         className={`absolute cursor-move border-2 ${
-          isSelected ? 'border-blue-500 bg-blue-50' : 'border-transparent hover:border-gray-300'
+          isSelected
+            ? "border-blue-500 bg-blue-50"
+            : "border-transparent hover:border-gray-300"
         }`}
-        style={{
-          left: node.position.x,
-          top: node.position.y,
-          width: node.size.width,
-          height: node.size.height,
-          ...node.styles
-        }}
+        style={
+          {
+            position: "absolute",
+            left: node.position.x,
+            top: node.position.y,
+            width: node.size.width,
+            height: node.size.height,
+            ...node.styles,
+          } as React.CSSProperties
+        }
         onMouseDown={(e) => handleMouseDown(e, node)}
       >
         <ComponentRenderer node={node} />
-        
+
         {/* Resize handles */}
         {isSelected && (
           <>
@@ -78,11 +83,11 @@ export const VisualCanvas = ({
           </>
         )}
       </div>
-    )
-  }
+    );
+  };
 
   return (
-    <div 
+    <div
       ref={canvasRef}
       className="relative w-full h-full bg-gray-100 overflow-hidden"
       onMouseMove={handleMouseMove}
@@ -90,67 +95,69 @@ export const VisualCanvas = ({
       onClick={() => onSelectNode(null)}
     >
       {/* Grid background */}
-      <div 
+      <div
         className="absolute inset-0 opacity-20"
         style={{
           backgroundImage: `
             linear-gradient(to right, #e5e7eb 1px, transparent 1px),
             linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)
           `,
-          backgroundSize: '20px 20px'
+          backgroundSize: "20px 20px",
         }}
       />
-      
+
       {/* Components */}
       {components.map(renderComponent)}
-      
+
       {/* Drop zone indicator */}
       <div className="absolute inset-4 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500">
         {components.length === 0 && (
           <div className="text-center">
             <p className="text-lg font-medium">Drop components here</p>
-            <p className="text-sm">Or use AI to generate components from prompts</p>
+            <p className="text-sm">
+              Or use AI to generate components from prompts
+            </p>
           </div>
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
 const ComponentRenderer = ({ node }: { node: ComponentNode }) => {
   switch (node.type) {
-    case 'text':
+    case "text":
       return (
         <span className="block p-2 text-gray-800">
-          {node.props.children || 'Text Component'}
+          {node.props.children || "Text Component"}
         </span>
-      )
-    case 'button':
+      );
+    case "button":
       return (
         <button className="w-full h-full bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700">
-          {node.props.children || 'Button'}
+          {node.props.children || "Button"}
         </button>
-      )
-    case 'input':
+      );
+    case "input":
       return (
-        <input 
+        <input
           className="w-full h-full border border-gray-300 rounded px-3 py-2"
-          placeholder={node.props.placeholder || 'Input field'}
+          placeholder={node.props.placeholder || "Input field"}
         />
-      )
-    case 'container':
+      );
+    case "container":
       return (
         <div className="w-full h-full bg-white border border-gray-200 rounded p-2">
-          {node.children?.map(child => (
+          {node.children?.map((child) => (
             <ComponentRenderer key={child.id} node={child} />
           ))}
         </div>
-      )
+      );
     default:
       return (
         <div className="w-full h-full bg-gray-200 border border-gray-300 rounded flex items-center justify-center">
           <span className="text-gray-600 text-sm">{node.type}</span>
         </div>
-      )
+      );
   }
-}
+};

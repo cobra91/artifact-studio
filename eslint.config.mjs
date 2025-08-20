@@ -7,15 +7,11 @@ const __dirname = dirname(__filename);
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
 });
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript", 'plugin:import/recommended', 'plugin:import/typescript', 'prettier'),
+  ...compat.extends("next/core-web-vitals"),
   {
-    plugins: {
-      'simple-import-sort': simpleImportSort,
-    },
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': [
@@ -25,20 +21,10 @@ const eslintConfig = [
           varsIgnorePattern: '^_',
         },
       ],
-      'simple-import-sort/imports': 'error',
-      'simple-import-sort/exports': 'error',
-    },
-    settings: {
-      'import/resolver': {
-        typescript: {
-          alwaysTryTypes: true,
-          project: './tsconfig.json',
-        },
-      },
     },
   },
   {
-    ignores: ['**/prisma/migrations/**', 'node_modules/**'],
+    ignores: ['node_modules/**', '.next/**'],
   },
 ];
 

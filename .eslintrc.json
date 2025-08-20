@@ -12,31 +12,37 @@
   "rules": {
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
-    
+
     // Prevent SonarQube typescript:S6594 - Use RegExp.exec() instead of String.match()
     "prefer-regex-literals": "error",
     "no-useless-escape": "error",
-    
+
     // Prevent SonarQube typescript:S6759 - Readonly props for React components
     "@typescript-eslint/prefer-readonly-parameter-types": "off",
     "@typescript-eslint/prefer-readonly": "warn",
-    
+
     // Additional TypeScript strict rules to prevent common issues
     "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_" }
+    ],
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-non-null-assertion": "warn",
-    
+
     // Enforce consistent code style
     "@typescript-eslint/consistent-type-definitions": ["error", "interface"],
-    "@typescript-eslint/consistent-type-imports": ["error", { "prefer": "type-imports" }],
-    
+    "@typescript-eslint/consistent-type-imports": [
+      "error",
+      { "prefer": "type-imports" }
+    ],
+
     // Performance and best practices
     "@typescript-eslint/prefer-nullish-coalescing": "error",
     "@typescript-eslint/prefer-optional-chain": "error",
     "@typescript-eslint/no-unnecessary-type-assertion": "error",
-    
+
     // React specific rules to prevent common issues
     "react-hooks/exhaustive-deps": "warn",
     "react/jsx-key": "error",

@@ -1,14 +1,14 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react";
 
 interface LivePreviewProps {
-  code: string
+  code: string;
 }
 
 export const LivePreview = ({ code }: LivePreviewProps) => {
-  const [activeTab, setActiveTab] = useState<'preview' | 'code'>('preview')
-  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   return (
     <div className="h-full flex flex-col bg-white">
@@ -16,34 +16,34 @@ export const LivePreview = ({ code }: LivePreviewProps) => {
       <div className="flex items-center justify-between p-3 border-b border-gray-200">
         <div className="flex">
           <button
-            onClick={() => setActiveTab('preview')}
+            onClick={() => setActiveTab("preview")}
             className={`px-3 py-1 text-sm rounded-l ${
-              activeTab === 'preview' 
-                ? 'bg-blue-600 text-white' 
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              activeTab === "preview"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
             Preview
           </button>
           <button
-            onClick={() => setActiveTab('code')}
+            onClick={() => setActiveTab("code")}
             className={`px-3 py-1 text-sm rounded-r ${
-              activeTab === 'code' 
-                ? 'bg-blue-600 text-white' 
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              activeTab === "code"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
             Code
           </button>
         </div>
-        
+
         <div className="flex gap-2">
           <button
             onClick={() => setIsFullscreen(!isFullscreen)}
             className="p-1 text-gray-500 hover:text-gray-700"
             title="Toggle fullscreen"
           >
-            {isFullscreen ? '🗗' : '🗖'}
+            {isFullscreen ? "🗗" : "🗖"}
           </button>
           <button
             className="p-1 text-gray-500 hover:text-gray-700"
@@ -56,11 +56,7 @@ export const LivePreview = ({ code }: LivePreviewProps) => {
 
       {/* Content */}
       <div className="flex-1 overflow-hidden">
-        {activeTab === 'preview' ? (
-          <PreviewPane />
-        ) : (
-          <CodePane code={code} />
-        )}
+        {activeTab === "preview" ? <PreviewPane /> : <CodePane code={code} />}
       </div>
 
       {/* Footer */}
@@ -74,8 +70,8 @@ export const LivePreview = ({ code }: LivePreviewProps) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 const PreviewPane = () => {
   return (
@@ -86,38 +82,40 @@ const PreviewPane = () => {
           <div className="text-center text-gray-500 py-8">
             <div className="text-4xl mb-2">👁️</div>
             <p className="text-lg font-medium">Live Preview</p>
-            <p className="text-sm">Your components will appear here in real-time</p>
+            <p className="text-sm">
+              Your components will appear here in real-time
+            </p>
           </div>
-          
+
           {/* Sample preview elements */}
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
             <div className="bg-blue-600 text-white px-4 py-2 rounded mb-2 inline-block">
               Sample Button
             </div>
             <p className="text-gray-700">Sample text component</p>
-            <input 
-              className="border border-gray-300 rounded px-3 py-2 mt-2 w-full" 
+            <input
+              className="border border-gray-300 rounded px-3 py-2 mt-2 w-full"
               placeholder="Sample input field"
             />
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
 const CodePane = ({ code }: { code: string }) => {
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState(false);
 
   const copyCode = async () => {
     try {
-      await navigator.clipboard.writeText(code || sampleCode)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      await navigator.clipboard.writeText(code || sampleCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
-      console.error('Failed to copy code:', err)
+      console.error("Failed to copy code:", err);
     }
-  }
+  };
 
   const sampleCode = `export const GeneratedComponent = () => {
   return (
@@ -134,7 +132,7 @@ const CodePane = ({ code }: { code: string }) => {
       </button>
     </div>
   )
-}`
+}`;
 
   return (
     <div className="h-full flex flex-col">
@@ -144,15 +142,15 @@ const CodePane = ({ code }: { code: string }) => {
           onClick={copyCode}
           className="px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 rounded"
         >
-          {copied ? '✓ Copied' : '📋 Copy'}
+          {copied ? "✓ Copied" : "📋 Copy"}
         </button>
       </div>
-      
+
       <div className="flex-1 overflow-auto bg-gray-900 text-gray-100 p-4">
         <pre className="text-sm font-mono whitespace-pre-wrap">
           <code>{code || sampleCode}</code>
         </pre>
       </div>
     </div>
-  )
-}
+  );
+};

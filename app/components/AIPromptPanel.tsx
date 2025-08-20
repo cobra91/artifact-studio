@@ -1,18 +1,27 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { AIGenerationRequest } from '../types/artifact'
+import { useState } from "react";
+import { AIGenerationRequest } from "../types/artifact";
 
 interface AIPromptPanelProps {
-  onGenerate: (request: AIGenerationRequest) => Promise<any>
-  isGenerating: boolean
+  onGenerate: (request: AIGenerationRequest) => Promise<any>;
+  isGenerating: boolean;
 }
 
-export const AIPromptPanel = ({ onGenerate, isGenerating }: AIPromptPanelProps) => {
-  const [prompt, setPrompt] = useState('')
-  const [framework, setFramework] = useState<'react' | 'vue' | 'svelte'>('react')
-  const [styling, setStyling] = useState<'tailwindcss' | 'css' | 'styled-components'>('tailwindcss')
-  const [interactivity, setInteractivity] = useState<'low' | 'medium' | 'high'>('medium')
+export const AIPromptPanel = ({
+  onGenerate,
+  isGenerating,
+}: AIPromptPanelProps) => {
+  const [prompt, setPrompt] = useState("");
+  const [framework, setFramework] = useState<"react" | "vue" | "svelte">(
+    "react",
+  );
+  const [styling, setStyling] = useState<
+    "tailwindcss" | "css" | "styled-components"
+  >("tailwindcss");
+  const [interactivity, setInteractivity] = useState<"low" | "medium" | "high">(
+    "medium",
+  );
 
   const examplePrompts = [
     "Create a loan calculator with sliders for amount, rate, and term",
@@ -20,28 +29,30 @@ export const AIPromptPanel = ({ onGenerate, isGenerating }: AIPromptPanelProps) 
     "Build a quiz about React hooks with multiple choice questions",
     "Design a responsive pricing table with 3 tiers",
     "Create a todo list with drag and drop functionality",
-    "Build a weather widget with current conditions and forecast"
-  ]
+    "Build a weather widget with current conditions and forecast",
+  ];
 
   const handleGenerate = async () => {
-    if (!prompt.trim()) return
-    
+    if (!prompt.trim()) return;
+
     await onGenerate({
       prompt,
       framework,
       styling,
-      interactivity
-    })
-  }
+      interactivity,
+    });
+  };
 
   const useExamplePrompt = (example: string) => {
-    setPrompt(example)
-  }
+    setPrompt(example);
+  };
 
   return (
     <div className="h-full flex flex-col p-4">
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">AI Component Generator</h3>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+          AI Component Generator
+        </h3>
         <p className="text-sm text-gray-600">Describe what you want to build</p>
       </div>
 
@@ -61,9 +72,11 @@ export const AIPromptPanel = ({ onGenerate, isGenerating }: AIPromptPanelProps) 
       {/* Configuration Options */}
       <div className="space-y-3 mb-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Framework</label>
-          <select 
-            value={framework} 
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Framework
+          </label>
+          <select
+            value={framework}
             onChange={(e) => setFramework(e.target.value as any)}
             className="w-full p-2 border border-gray-300 rounded-md text-sm"
           >
@@ -74,9 +87,11 @@ export const AIPromptPanel = ({ onGenerate, isGenerating }: AIPromptPanelProps) 
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Styling</label>
-          <select 
-            value={styling} 
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Styling
+          </label>
+          <select
+            value={styling}
             onChange={(e) => setStyling(e.target.value as any)}
             className="w-full p-2 border border-gray-300 rounded-md text-sm"
           >
@@ -87,9 +102,11 @@ export const AIPromptPanel = ({ onGenerate, isGenerating }: AIPromptPanelProps) 
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Interactivity</label>
-          <select 
-            value={interactivity} 
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Interactivity
+          </label>
+          <select
+            value={interactivity}
             onChange={(e) => setInteractivity(e.target.value as any)}
             className="w-full p-2 border border-gray-300 rounded-md text-sm"
           >
@@ -112,13 +129,15 @@ export const AIPromptPanel = ({ onGenerate, isGenerating }: AIPromptPanelProps) 
             Generating...
           </div>
         ) : (
-          '✨ Generate Component'
+          "✨ Generate Component"
         )}
       </button>
 
       {/* Example Prompts */}
       <div className="mt-4 flex-1">
-        <h4 className="text-sm font-medium text-gray-700 mb-2">Example Prompts</h4>
+        <h4 className="text-sm font-medium text-gray-700 mb-2">
+          Example Prompts
+        </h4>
         <div className="space-y-2 max-h-40 overflow-y-auto">
           {examplePrompts.map((example, index) => (
             <button
@@ -132,5 +151,5 @@ export const AIPromptPanel = ({ onGenerate, isGenerating }: AIPromptPanelProps) 
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

@@ -1,63 +1,73 @@
-'use client'
+"use client";
 
-import { ComponentNode } from '../types/artifact'
+import { ComponentNode } from "../types/artifact";
 
 interface ComponentLibraryProps {
-  onAddComponent: (component: ComponentNode) => void
+  onAddComponent: (component: ComponentNode) => void;
 }
 
 export const ComponentLibrary = ({ onAddComponent }: ComponentLibraryProps) => {
   const componentTemplates = [
     {
-      name: 'Container',
-      type: 'container' as const,
-      icon: '📦',
-      defaultProps: { className: 'p-4 bg-white rounded-lg shadow-sm border' }
+      name: "Container",
+      type: "container" as const,
+      icon: "📦",
+      defaultProps: { className: "p-4 bg-white rounded-lg shadow-sm border" },
     },
     {
-      name: 'Text',
-      type: 'text' as const,
-      icon: '📝',
-      defaultProps: { children: 'Sample text', className: 'text-gray-800' }
+      name: "Text",
+      type: "text" as const,
+      icon: "📝",
+      defaultProps: { children: "Sample text", className: "text-gray-800" },
     },
     {
-      name: 'Button',
-      type: 'button' as const,
-      icon: '🔘',
-      defaultProps: { children: 'Click me', className: 'bg-blue-600 text-white px-4 py-2 rounded' }
+      name: "Button",
+      type: "button" as const,
+      icon: "🔘",
+      defaultProps: {
+        children: "Click me",
+        className: "bg-blue-600 text-white px-4 py-2 rounded",
+      },
     },
     {
-      name: 'Input',
-      type: 'input' as const,
-      icon: '📝',
-      defaultProps: { placeholder: 'Enter text...', className: 'border border-gray-300 rounded px-3 py-2' }
+      name: "Input",
+      type: "input" as const,
+      icon: "📝",
+      defaultProps: {
+        placeholder: "Enter text...",
+        className: "border border-gray-300 rounded px-3 py-2",
+      },
     },
     {
-      name: 'Image',
-      type: 'image' as const,
-      icon: '🖼️',
-      defaultProps: { src: '/placeholder.jpg', alt: 'Image', className: 'rounded' }
+      name: "Image",
+      type: "image" as const,
+      icon: "🖼️",
+      defaultProps: {
+        src: "/placeholder.jpg",
+        alt: "Image",
+        className: "rounded",
+      },
     },
     {
-      name: 'Chart',
-      type: 'chart' as const,
-      icon: '📊',
-      defaultProps: { type: 'bar', data: [], className: 'w-full h-full' }
-    }
-  ]
+      name: "Chart",
+      type: "chart" as const,
+      icon: "📊",
+      defaultProps: { type: "bar", data: [], className: "w-full h-full" },
+    },
+  ];
 
-  const createComponent = (template: typeof componentTemplates[0]) => {
+  const createComponent = (template: (typeof componentTemplates)[0]) => {
     const component: ComponentNode = {
       id: `${template.type}-${Date.now()}`,
       type: template.type,
       props: template.defaultProps,
       position: { x: 50, y: 50 },
       size: { width: 200, height: 100 },
-      styles: {}
-    }
-    
-    onAddComponent(component)
-  }
+      styles: {},
+    };
+
+    onAddComponent(component);
+  };
 
   return (
     <div className="h-full flex flex-col">
@@ -65,7 +75,7 @@ export const ComponentLibrary = ({ onAddComponent }: ComponentLibraryProps) => {
         <h2 className="text-lg font-semibold text-gray-800">Components</h2>
         <p className="text-sm text-gray-600">Drag to add to canvas</p>
       </div>
-      
+
       <div className="flex-1 p-4 space-y-2">
         {componentTemplates.map((template) => (
           <button
@@ -80,7 +90,7 @@ export const ComponentLibrary = ({ onAddComponent }: ComponentLibraryProps) => {
           </button>
         ))}
       </div>
-      
+
       <div className="p-4 border-t border-gray-200">
         <h3 className="text-md font-medium text-gray-800 mb-2">Templates</h3>
         <div className="space-y-2">
@@ -99,5 +109,5 @@ export const ComponentLibrary = ({ onAddComponent }: ComponentLibraryProps) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

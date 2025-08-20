@@ -13,12 +13,14 @@ Visual Artifact Studio is a revolutionary no-code platform that combines the vis
 ## ✨ Key Features
 
 ### 🎨 Visual Builder Core
+
 - **Drag & Drop Interface**: Intuitive component creation with real-time positioning
 - **Live Preview**: Hot reload with instant visual feedback
 - **Component Library**: Pre-built templates and reusable components
 - **Style Customization**: Visual property panel with real-time styling
 
 ### 🤖 AI-Powered Generation
+
 Transform natural language into fully functional components:
 
 ```
@@ -29,6 +31,7 @@ Transform natural language into fully functional components:
 ```
 
 ### 🛠️ Developer Experience
+
 - **Framework Support**: React (Vue & Svelte coming soon)
 - **Styling Options**: Tailwind CSS, plain CSS, styled-components
 - **Code Export**: Clean, production-ready component code
@@ -60,7 +63,8 @@ Transform natural language into fully functional components:
 ## 🚦 Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
+
+- Node.js 18+
 - pnpm or yarn
 
 ### Installation
@@ -82,18 +86,21 @@ Open [http://localhost:3000](http://localhost:3000) to see the Visual Artifact S
 ## 🎯 Quick Start Guide
 
 ### 1. **Create Your First Component**
+
 - Open the AI Prompt Panel (right sidebar)
 - Type: `"Create a simple contact form with name, email, and message fields"`
 - Click "✨ Generate Component"
 - Watch as your component appears on the canvas!
 
 ### 2. **Customize with Visual Tools**
+
 - Click any component on the canvas to select it
 - Use the Style Panel to adjust colors, fonts, spacing
 - Drag components to reposition them
 - Resize using the corner handles
 
 ### 3. **Export Your Code**
+
 - Switch to the "Code" tab in Live Preview
 - Copy the generated React component
 - Use it directly in your projects!
@@ -101,6 +108,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the Visual Artifact S
 ## 🧩 Component Library
 
 ### Built-in Components
+
 - **Container**: Layout wrapper with styling options
 - **Text**: Typography with rich formatting
 - **Button**: Interactive buttons with hover states
@@ -109,6 +117,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the Visual Artifact S
 - **Chart**: Data visualization components
 
 ### AI-Generated Templates
+
 - 🧮 **Calculator**: Loan, mortgage, tip calculators
 - 📊 **Dashboard**: Analytics and metrics displays
 - 📝 **Forms**: Contact, signup, survey forms
@@ -122,35 +131,34 @@ Get the most out of AI generation with these proven prompts:
 
 ```javascript
 // Financial Tools
-"Create a mortgage calculator with loan amount, interest rate, and term sliders"
+"Create a mortgage calculator with loan amount, interest rate, and term sliders";
 
-// Data Visualization  
-"Build a sales dashboard with bar charts showing monthly revenue trends"
+// Data Visualization
+"Build a sales dashboard with bar charts showing monthly revenue trends";
 
 // Interactive Learning
-"Make a JavaScript quiz with 5 multiple choice questions and scoring"
+"Make a JavaScript quiz with 5 multiple choice questions and scoring";
 
 // E-commerce
-"Design a product comparison table with features, pricing, and buy buttons"
+"Design a product comparison table with features, pricing, and buy buttons";
 
 // Productivity
-"Create a kanban board with drag and drop for task management"
+"Create a kanban board with drag and drop for task management";
 
 // Marketing
-"Build a landing page hero section with headline, subtext, and CTA button"
+"Build a landing page hero section with headline, subtext, and CTA button";
 ```
 
 ## 🎨 Styling System
 
 ### Tailwind CSS Integration
+
 All components use Tailwind CSS classes for consistent, responsive design:
 
 ```javascript
 // Example generated component
 <div className="p-6 bg-white rounded-lg shadow-lg max-w-md mx-auto">
-  <h2 className="text-2xl font-bold text-gray-800 mb-4">
-    Generated Component
-  </h2>
+  <h2 className="text-2xl font-bold text-gray-800 mb-4">Generated Component</h2>
   <button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
     Click Me
   </button>
@@ -158,32 +166,37 @@ All components use Tailwind CSS classes for consistent, responsive design:
 ```
 
 ### Custom Styling
+
 - **Visual Editor**: Point-and-click styling
-- **CSS Properties**: Direct style object editing  
+- **CSS Properties**: Direct style object editing
 - **Theme System**: Consistent color palettes
 - **Responsive**: Mobile-first design approach
 
 ## 🔧 Development Roadmap
 
 ### Phase 1: Core Foundation ✅
+
 - [x] Visual canvas with drag & drop
 - [x] Component library
 - [x] Basic AI generation
 - [x] Live preview system
 
 ### Phase 2: Enhanced AI (In Progress)
+
 - [ ] Advanced prompt understanding
 - [ ] Context-aware generation
 - [ ] Multi-component layouts
 - [ ] Smart styling suggestions
 
 ### Phase 3: Collaboration & Deployment
+
 - [ ] Real-time collaboration
 - [ ] Version control integration
 - [ ] One-click deployment
 - [ ] Component marketplace
 
 ### Phase 4: Advanced Features
+
 - [ ] Animation builder
 - [ ] State management integration
 - [ ] API connection wizard
@@ -201,6 +214,7 @@ We welcome contributions! Here's how to get started:
 6. **Open a Pull Request**
 
 ### Development Guidelines
+
 - Follow TypeScript best practices
 - Use Tailwind CSS for styling
 - Write tests for new features
@@ -268,8 +282,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Ready to build the future of component creation?** 
+**Ready to build the future of component creation?**
 
 [Get Started](http://localhost:3000) • [Documentation](./docs) • [Examples](./examples) • [Community](https://github.com/your-username/visual-artifact-studio/discussions)
 
-*Made with ❤️ by developers, for developers*
+_Made with ❤️ by developers, for developers_

@@ -24,16 +24,16 @@ const nextConfig: NextConfig = {
   turbopack: {
     rules: {
       // Configure file processing rules for Turbopack
-      '*.svg': {
-        loaders: ['@svgr/webpack'],
-        as: '*.js',
+      "*.svg": {
+        loaders: ["@svgr/webpack"],
+        as: "*.js",
       },
     },
     resolveAlias: {
       // Define path aliases for Turbopack
-      '@': './app',
-      '@/components': './app/components',
-      '@/lib': './app/lib',
+      "@": "./app",
+      "@/components": "./app/components",
+      "@/lib": "./app/lib",
     },
   },
 };

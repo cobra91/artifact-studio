@@ -1,5 +1,5 @@
-import { ArtifactBuilder } from './components/ArtifactBuilder'
+import { ArtifactBuilder } from "./components/ArtifactBuilder";
 
 export default function Home() {
-  return <ArtifactBuilder />
+  return <ArtifactBuilder />;
 }
