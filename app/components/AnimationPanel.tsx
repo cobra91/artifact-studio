@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+
 import { ComponentNode } from "../types/artifact";
 
 interface AnimationPanelProps {
@@ -38,7 +39,9 @@ export const AnimationPanel = ({
       >
         <option value="">None</option>
         <option value="spin 1s linear infinite">Spin</option>
-        <option value="ping 1s cubic-bezier(0, 0, 0.2, 1) infinite">Ping</option>
+        <option value="ping 1s cubic-bezier(0, 0, 0.2, 1) infinite">
+          Ping
+        </option>
         <option value="bounce 1s infinite">Bounce</option>
       </select>
     </div>

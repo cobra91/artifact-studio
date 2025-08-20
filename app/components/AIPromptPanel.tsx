@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+
 import { AIGenerationRequest } from "../types/artifact";
 
 interface AIPromptPanelProps {
@@ -19,8 +20,12 @@ export const AIPromptPanel = ({
   const [styling, setStyling] = useState<
     "tailwindcss" | "css" | "styled-components"
   >("tailwindcss");
-  const [interactivity, setInteractivity] = useState<"low" | "medium" | "high">("medium");
-  const [theme, setTheme] = useState<"default" | "modern" | "minimalist">("default");
+  const [interactivity, setInteractivity] = useState<"low" | "medium" | "high">(
+    "medium",
+  );
+  const [theme, setTheme] = useState<"default" | "modern" | "minimalist">(
+    "default",
+  );
 
   const examplePrompts = [
     "Create a loan calculator with sliders for amount, rate, and term",

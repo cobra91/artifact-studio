@@ -1,7 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { postSandboxMessage, RENDER_COMPONENT_MESSAGE, SANDBOX_READY_MESSAGE } from "../lib/sandbox";
+import { useEffect, useRef,useState } from "react";
+
+import {
+  postSandboxMessage,
+  RENDER_COMPONENT_MESSAGE,
+  SANDBOX_READY_MESSAGE,
+} from "../lib/sandbox";
 
 interface LivePreviewProps {
   code: string;
