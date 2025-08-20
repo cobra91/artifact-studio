@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sandbox</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+    const App = ({ code }) => {
+      if (!code) return null;
+
+      try {
+        // Transpile the JSX code using Babel
+        const transformedCode = Babel.transform(code, {
+          presets: ["react"],
+        }).code;
+
+        // Create a function from the code
+        const Component = new Function('React', 'useState', `return ${transformedCode}`)(React, useState);
+        
+        return <Component />;
+      } catch (error) {
+        console.error("Error rendering component:", error);
+        return <div style={{ color: 'red' }}>Error: {error.message}</div>;
+      }
+    };
+
+    window.addEventListener("message", (event) => {
+      const { type, payload } = event.data;
+      if (type === "render-component") {
+        const root = ReactDOM.createRoot(document.getElementById("root"));
+        root.render(<App code={payload.code} />);
+      }
+    });
+
+    // Notify the parent window that the sandbox is ready
+    window.parent.postMessage({ type: "sandbox-ready" }, "*");
+  </script>
+</body>
+</html>
