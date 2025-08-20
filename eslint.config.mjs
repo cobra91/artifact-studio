@@ -13,18 +13,20 @@ const eslintConfig = [
   ...compat.extends("next/core-web-vitals"),
   {
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-unused-vars': [
-        'error',
+      // Disable explicit any warnings for development
+      "no-explicit-any": "off",
+      // Handle unused variables with underscore prefix
+      "no-unused-vars": [
+        "error",
         {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
         },
       ],
     },
   },
   {
-    ignores: ['node_modules/**', '.next/**'],
+    ignores: ["node_modules/**", ".next/**"],
   },
 ];
 

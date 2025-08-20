@@ -15,8 +15,8 @@ export class AICodeGenerator {
     request: AIGenerationRequest,
   ): Promise<ComponentNode[]> {
     // Mock AI generation based on prompt keywords
-    const { prompt, interactivity } = request;
-    const components: ComponentNode[] = [];
+    const { prompt, interactivity: _interactivity } = request;
+    const _components: ComponentNode[] = [];
 
     if (prompt.toLowerCase().includes("calculator")) {
       return this.createCalculatorComponents();
@@ -320,7 +320,7 @@ export class AICodeGenerator {
     components: ComponentNode[],
     request: AIGenerationRequest,
   ): string {
-    const { framework, styling } = request;
+    const { framework: _framework, styling: _styling } = request;
 
     return `import React, { useState } from 'react'
 

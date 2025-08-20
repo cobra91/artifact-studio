@@ -47,7 +47,7 @@ export const ArtifactBuilder = () => {
     }
   };
 
-  const generateReactCode = (components: ComponentNode[]): string => {
+  const _generateReactCode = (components: ComponentNode[]): string => {
     // Basic code generation - enhance with proper React component generation
     return `
 export const GeneratedComponent = () => {

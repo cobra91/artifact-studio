@@ -4,7 +4,7 @@ import { ComponentNode } from "../types/artifact";
 
 interface StylePanelProps {
   selectedNode: ComponentNode | null;
-  onUpdateNode: (updates: Partial<ComponentNode>) => void;
+  onUpdateNode: (_updates: Partial<ComponentNode>) => void;
 }
 
 export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {

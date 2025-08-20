@@ -3,7 +3,7 @@
 import { ComponentNode } from "../types/artifact";
 
 interface ComponentLibraryProps {
-  onAddComponent: (component: ComponentNode) => void;
+  onAddComponent: (_component: ComponentNode) => void;
 }
 
 export const ComponentLibrary = ({ onAddComponent }: ComponentLibraryProps) => {

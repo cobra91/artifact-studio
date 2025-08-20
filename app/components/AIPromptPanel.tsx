@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AIGenerationRequest } from "../types/artifact";
 
 interface AIPromptPanelProps {
-  onGenerate: (request: AIGenerationRequest) => Promise<any>;
+  onGenerate: (_request: AIGenerationRequest) => Promise<any>;
   isGenerating: boolean;
 }
 
@@ -43,7 +43,7 @@ export const AIPromptPanel = ({
     });
   };
 
-  const useExamplePrompt = (example: string) => {
+  const selectExamplePrompt = (example: string) => {
     setPrompt(example);
   };
 
@@ -142,7 +142,7 @@ export const AIPromptPanel = ({
           {examplePrompts.map((example, index) => (
             <button
               key={index}
-              onClick={() => useExamplePrompt(example)}
+              onClick={() => selectExamplePrompt(example)}
               className="w-full p-2 text-left text-xs bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded text-gray-700 transition-colors"
             >
               {example}

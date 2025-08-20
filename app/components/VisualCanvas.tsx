@@ -6,8 +6,8 @@ import { ComponentNode } from "../types/artifact";
 interface VisualCanvasProps {
   components: ComponentNode[];
   selectedNode: ComponentNode | null;
-  onSelectNode: (node: ComponentNode | null) => void;
-  onUpdateComponent: (id: string, updates: Partial<ComponentNode>) => void;
+  onSelectNode: (_node: ComponentNode | null) => void;
+  onUpdateComponent: (_id: string, _updates: Partial<ComponentNode>) => void;
 }
 
 export const VisualCanvas = ({

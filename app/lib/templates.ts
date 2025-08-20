@@ -1,4 +1,4 @@
-import { ArtifactTemplate, ComponentNode } from "../types/artifact";
+import { ArtifactTemplate } from "../types/artifact";
 
 export const artifactTemplates: ArtifactTemplate[] = [
   {
