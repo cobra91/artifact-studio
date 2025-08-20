@@ -19,9 +19,8 @@ export const AIPromptPanel = ({
   const [styling, setStyling] = useState<
     "tailwindcss" | "css" | "styled-components"
   >("tailwindcss");
-  const [interactivity, setInteractivity] = useState<"low" | "medium" | "high">(
-    "medium",
-  );
+  const [interactivity, setInteractivity] = useState<"low" | "medium" | "high">("medium");
+  const [theme, setTheme] = useState<"default" | "modern" | "minimalist">("default");
 
   const examplePrompts = [
     "Create a loan calculator with sliders for amount, rate, and term",
@@ -40,6 +39,7 @@ export const AIPromptPanel = ({
       framework,
       styling,
       interactivity,
+      theme,
     });
   };
 
@@ -70,7 +70,7 @@ export const AIPromptPanel = ({
       </div>
 
       {/* Configuration Options */}
-      <div className="space-y-3 mb-4">
+      <div className="space-y-3 mb-4 flex-grow overflow-y-auto">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Framework
@@ -114,6 +114,45 @@ export const AIPromptPanel = ({
             <option value="medium">Medium (Forms, Clicks)</option>
             <option value="high">High (Animations, Real-time)</option>
           </select>
+        </div>
+
+        {/* Smart Styling Suggestions */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Visual Theme
+          </label>
+          <div className="flex items-center space-x-4">
+            <label className="flex items-center">
+              <input
+                type="radio"
+                value="default"
+                checked={theme === "default"}
+                onChange={() => setTheme("default")}
+                className="form-radio h-4 w-4 text-blue-600"
+              />
+              <span className="ml-2 text-sm text-gray-700">Default</span>
+            </label>
+            <label className="flex items-center">
+              <input
+                type="radio"
+                value="modern"
+                checked={theme === "modern"}
+                onChange={() => setTheme("modern")}
+                className="form-radio h-4 w-4 text-purple-600"
+              />
+              <span className="ml-2 text-sm text-gray-700">Modern</span>
+            </label>
+            <label className="flex items-center">
+              <input
+                type="radio"
+                value="minimalist"
+                checked={theme === "minimalist"}
+                onChange={() => setTheme("minimalist")}
+                className="form-radio h-4 w-4 text-gray-600"
+              />
+              <span className="ml-2 text-sm text-gray-700">Minimalist</span>
+            </label>
+          </div>
         </div>
       </div>
 

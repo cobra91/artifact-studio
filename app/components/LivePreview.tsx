@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { postSandboxMessage, RENDER_COMPONENT_MESSAGE, SANDBOX_READY_MESSAGE } from "../lib/sandbox";
 
 interface LivePreviewProps {
   code: string;
@@ -8,7 +9,6 @@ interface LivePreviewProps {
 
 export const LivePreview = ({ code }: LivePreviewProps) => {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
-  const [isFullscreen, setIsFullscreen] = useState(false);
 
   return (
     <div className="h-full flex flex-col bg-white">
@@ -36,70 +36,54 @@ export const LivePreview = ({ code }: LivePreviewProps) => {
             Code
           </button>
         </div>
-
-        <div className="flex gap-2">
-          <button
-            onClick={() => setIsFullscreen(!isFullscreen)}
-            className="p-1 text-gray-500 hover:text-gray-700"
-            title="Toggle fullscreen"
-          >
-            {isFullscreen ? "🗗" : "🗖"}
-          </button>
-          <button
-            className="p-1 text-gray-500 hover:text-gray-700"
-            title="Refresh preview"
-          >
-            🔄
-          </button>
-        </div>
       </div>
 
       {/* Content */}
       <div className="flex-1 overflow-hidden">
-        {activeTab === "preview" ? <PreviewPane /> : <CodePane code={code} />}
-      </div>
-
-      {/* Footer */}
-      <div className="p-2 border-t border-gray-200 bg-gray-50">
-        <div className="flex items-center justify-between text-xs text-gray-600">
-          <span>Live Preview</span>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span>Connected</span>
-          </div>
-        </div>
+        {activeTab === "preview" ? (
+          <PreviewPane code={code} />
+        ) : (
+          <CodePane code={code} />
+        )}
       </div>
     </div>
   );
 };
 
-const PreviewPane = () => {
-  return (
-    <div className="h-full p-4 bg-gray-50">
-      <div className="h-full bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-        {/* Mock preview content */}
-        <div className="space-y-4">
-          <div className="text-center text-gray-500 py-8">
-            <div className="text-4xl mb-2">👁️</div>
-            <p className="text-lg font-medium">Live Preview</p>
-            <p className="text-sm">
-              Your components will appear here in real-time
-            </p>
-          </div>
+const PreviewPane = ({ code }: { code: string }) => {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [isSandboxReady, setIsSandboxReady] = useState(false);
 
-          {/* Sample preview elements */}
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
-            <div className="bg-blue-600 text-white px-4 py-2 rounded mb-2 inline-block">
-              Sample Button
-            </div>
-            <p className="text-gray-700">Sample text component</p>
-            <input
-              className="border border-gray-300 rounded px-3 py-2 mt-2 w-full"
-              placeholder="Sample input field"
-            />
-          </div>
-        </div>
-      </div>
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.source !== iframeRef.current?.contentWindow) return;
+      if (event.data.type === SANDBOX_READY_MESSAGE) {
+        setIsSandboxReady(true);
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
+  useEffect(() => {
+    if (isSandboxReady && iframeRef.current && code) {
+      postSandboxMessage(iframeRef.current, {
+        type: RENDER_COMPONENT_MESSAGE,
+        payload: { code },
+      });
+    }
+  }, [code, isSandboxReady]);
+
+  return (
+    <div className="w-full h-full bg-white">
+      <iframe
+        ref={iframeRef}
+        src="/sandbox.html"
+        title="Live Preview"
+        className="w-full h-full border-0"
+        sandbox="allow-scripts"
+      />
     </div>
   );
 };
@@ -109,30 +93,13 @@ const CodePane = ({ code }: { code: string }) => {
 
   const copyCode = async () => {
     try {
-      await navigator.clipboard.writeText(code || sampleCode);
+      await navigator.clipboard.writeText(code);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Failed to copy code:", err);
     }
   };
-
-  const sampleCode = `export const GeneratedComponent = () => {
-  return (
-    <div className="p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">
-        Generated Component
-      </h2>
-      <p className="text-gray-600 mb-4">
-        This is a sample generated component. 
-        Use the AI prompt panel to create custom components.
-      </p>
-      <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-        Get Started
-      </button>
-    </div>
-  )
-}`;
 
   return (
     <div className="h-full flex flex-col">
@@ -148,7 +115,7 @@ const CodePane = ({ code }: { code: string }) => {
 
       <div className="flex-1 overflow-auto bg-gray-900 text-gray-100 p-4">
         <pre className="text-sm font-mono whitespace-pre-wrap">
-          <code>{code || sampleCode}</code>
+          <code>{code || "Generate a component to see the code here."}</code>
         </pre>
       </div>
     </div>

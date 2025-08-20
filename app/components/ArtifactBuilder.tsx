@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import Link from "next/link";
 import {
   ComponentNode,
   AIGenerationRequest,
@@ -11,12 +12,19 @@ import { ComponentLibrary } from "./ComponentLibrary";
 import { StylePanel } from "./StylePanel";
 import { AIPromptPanel } from "./AIPromptPanel";
 import { LivePreview } from "./LivePreview";
+import { AnimationPanel } from "./AnimationPanel";
+import { StateManagerPanel } from "./StateManagerPanel";
+import { ApiConnectionPanel } from "./ApiConnectionPanel";
+import { PerformancePanel } from "./PerformancePanel";
+
+type RightPanelTab = "AI" | "Style" | "Animate" | "State" | "API" | "Perf";
 
 export const ArtifactBuilder = () => {
   const [canvas, setCanvas] = useState<ComponentNode[]>([]);
   const [selectedNode, setSelectedNode] = useState<ComponentNode | null>(null);
   const [livePreview, setLivePreview] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [activeTab, setActiveTab] = useState<RightPanelTab>("AI");
 
   const generateFromPrompt = async (
     request: AIGenerationRequest,
@@ -26,7 +34,6 @@ export const ArtifactBuilder = () => {
       const { aiCodeGen } = await import("../lib/aiCodeGen");
       const result = await aiCodeGen.create(request);
 
-      // Add generated components to canvas
       setCanvas((prev) => [...prev, ...result.components]);
       setLivePreview(result.code);
 
@@ -47,80 +54,98 @@ export const ArtifactBuilder = () => {
     }
   };
 
-  const _generateReactCode = (components: ComponentNode[]): string => {
-    // Basic code generation - enhance with proper React component generation
-    return `
-export const GeneratedComponent = () => {
-  return (
-    <div className="generated-artifact">
-      ${components.map((comp) => renderComponentCode(comp)).join("\n")}
-    </div>
-  )
-}`;
-  };
-
-  const renderComponentCode = (node: ComponentNode): string => {
-    const { type, props, children } = node;
-    const childrenCode = children?.map(renderComponentCode).join("\n") || "";
-
-    switch (type) {
-      case "container":
-        return `<div ${propsToString(props)}>${childrenCode}</div>`;
-      case "text":
-        return `<span ${propsToString(props)}>${props.children || ""}</span>`;
-      case "button":
-        return `<button ${propsToString(props)}>${props.children || "Button"}</button>`;
-      default:
-        return `<div ${propsToString(props)}>${childrenCode}</div>`;
-    }
-  };
-
-  const propsToString = (props: Record<string, any>): string => {
-    return Object.entries(props)
-      .map(([key, value]) => `${key}="${value}"`)
-      .join(" ");
-  };
-
   const addComponent = useCallback((component: ComponentNode) => {
     setCanvas((prev) => [...prev, component]);
   }, []);
 
   const updateComponent = useCallback(
     (id: string, updates: Partial<ComponentNode>) => {
+      let updatedNode: ComponentNode | null = null;
       setCanvas((prev) =>
-        prev.map((comp) => (comp.id === id ? { ...comp, ...updates } : comp)),
+        prev.map((comp) => {
+          if (comp.id === id) {
+            updatedNode = { ...comp, ...updates };
+            return updatedNode;
+          }
+          return comp;
+        }),
       );
+
+      if (selectedNode?.id === id && updatedNode) {
+        setSelectedNode(updatedNode);
+      }
     },
-    [],
+    [selectedNode],
+  );
+
+  const renderPanel = () => {
+    const panelProps = {
+      selectedNode,
+      onUpdateNode: (updates: Partial<ComponentNode>) =>
+        selectedNode && updateComponent(selectedNode.id, updates),
+    };
+
+    switch (activeTab) {
+      case "AI":
+        return <AIPromptPanel onGenerate={generateFromPrompt} isGenerating={isGenerating} />;
+      case "Style":
+        return <StylePanel {...panelProps} />;
+      case "Animate":
+        return <AnimationPanel {...panelProps} />;
+      case "State":
+        return <StateManagerPanel {...panelProps} />;
+      case "API":
+        return <ApiConnectionPanel {...panelProps} />;
+      case "Perf":
+        return <PerformancePanel selectedNode={selectedNode} />;
+      default:
+        return null;
+    }
+  };
+
+  const TabButton = ({ tabName }: { tabName: RightPanelTab }) => (
+    <button
+      onClick={() => setActiveTab(tabName)}
+      className={`px-3 py-2 text-sm font-medium ${
+        activeTab === tabName
+          ? "text-blue-600 border-b-2 border-blue-600"
+          : "text-gray-500 hover:text-gray-700"
+      }`}
+    >
+      {tabName}
+    </button>
   );
 
   return (
-    <div className="h-screen flex bg-gray-50">
-      {/* Component Library Sidebar */}
-      <div className="w-64 bg-white border-r border-gray-200">
+    <div className="h-screen flex bg-gray-50 font-sans">
+      {/* Left Sidebar */}
+      <div className="w-64 bg-white border-r border-gray-200 flex-shrink-0">
         <ComponentLibrary onAddComponent={addComponent} />
       </div>
 
-      {/* Main Canvas Area */}
+      {/* Main Area */}
       <div className="flex-1 flex flex-col">
         {/* Toolbar */}
-        <div className="h-16 bg-white border-b border-gray-200 flex items-center px-4">
+        <div className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 flex-shrink-0">
           <h1 className="text-xl font-semibold text-gray-800">
             Visual Artifact Studio
           </h1>
-          <div className="ml-auto flex gap-2">
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+          <div className="flex items-center gap-2">
+            <Link href="/marketplace" className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm">
+                Marketplace
+            </Link>
+            <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
               Save
             </button>
-            <button className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+            <button className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm">
               Deploy
             </button>
           </div>
         </div>
 
-        {/* Canvas and Preview */}
-        <div className="flex-1 flex">
-          <div className="flex-1">
+        {/* Canvas & Preview */}
+        <div className="flex-1 flex overflow-hidden">
+          <div className="flex-1 h-full overflow-auto">
             <VisualCanvas
               components={canvas}
               selectedNode={selectedNode}
@@ -128,27 +153,24 @@ export const GeneratedComponent = () => {
               onUpdateComponent={updateComponent}
             />
           </div>
-          <div className="w-96 border-l border-gray-200">
+          <div className="w-96 flex-shrink-0 border-l border-gray-200">
             <LivePreview code={livePreview} />
           </div>
         </div>
       </div>
 
-      {/* Properties Panel */}
-      <div className="w-80 bg-white border-l border-gray-200">
-        <div className="h-1/2">
-          <AIPromptPanel
-            onGenerate={generateFromPrompt}
-            isGenerating={isGenerating}
-          />
+      {/* Right Sidebar */}
+      <div className="w-80 bg-white border-l border-gray-200 flex flex-col flex-shrink-0">
+        <div className="flex justify-around border-b border-gray-200">
+          <TabButton tabName="AI" />
+          <TabButton tabName="Style" />
+          <TabButton tabName="Animate" />
+          <TabButton tabName="State" />
+          <TabButton tabName="API" />
+          <TabButton tabName="Perf" />
         </div>
-        <div className="h-1/2 border-t border-gray-200">
-          <StylePanel
-            selectedNode={selectedNode}
-            onUpdateNode={(updates) =>
-              selectedNode && updateComponent(selectedNode.id, updates)
-            }
-          />
+        <div className="flex-1 overflow-y-auto">
+          {renderPanel()}
         </div>
       </div>
     </div>

@@ -114,6 +114,7 @@ export interface AIGenerationRequest {
   framework: Framework;
   styling: StylingApproach;
   interactivity: InteractivityLevel;
+  theme: "default" | "modern" | "minimalist";
   context?: {
     existingComponents?: ComponentNode[];
     targetContainer?: string;
