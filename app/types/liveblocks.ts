@@ -2,10 +2,7 @@ export type Presence = {
   cursor: { x: number; y: number } | null;
 };
 
-export type Storage = {
-  // Example storage items
-  // components: LiveList<LiveObject<ComponentNode>>;
-};
+export type Storage = Record<string, never>;
 
 export type UserMeta = {
   id: string;
@@ -16,15 +13,6 @@ export type UserMeta = {
   };
 };
 
-export type RoomEvent = {
-  // Example room events
-  // type: "REACTION";
-  // emoji: string;
-};
+export type RoomEvent = Record<string, never>;
 
-export type ThreadMetadata = {
-  // Example thread metadata
-  // resolved: boolean;
-  // zIndex: number;
-  // time: number;
-};
+export type ThreadMetadata = Record<string, never>;

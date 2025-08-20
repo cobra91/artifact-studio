@@ -8,7 +8,10 @@ export interface SandboxMessage {
   payload: any;
 }
 
-export const postSandboxMessage = (iframe: HTMLIFrameElement, message: SandboxMessage) => {
+export const postSandboxMessage = (
+  iframe: HTMLIFrameElement,
+  message: SandboxMessage,
+) => {
   if (iframe.contentWindow) {
     iframe.contentWindow.postMessage(message, "*");
   }

@@ -37,6 +37,22 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
     });
   };
 
+  const updateRotation = (value: number) => {
+    onUpdateNode({
+      rotation: value,
+    });
+  };
+
+  const updateSkew = (axis: "x" | "y", value: number) => {
+    onUpdateNode({
+      skew: {
+        x: selectedNode.skew?.x || 0,
+        y: selectedNode.skew?.y || 0,
+        [axis]: value,
+      },
+    });
+  };
+
   const updateProp = (key: string, value: any) => {
     onUpdateNode({
       props: {
@@ -110,6 +126,48 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
               value={selectedNode.size.height}
               onChange={(e) =>
                 updateSize("height", parseInt(e.target.value) || 0)
+              }
+              className="w-full p-2 text-sm border border-gray-300 rounded"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Transform */}
+      <div className="mb-6">
+        <h4 className="text-sm font-medium text-gray-700 mb-3">
+          Transform
+        </h4>
+        <div className="grid grid-cols-3 gap-3">
+          <div>
+            <label className="block text-xs text-gray-600 mb-1">Rotation</label>
+            <input
+              type="number"
+              value={selectedNode.rotation || 0}
+              onChange={(e) =>
+                updateRotation(parseInt(e.target.value) || 0)
+              }
+              className="w-full p-2 text-sm border border-gray-300 rounded"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-600 mb-1">Skew X</label>
+            <input
+              type="number"
+              value={selectedNode.skew?.x || 0}
+              onChange={(e) =>
+                updateSkew("x", parseInt(e.target.value) || 0)
+              }
+              className="w-full p-2 text-sm border border-gray-300 rounded"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-600 mb-1">Skew Y</label>
+            <input
+              type="number"
+              value={selectedNode.skew?.y || 0}
+              onChange={(e) =>
+                updateSkew("y", parseInt(e.target.value) || 0)
               }
               className="w-full p-2 text-sm border border-gray-300 rounded"
             />
@@ -250,12 +308,6 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             className="p-2 text-xs bg-gray-100 hover:bg-gray-200 rounded"
           >
             Add Border
-          </button>
-          <button
-            onClick={() => updateStyle("transform", "rotate(5deg)")}
-            className="p-2 text-xs bg-gray-100 hover:bg-gray-200 rounded"
-          >
-            Rotate
           </button>
           <button
             onClick={() => updateStyle("opacity", "0.8")}

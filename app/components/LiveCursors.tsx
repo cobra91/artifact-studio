@@ -1,6 +1,7 @@
 "use client";
 
-import { useOthers, useMyPresence } from "@liveblocks/react";
+import { useMyPresence,useOthers } from "@liveblocks/react";
+
 import { Presence } from "../types/liveblocks";
 
 export function LiveCursors() {
