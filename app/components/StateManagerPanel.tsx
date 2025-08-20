@@ -6,25 +6,33 @@ import { ComponentNode } from "../types/artifact";
 interface StateManagerPanelProps {
   selectedNode: ComponentNode | null;
   onUpdateNode: (_updates: Partial<ComponentNode>) => void;
+  onAddState: (_key: string, _value: any) => void;
 }
 
 export const StateManagerPanel = ({
   selectedNode,
   onUpdateNode,
+  onAddState,
 }: StateManagerPanelProps) => {
   const [stateKey, setStateKey] = useState("");
   const [stateValue, setStateValue] = useState("");
 
   const handleAddState = () => {
+    if (stateKey) {
+      onAddState(stateKey, stateValue);
+      setStateKey("");
+      setStateValue("");
+    }
+  };
+
+  const handleUseState = () => {
     if (selectedNode && stateKey) {
       onUpdateNode({
         props: {
           ...selectedNode.props,
-          [stateKey]: stateValue,
+          children: `{${stateKey}}`,
         },
       });
-      setStateKey("");
-      setStateValue("");
     }
   };
 
@@ -38,23 +46,28 @@ export const StateManagerPanel = ({
           value={stateKey}
           onChange={(e) => setStateKey(e.target.value)}
           className="w-1/2 p-2 border rounded"
-          disabled={!selectedNode}
         />
         <input
           type="text"
-          placeholder="State Value"
+          placeholder="Default Value"
           value={stateValue}
           onChange={(e) => setStateValue(e.target.value)}
           className="w-1/2 p-2 border rounded"
-          disabled={!selectedNode}
         />
       </div>
       <button
         onClick={handleAddState}
-        className="w-full p-2 bg-blue-600 text-white rounded"
+        className="w-full p-2 bg-blue-600 text-white rounded mb-2"
+        disabled={!stateKey}
+      >
+        Add State Variable
+      </button>
+      <button
+        onClick={handleUseState}
+        className="w-full p-2 bg-green-600 text-white rounded"
         disabled={!selectedNode || !stateKey}
       >
-        Add State
+        Use State in Selected Component
       </button>
     </div>
   );
