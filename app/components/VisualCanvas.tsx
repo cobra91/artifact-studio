@@ -1,13 +1,17 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { ComponentNode } from "../types/artifact";
+import { ComponentNode, ComponentType } from "../types/artifact";
 
 interface VisualCanvasProps {
   components: ComponentNode[];
   selectedNode: ComponentNode | null;
   onSelectNode: (_node: ComponentNode | null) => void;
   onUpdateComponent: (_id: string, _updates: Partial<ComponentNode>) => void;
+  onAddComponent: (
+    _type: ComponentType,
+    _position: { x: number; y: number },
+  ) => void;
 }
 
 export const VisualCanvas = ({
@@ -15,6 +19,7 @@ export const VisualCanvas = ({
   selectedNode,
   onSelectNode,
   onUpdateComponent,
+  onAddComponent,
 }: VisualCanvasProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
@@ -46,6 +51,24 @@ export const VisualCanvas = ({
 
   const handleMouseUp = () => {
     setIsDragging(false);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault(); // This is crucial to allow dropping
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const componentType = e.dataTransfer.getData("componentType") as ComponentType;
+    if (!componentType || !canvasRef.current) return;
+
+    const canvasRect = canvasRef.current.getBoundingClientRect();
+    const position = {
+      x: e.clientX - canvasRect.left,
+      y: e.clientY - canvasRect.top,
+    };
+
+    onAddComponent(componentType, position);
   };
 
   const renderComponent = (node: ComponentNode) => {
@@ -92,6 +115,8 @@ export const VisualCanvas = ({
       className="relative w-full h-full bg-gray-100 overflow-hidden"
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
       onClick={() => onSelectNode(null)}
     >
       {/* Grid background */}
@@ -110,7 +135,7 @@ export const VisualCanvas = ({
       {components.map(renderComponent)}
 
       {/* Drop zone indicator */}
-      <div className="absolute inset-4 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500">
+      <div className="absolute inset-4 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500 pointer-events-none">
         {components.length === 0 && (
           <div className="text-center">
             <p className="text-lg font-medium">Drop components here</p>

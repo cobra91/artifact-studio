@@ -6,6 +6,7 @@ import {
   ComponentNode,
   AIGenerationRequest,
   SandboxResult,
+  ComponentType,
 } from "../types/artifact";
 import { VisualCanvas } from "./VisualCanvas";
 import { ComponentLibrary } from "./ComponentLibrary";
@@ -18,6 +19,52 @@ import { ApiConnectionPanel } from "./ApiConnectionPanel";
 import { PerformancePanel } from "./PerformancePanel";
 
 type RightPanelTab = "AI" | "Style" | "Animate" | "State" | "API" | "Perf";
+
+// Helper function to get default properties for a new component
+const getComponentDefaults = (type: ComponentType) => {
+  switch (type) {
+    case "container":
+      return {
+        props: { className: "p-4 bg-white rounded-lg shadow-sm border" },
+        size: { width: 300, height: 200 },
+      };
+    case "text":
+      return {
+        props: { children: "Sample text", className: "text-gray-800" },
+        size: { width: 150, height: 40 },
+      };
+    case "button":
+      return {
+        props: {
+          children: "Click me",
+          className: "bg-blue-600 text-white px-4 py-2 rounded",
+        },
+        size: { width: 120, height: 40 },
+      };
+    case "input":
+      return {
+        props: {
+          placeholder: "Enter text...",
+          className: "border border-gray-300 rounded px-3 py-2",
+        },
+        size: { width: 200, height: 40 },
+      };
+    case "image":
+      return {
+        props: {
+          src: "https://via.placeholder.com/150",
+          alt: "Image",
+          className: "rounded",
+        },
+        size: { width: 150, height: 150 },
+      };
+    default:
+      return {
+        props: {},
+        size: { width: 200, height: 100 },
+      };
+  }
+};
 
 export const ArtifactBuilder = () => {
   const [canvas, setCanvas] = useState<ComponentNode[]>([]);
@@ -54,9 +101,21 @@ export const ArtifactBuilder = () => {
     }
   };
 
-  const addComponent = useCallback((component: ComponentNode) => {
-    setCanvas((prev) => [...prev, component]);
-  }, []);
+  const addComponent = useCallback(
+    (type: ComponentType, position: { x: number; y: number }) => {
+      const defaults = getComponentDefaults(type);
+      const newComponent: ComponentNode = {
+        id: `${type}-${Date.now()}`,
+        type,
+        position,
+        props: defaults.props,
+        size: defaults.size,
+        styles: {},
+      };
+      setCanvas((prev) => [...prev, newComponent]);
+    },
+    [],
+  );
 
   const updateComponent = useCallback(
     (id: string, updates: Partial<ComponentNode>) => {
@@ -87,7 +146,12 @@ export const ArtifactBuilder = () => {
 
     switch (activeTab) {
       case "AI":
-        return <AIPromptPanel onGenerate={generateFromPrompt} isGenerating={isGenerating} />;
+        return (
+          <AIPromptPanel
+            onGenerate={generateFromPrompt}
+            isGenerating={isGenerating}
+          />
+        );
       case "Style":
         return <StylePanel {...panelProps} />;
       case "Animate":
@@ -120,7 +184,7 @@ export const ArtifactBuilder = () => {
     <div className="h-screen flex bg-gray-50 font-sans">
       {/* Left Sidebar */}
       <div className="w-64 bg-white border-r border-gray-200 flex-shrink-0">
-        <ComponentLibrary onAddComponent={addComponent} />
+        <ComponentLibrary />
       </div>
 
       {/* Main Area */}
@@ -131,8 +195,11 @@ export const ArtifactBuilder = () => {
             Visual Artifact Studio
           </h1>
           <div className="flex items-center gap-2">
-            <Link href="/marketplace" className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm">
-                Marketplace
+            <Link
+              href="/marketplace"
+              className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm"
+            >
+              Marketplace
             </Link>
             <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
               Save
@@ -151,6 +218,7 @@ export const ArtifactBuilder = () => {
               selectedNode={selectedNode}
               onSelectNode={setSelectedNode}
               onUpdateComponent={updateComponent}
+              onAddComponent={addComponent}
             />
           </div>
           <div className="w-96 flex-shrink-0 border-l border-gray-200">
@@ -169,9 +237,7 @@ export const ArtifactBuilder = () => {
           <TabButton tabName="API" />
           <TabButton tabName="Perf" />
         </div>
-        <div className="flex-1 overflow-y-auto">
-          {renderPanel()}
-        </div>
+        <div className="flex-1 overflow-y-auto">{renderPanel()}</div>
       </div>
     </div>
   );
