@@ -1,7 +1,3 @@
-"use client";
-
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 import { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -151,7 +147,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <DndProvider backend={HTML5Backend}>{children}</DndProvider>
+        {children}
       </body>
     </html>
   );
