@@ -1,4 +1,4 @@
-import { ArtifactTemplate } from "../types/artifact";
+import { ArtifactTemplate, TemplateReview } from "../types/artifact";
 
 let artifactTemplates: ArtifactTemplate[] = [];
 
@@ -50,4 +50,30 @@ export const getTemplates = async (filters: { category?: string; tags?: string[]
 export const getTemplateById = async (id: string) => {
   const templates = await fetchTemplates();
   return templates.find((template) => template.id === id);
+};
+
+export const submitReview = async (templateId: string, review: TemplateReview) => {
+  const templates = await fetchTemplates();
+  const template = templates.find((t) => t.id === templateId);
+
+  if (template) {
+    if (!template.reviews) {
+      template.reviews = [];
+    }
+    template.reviews.push(review);
+
+    // Recalculate average rating
+    const totalRating = template.reviews.reduce((sum, r) => sum + r.rating, 0);
+    template.rating = parseFloat((totalRating / template.reviews.length).toFixed(1));
+
+    // In a real app, you'd send this to a backend to update the JSON file
+    // For now, we just update the in-memory array.
+    // This change will be lost on page refresh unless persisted by other means.
+  }
+};
+
+export const getReviews = async (templateId: string): Promise<TemplateReview[]> => {
+  const templates = await fetchTemplates();
+  const template = templates.find((t) => t.id === templateId);
+  return template?.reviews || [];
 };

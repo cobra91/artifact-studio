@@ -105,6 +105,14 @@ export interface ArtifactTemplate {
   isPublic: boolean; // Available in marketplace
   framework: Framework; // Target framework
   styling: StylingApproach; // Styling method
+  reviews?: TemplateReview[]; // New field for reviews
+}
+
+export interface TemplateReview {
+  userId: string;
+  rating: number; // 1-5
+  comment: string;
+  timestamp: number; // Unix timestamp
 }
 
 // Framework and styling types

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { LiveCursors } from "../components/LiveCursors";
 import { getTemplates } from "../lib/templates";
 import { ArtifactTemplate } from "../types/artifact";
+import { TemplateReviewSection } from "./TemplateReviewSection"; // Import the new component
 
 export default function Marketplace() {
   const [templates, setTemplates] = useState<ArtifactTemplate[]>([]);
@@ -79,6 +80,7 @@ export default function Marketplace() {
                   {template.downloads} downloads
                 </div>
               </div>
+              <TemplateReviewSection templateId={template.id} currentRating={template.rating} />
             </div>
           ))}
         </div>
