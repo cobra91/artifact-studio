@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
+import { generationHistory,GenerationHistoryEntry } from "../lib/history";
 import { AIGenerationRequest } from "../types/artifact";
 
 interface AIPromptPanelProps {
@@ -14,42 +15,45 @@ export const AIPromptPanel = ({
   isGenerating,
 }: AIPromptPanelProps) => {
   const [prompt, setPrompt] = useState("");
-  const [framework, setFramework] = useState<"react" | "vue" | "svelte">(
-    "react",
-  );
-  const [styling, setStyling] = useState<
-    "tailwindcss" | "css" | "styled-components"
-  >("tailwindcss");
-  const [interactivity, setInteractivity] = useState<"low" | "medium" | "high">(
-    "medium",
-  );
-  const [theme, setTheme] = useState<"default" | "modern" | "minimalist">(
-    "default",
-  );
+  const [framework, setFramework] = useState<"react" | "vue" | "svelte">("react");
+  const [styling, setStyling] = useState<"tailwindcss" | "css" | "styled-components">("tailwindcss");
+  const [interactivity, setInteractivity] = useState<"low" | "medium" | "high">("medium");
+  const [theme, setTheme] = useState<"default" | "modern" | "minimalist">("default");
+  const [history, setHistory] = useState<GenerationHistoryEntry[]>([]);
 
-  const examplePrompts = [
-    "Create a loan calculator with sliders for amount, rate, and term",
-    "Make a data visualization showing monthly sales trends",
-    "Build a quiz about React hooks with multiple choice questions",
-    "Design a responsive pricing table with 3 tiers",
-    "Create a todo list with drag and drop functionality",
-    "Build a weather widget with current conditions and forecast",
-  ];
+  useEffect(() => {
+    setHistory(generationHistory.getHistory());
+  }, []);
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
 
-    await onGenerate({
+    const request = {
       prompt,
       framework,
       styling,
       interactivity,
       theme,
-    });
+    };
+
+    const result = await onGenerate(request);
+    if (result) {
+      generationHistory.addGeneration(request, result.components);
+      setHistory(generationHistory.getHistory());
+    }
   };
 
-  const selectExamplePrompt = (example: string) => {
-    setPrompt(example);
+  const applyHistoryEntry = (entry: GenerationHistoryEntry) => {
+    setPrompt(entry.request.prompt);
+    setFramework(entry.request.framework);
+    setStyling(entry.request.styling);
+    setInteractivity(entry.request.interactivity);
+    setTheme(entry.request.theme);
+  };
+
+  const handleClearHistory = () => {
+    generationHistory.clearHistory();
+    setHistory([]);
   };
 
   return (
@@ -177,19 +181,20 @@ export const AIPromptPanel = ({
         )}
       </button>
 
-      {/* Example Prompts */}
+      {/* History Section */}
       <div className="mt-4 flex-1">
-        <h4 className="text-sm font-medium text-gray-700 mb-2">
-          Example Prompts
-        </h4>
+        <div className="flex justify-between items-center mb-2">
+          <h4 className="text-sm font-medium text-gray-700">History</h4>
+          <button onClick={handleClearHistory} className="text-xs text-gray-500 hover:text-gray-700">Clear</button>
+        </div>
         <div className="space-y-2 max-h-40 overflow-y-auto">
-          {examplePrompts.map((example, index) => (
+          {history.map((entry) => (
             <button
-              key={index}
-              onClick={() => selectExamplePrompt(example)}
+              key={entry.id}
+              onClick={() => applyHistoryEntry(entry)}
               className="w-full p-2 text-left text-xs bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded text-gray-700 transition-colors"
             >
-              {example}
+              {entry.request.prompt}
             </button>
           ))}
         </div>

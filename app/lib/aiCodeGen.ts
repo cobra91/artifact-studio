@@ -17,6 +17,30 @@ The JSON object must have three top-level keys: "components", "layout", and "com
 2.  **layout**: An object defining styles and children for each component ID. The root container must have an ID of "root".
 3.  **componentDetails**: An object providing the specific props for each component ID (e.g., text content, image src).
 
+**Component Types and Examples:**
+
+*   **container**: A flexible layout element. Use it for grouping other components.
+    *   { "type": "container", "id": "root", "children": ["header", "content"] }
+*   **text**: For displaying static text.
+    *   { "type": "text", "content": "Hello, World!", "props": { "className": "text-xl" } }
+*   **button**: An interactive button.
+    *   { "type": "button", "content": "Click Me", "props": { "className": "btn-primary" } }
+*   **input**: A text input field.
+    *   { "type": "input", "props": { "placeholder": "Enter your name" } }
+*   **image**: For displaying images.
+    *   { "type": "image", "props": { "src": "/placeholder.png", "alt": "Placeholder" } }
+*   **calculator**: A component with state and logic for calculations.
+    *   { "type": "calculator", "id": "my-calculator" }
+*   **quiz**: A component with questions, answers, and scoring.
+    *   { "type": "quiz", "id": "tech-quiz", "props": { "questions": [...] } }
+*   **chart**: For data visualization.
+    *   { "type": "chart", "id": "sales-chart", "props": { "chartType": "bar", "data": {...} } }
+
+**Styling:**
+
+*   Use the "styles" property in the "layout" object for CSS styles.
+*   For frameworks like TailwindCSS, use the "className" property in "props".
+
 Here is an example of the required JSON structure for a "user profile card" prompt:
 {
   "components": [
@@ -90,7 +114,20 @@ export class AICodeGenerator {
 
     const aiResponse = await generateComponentTreeFromAI(request);
     const components = this.buildComponentTree(aiResponse);
-    const code = this.generateReactCode(components, request);
+    
+    let code = "";
+    switch (request.framework) {
+      case "vue":
+        code = this.generateVueCode(components, request);
+        break;
+      case "svelte":
+        code = this.generateSvelteCode(components, request);
+        break;
+      case "react":
+      default:
+        code = this.generateReactCode(components, request);
+        break;
+    }
 
     return { code, components };
   }
@@ -135,7 +172,6 @@ export class AICodeGenerator {
         layoutInfo.children.forEach((childId: string) => {
           const childNode = componentMap.get(childId);
           if (childNode) {
-            // This is the fix: ensure children is always an array
             if (!parentNode.children) {
               parentNode.children = [];
             }
@@ -175,7 +211,7 @@ export class AICodeGenerator {
   }, []);`)
       .join("\n  ");
 
-    return `import React, { useState, useEffect } from 'react'
+    return `import React, { useState, useEffect } from 'react';
 
 export const GeneratedArtifact = () => {
   ${stateInitialization}
@@ -183,15 +219,15 @@ export const GeneratedArtifact = () => {
 
   return (
     <div className="generated-artifact">
-      ${components.map((comp) => this.renderComponentCode(comp, 1)).join("\n")}
+      ${components.map((comp) => this.renderReactComponent(comp, 1)).join("\n")}
     </div>
-  )
-}
+  );
+};
 
-export default GeneratedArtifact`;
+export default GeneratedArtifact;`;
   }
 
-  private renderComponentCode(node: ComponentNode, indent: number = 0): string {
+  private renderReactComponent(node: ComponentNode, indent: number = 0): string {
     const spaces = "  ".repeat(indent);
     const { type, props, children, styles } = node;
 
@@ -213,7 +249,7 @@ export default GeneratedArtifact`;
     const childrenContent = props.children || "";
     const childrenCode =
       children
-        ?.map((child) => this.renderComponentCode(child, indent + 1))
+        ?.map((child) => this.renderReactComponent(child, indent + 1))
         .join("\n") || "";
 
     const elementMap: { [key: string]: string } = {
@@ -232,8 +268,168 @@ export default GeneratedArtifact`;
     }
 
     return `${spaces}<${Element} ${propsStr}>
-${childrenContent}${childrenCode ? `\n${childrenCode}\n${spaces}` : ""}
+${spaces}  ${childrenContent}${childrenCode ? `\n${childrenCode}\n${spaces}` : ""}
 ${spaces}</${Element}>`;
+  }
+
+  public generateVueCode(
+    components: ComponentNode[],
+    _request?: AIGenerationRequest,
+    appState: { [key: string]: any } = {},
+    apiData: { [key: string]: any } = {},
+  ): string {
+    const stateInitialization = Object.entries(appState)
+      .map(([key, value]) => `const ${key} = ref(${JSON.stringify(value)});`)
+      .join("\n  ");
+
+    const apiDataInitialization = Object.entries(apiData)
+      .map(([key, url]) => `const ${key} = ref(null);
+  onMounted(async () => {
+    const response = await fetch("${url}");
+    ${key}.value = await response.json();
+  });`)
+      .join("\n  ");
+
+    return `<template>
+  <div class="generated-artifact">
+    ${components.map((comp) => this.renderVueComponent(comp, 2)).join("\n")}
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+
+  ${stateInitialization}
+  ${apiDataInitialization}
+</script>
+
+<style scoped>
+/* Add component-specific styles here */
+</style>`;
+  }
+
+  private renderVueComponent(node: ComponentNode, indent: number = 0): string {
+    const spaces = "  ".repeat(indent);
+    const { type, props, children, styles } = node;
+
+    const propsStr = Object.entries({ ...props, style: this.toInlineCss(styles) })
+      .map(([key, value]) => {
+        if (key === "children" || value === undefined) return null;
+        if (key === "style" && Object.keys(value).length === 0) return null;
+        if (typeof value === "object") {
+          return `:${key}='${JSON.stringify(value)}'`;
+        }
+        return `${key}="${value}"`;
+      })
+      .filter(Boolean)
+      .join(" ");
+
+    const childrenContent = props.children || "";
+    const childrenCode =
+      children
+        ?.map((child) => this.renderVueComponent(child, indent + 1))
+        .join("\n") || "";
+
+    const elementMap: { [key: string]: string } = {
+      container: "div",
+      text: "p",
+      button: "button",
+      input: "input",
+      image: "img",
+    };
+
+    const Element = elementMap[type] || "div";
+    const isSelfClosing = ["input", "img"].includes(Element);
+
+    if (isSelfClosing) {
+      return `${spaces}<${Element} ${propsStr} />`;
+    }
+
+    return `${spaces}<${Element} ${propsStr}>
+${spaces}  ${childrenContent}${childrenCode ? `\n${childrenCode}\n${spaces}` : ""}
+${spaces}</${Element}>`;
+  }
+
+  public generateSvelteCode(
+    components: ComponentNode[],
+    _request?: AIGenerationRequest,
+    appState: { [key: string]: any } = {},
+    apiData: { [key: string]: any } = {},
+  ): string {
+    const stateInitialization = Object.entries(appState)
+      .map(([key, value]) => `let ${key} = ${JSON.stringify(value)};`)
+      .join("\n  ");
+
+    const apiDataInitialization = Object.entries(apiData)
+      .map(([key, url]) => `let ${key} = null;
+  onMount(async () => {
+    const response = await fetch("${url}");
+    ${key} = await response.json();
+  });`)
+      .join("\n  ");
+
+    return `<script>
+  import { onMount } from 'svelte';
+
+  ${stateInitialization}
+  ${apiDataInitialization}
+</script>
+
+<div class="generated-artifact">
+  ${components.map((comp) => this.renderSvelteComponent(comp, 1)).join("\n")}
+</div>
+
+<style>
+/* Add component-specific styles here */
+</style>`;
+  }
+
+  private renderSvelteComponent(node: ComponentNode, indent: number = 0): string {
+    const spaces = "  ".repeat(indent);
+    const { type, props, children, styles } = node;
+
+    const propsStr = Object.entries({ ...props, style: this.toInlineCss(styles) })
+      .map(([key, value]) => {
+        if (key === "children" || value === undefined) return null;
+        if (typeof value === "string" && value) {
+          return `${key}="${value}"`;
+        }
+        return null;
+      })
+      .filter(Boolean)
+      .join(" ");
+
+    const childrenContent = props.children || "";
+    const childrenCode =
+      children
+        ?.map((child) => this.renderSvelteComponent(child, indent + 1))
+        .join("\n") || "";
+
+    const elementMap: { [key: string]: string } = {
+      container: "div",
+      text: "p",
+      button: "button",
+      input: "input",
+      image: "img",
+    };
+
+    const Element = elementMap[type] || "div";
+    const isSelfClosing = ["input", "img"].includes(Element);
+
+    if (isSelfClosing) {
+      return `${spaces}<${Element} ${propsStr} />`;
+    }
+
+    return `${spaces}<${Element} ${propsStr}>
+${spaces}  ${childrenContent}${childrenCode ? `\n${childrenCode}\n${spaces}` : ""}
+${spaces}</${Element}>`;
+  }
+
+  private toInlineCss(styles: { [key: string]: string | undefined }): string {
+    return Object.entries(styles)
+      .filter(([, value]) => value !== undefined)
+      .map(([key, value]) => `${key.replace(/([A-Z])/g, "-$1").toLowerCase()}:${value}`)
+      .join(';');
   }
 }
 

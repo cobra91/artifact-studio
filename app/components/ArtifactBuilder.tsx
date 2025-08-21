@@ -1,14 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect,useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-import {
-  AIGenerationRequest,
-  ComponentNode,
-  ComponentType,
-  SandboxResult,
-} from "../types/artifact";
+import { AIGenerationRequest, ComponentNode, ComponentType, SandboxResult, } from "../types/artifact";
+import { ABTestPanel } from "./ABTestPanel";
 import { AIPromptPanel } from "./AIPromptPanel";
 import { AnimationPanel } from "./AnimationPanel";
 import { ApiConnectionPanel } from "./ApiConnectionPanel";
@@ -18,9 +14,10 @@ import { LivePreview } from "./LivePreview";
 import { PerformancePanel } from "./PerformancePanel";
 import { StateManagerPanel } from "./StateManagerPanel";
 import { StylePanel } from "./StylePanel";
+import { VersionPanel } from "./VersionPanel";
 import { VisualCanvas } from "./VisualCanvas";
 
-type RightPanelTab = "AI" | "Style" | "Animate" | "State" | "API" | "Perf";
+type RightPanelTab = "AI" | "Style" | "Animate" | "State" | "API" | "Perf" | "Versions" | "A/B";
 
 // Helper function to get default properties for a new component
 const getComponentDefaults = (type: ComponentType) => {
@@ -70,6 +67,26 @@ const getComponentDefaults = (type: ComponentType) => {
 
 export const ArtifactBuilder = () => {
   const [canvas, setCanvas] = useState<ComponentNode[]>([]);
+  const [history, setHistory] = useState<ComponentNode[][]>([[]]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const [framework, setFramework] = useState<"react" | "vue" | "svelte">("react");
+
+  const historyRef = useRef(history);
+  historyRef.current = history;
+  const historyIndexRef = useRef(historyIndex);
+  historyIndexRef.current = historyIndex;
+
+  const updateCanvas = useCallback((updater: ComponentNode[] | ((c: ComponentNode[]) => ComponentNode[])) => {
+    setCanvas(prevCanvas => {
+      const newCanvas = typeof updater === 'function' ? updater(prevCanvas) : updater;
+      const newHistory = historyRef.current.slice(0, historyIndexRef.current + 1);
+      newHistory.push(newCanvas);
+      setHistory(newHistory);
+      setHistoryIndex(newHistory.length - 1);
+      return newCanvas;
+    });
+  }, []);
+
   const [selectedNodeIds, setSelectedNodeIds] = useState<string[]>([]);
   const [snapToGrid, setSnapToGrid] = useState<boolean>(true);
   const [aspectRatioLocked, setAspectRatioLocked] = useState<boolean>(false);
@@ -154,7 +171,7 @@ export const ArtifactBuilder = () => {
   useEffect(() => {
     const savedCanvas = localStorage.getItem("canvas");
     if (savedCanvas) {
-      setCanvas(JSON.parse(savedCanvas));
+      updateCanvas(JSON.parse(savedCanvas));
     }
     const savedState = localStorage.getItem("appState");
     if (savedState) {
@@ -164,7 +181,7 @@ export const ArtifactBuilder = () => {
     if (savedApiData) {
       setApiData(JSON.parse(savedApiData));
     }
-  }, []);
+  }, [updateCanvas]);
 
   const handleSave = () => {
     localStorage.setItem("canvas", JSON.stringify(canvas));
@@ -194,11 +211,12 @@ export const ArtifactBuilder = () => {
     request: AIGenerationRequest,
   ): Promise<SandboxResult> => {
     setIsGenerating(true);
+    setFramework(request.framework);
     try {
       const { aiCodeGen } = await import("../lib/aiCodeGen");
       const result = await aiCodeGen.create(request);
 
-      setCanvas((prev) => [...prev, ...result.components]);
+      updateCanvas((prev) => [...prev, ...result.components]);
       setLivePreview(result.code);
 
       return {
@@ -229,9 +247,9 @@ export const ArtifactBuilder = () => {
         size: defaults.size,
         styles: {},
       };
-      setCanvas((prev) => [...prev, newComponent]);
+      updateCanvas((prev) => [...prev, newComponent]);
     },
-    [],
+    [updateCanvas],
   );
 
   const groupSelectedNodes = useCallback(() => {
@@ -264,12 +282,12 @@ export const ArtifactBuilder = () => {
       })),
     };
 
-    setCanvas((prev) => [
+    updateCanvas((prev) => [
       ...prev.filter((c) => !selectedNodeIds.includes(c.id)),
       newContainer,
     ]);
     setSelectedNodeIds([newContainer.id]);
-  }, [canvas, selectedNodeIds]);
+  }, [canvas, selectedNodeIds, updateCanvas]);
 
   const ungroupSelectedNodes = useCallback(() => {
     if (selectedNodeIds.length !== 1) return;
@@ -286,17 +304,17 @@ export const ArtifactBuilder = () => {
       },
     }));
 
-    setCanvas((prev) => [
+    updateCanvas((prev) => [
       ...prev.filter((c) => c.id !== container.id),
       ...children,
     ]);
     setSelectedNodeIds(children.map((c) => c.id));
-  }, [canvas, selectedNodeIds]);
+  }, [canvas, selectedNodeIds, updateCanvas]);
 
   const updateComponent = useCallback(
     (id: string, updates: Partial<ComponentNode>) => {
       let updatedNode: ComponentNode | null = null;
-      setCanvas((prev) =>
+      updateCanvas((prev) =>
         prev.map((comp) => {
           if (comp.id === id) {
             updatedNode = { ...comp, ...updates };
@@ -306,7 +324,7 @@ export const ArtifactBuilder = () => {
         }),
       );
     },
-    [],
+    [updateCanvas],
   );
 
   const handleAddState = (key: string, value: any) => {
@@ -320,6 +338,43 @@ export const ArtifactBuilder = () => {
       setApiData((prev) => ({ ...prev, [key]: data }));
     } catch (error) {
       console.error("Failed to fetch API data:", error);
+    }
+  };
+
+  const handleRestoreVersion = (components: ComponentNode[]) => {
+    updateCanvas(components);
+  };
+
+  const handleUndo = () => {
+    if (historyIndex > 0) {
+      setHistoryIndex(historyIndex - 1);
+      setCanvas(history[historyIndex - 1]);
+    }
+  };
+
+  const handleRedo = () => {
+    if (historyIndex < history.length - 1) {
+      setHistoryIndex(historyIndex + 1);
+      setCanvas(history[historyIndex + 1]);
+    }
+  };
+
+  const handleCopy = () => {
+    if (selectedNode) {
+      navigator.clipboard.writeText(JSON.stringify(selectedNode));
+    }
+  };
+
+  const handlePaste = async () => {
+    const text = await navigator.clipboard.readText();
+    try {
+      const node = JSON.parse(text) as ComponentNode;
+      node.id = `${node.type}-${Date.now()}`;
+      node.position.x += 10;
+      node.position.y += 10;
+      updateCanvas([...canvas, node]);
+    } catch (e) {
+      console.error("Failed to parse clipboard content", e);
     }
   };
 
@@ -352,6 +407,10 @@ export const ArtifactBuilder = () => {
         );
       case "Perf":
         return <PerformancePanel selectedNode={selectedNode} />;
+      case "Versions":
+        return <VersionPanel onRestoreVersion={handleRestoreVersion} />;
+      case "A/B":
+        return <ABTestPanel selectedNode={selectedNode} />;
       default:
         return null;
     }
@@ -386,6 +445,33 @@ export const ArtifactBuilder = () => {
             Visual Artifact Studio
           </h1>
           <div className="flex items-center gap-2">
+            <button
+              onClick={handleUndo}
+              disabled={historyIndex === 0}
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm disabled:opacity-50"
+            >
+              Undo
+            </button>
+            <button
+              onClick={handleRedo}
+              disabled={historyIndex === history.length - 1}
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm disabled:opacity-50"
+            >
+              Redo
+            </button>
+            <button
+              onClick={handleCopy}
+              disabled={!selectedNode}
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm disabled:opacity-50"
+            >
+              Copy
+            </button>
+            <button
+              onClick={handlePaste}
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm"
+            >
+              Paste
+            </button>
             <button
               className={`px-4 py-2 text-sm rounded-md ${snapToGrid ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"}`}
               onClick={() => setSnapToGrid(!snapToGrid)}
@@ -456,7 +542,7 @@ export const ArtifactBuilder = () => {
             />
           </div>
           <div className="w-96 flex-shrink-0 border-l border-gray-200">
-            <LivePreview code={livePreview} />
+            <LivePreview code={livePreview} framework={framework} />
           </div>
         </div>
       </div>
@@ -470,6 +556,8 @@ export const ArtifactBuilder = () => {
           <TabButton tabName="State" />
           <TabButton tabName="API" />
           <TabButton tabName="Perf" />
+          <TabButton tabName="Versions" />
+          <TabButton tabName="A/B" />
         </div>
         <div className="flex-1 overflow-y-auto">{renderPanel()}</div>
       </div>

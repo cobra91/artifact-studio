@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { ComponentNode } from "../types/artifact";
 
 interface StylePanelProps {
@@ -8,6 +10,9 @@ interface StylePanelProps {
 }
 
 export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
+  const [activeTab, setActiveTab] = useState<"layout" | "typography" | "appearance" | "responsive">("layout");
+  const [activeBreakpoint, setActiveBreakpoint] = useState<"base" | "sm" | "md" | "lg">("base");
+
   if (!selectedNode) {
     return (
       <div className="h-full p-4 flex items-center justify-center text-gray-500">
@@ -19,36 +24,23 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
     );
   }
 
-  const updatePosition = (axis: "x" | "y", value: number) => {
+  const updateStyle = (property: string, value: string | number) => {
     onUpdateNode({
-      position: {
-        ...selectedNode.position,
-        [axis]: value,
+      styles: {
+        ...selectedNode.styles,
+        [property]: String(value),
       },
     });
   };
 
-  const updateSize = (dimension: "width" | "height", value: number) => {
+  const updateResponsiveStyle = (property: string, value: string | number) => {
     onUpdateNode({
-      size: {
-        ...selectedNode.size,
-        [dimension]: value,
-      },
-    });
-  };
-
-  const updateRotation = (value: number) => {
-    onUpdateNode({
-      rotation: value,
-    });
-  };
-
-  const updateSkew = (axis: "x" | "y", value: number) => {
-    onUpdateNode({
-      skew: {
-        x: selectedNode.skew?.x || 0,
-        y: selectedNode.skew?.y || 0,
-        [axis]: value,
+      responsiveStyles: {
+        ...selectedNode.responsiveStyles,
+        [activeBreakpoint]: {
+          ...selectedNode.responsiveStyles?.[activeBreakpoint],
+          [property]: String(value),
+        },
       },
     });
   };
@@ -62,14 +54,209 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
     });
   };
 
-  const updateStyle = (property: string, value: string) => {
-    onUpdateNode({
-      styles: {
-        ...selectedNode.styles,
-        [property]: value,
-      },
-    });
-  };
+  const renderLayoutTab = () => (
+    <div className="space-y-4">
+      <div>
+        <label className="block text-xs text-gray-600 mb-1">Display</label>
+        <select
+          value={selectedNode.styles.display || "block"}
+          onChange={(e) => updateStyle("display", e.target.value)}
+          className="w-full p-2 text-sm border border-gray-300 rounded"
+        >
+          <option value="block">Block</option>
+          <option value="flex">Flex</option>
+          <option value="grid">Grid</option>
+          <option value="inline-block">Inline Block</option>
+        </select>
+      </div>
+      {selectedNode.styles.display === "flex" && (
+        <div className="space-y-4 p-2 border rounded">
+          <h5 className="text-xs font-medium text-gray-500">Flexbox</h5>
+          <div>
+            <label className="block text-xs text-gray-600 mb-1">Direction</label>
+            <select
+              value={selectedNode.styles.flexDirection || "row"}
+              onChange={(e) => updateStyle("flexDirection", e.target.value)}
+              className="w-full p-2 text-sm border border-gray-300 rounded"
+            >
+              <option value="row">Row</option>
+              <option value="col">Column</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs text-gray-600 mb-1">Justify Content</label>
+            <select
+              value={selectedNode.styles.justifyContent || "flex-start"}
+              onChange={(e) => updateStyle("justifyContent", e.target.value)}
+              className="w-full p-2 text-sm border border-gray-300 rounded"
+            >
+              <option value="flex-start">Start</option>
+              <option value="center">Center</option>
+              <option value="flex-end">End</option>
+              <option value="space-between">Space Between</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs text-gray-600 mb-1">Align Items</label>
+            <select
+              value={selectedNode.styles.alignItems || "stretch"}
+              onChange={(e) => updateStyle("alignItems", e.target.value)}
+              className="w-full p-2 text-sm border border-gray-300 rounded"
+            >
+              <option value="stretch">Stretch</option>
+              <option value="flex-start">Start</option>
+              <option value="center">Center</option>
+              <option value="flex-end">End</option>
+            </select>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderTypographyTab = () => (
+    <div className="space-y-4">
+      <div>
+        <label className="block text-xs text-gray-600 mb-1">Font Size</label>
+        <input
+          type="text"
+          value={selectedNode.styles.fontSize || "16px"}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (/^\d+(px|em|rem|%)$/.test(value)) {
+              updateStyle("fontSize", value)
+            }
+          }}
+          className="w-full p-2 text-sm border border-gray-300 rounded"
+        />
+      </div>
+      <div>
+        <label className="block text-xs text-gray-600 mb-1">Font Weight</label>
+        <select
+          value={selectedNode.styles.fontWeight || "normal"}
+          onChange={(e) => updateStyle("fontWeight", e.target.value)}
+          className="w-full p-2 text-sm border border-gray-300 rounded"
+        >
+          <option value="normal">Normal</option>
+          <option value="bold">Bold</option>
+          <option value="lighter">Lighter</option>
+        </select>
+      </div>
+      <div>
+        <label className="block text-xs text-gray-600 mb-1">Text Align</label>
+        <select
+          value={selectedNode.styles.textAlign || "left"}
+          onChange={(e) => updateStyle("textAlign", e.target.value)}
+          className="w-full p-2 text-sm border border-gray-300 rounded"
+        >
+          <option value="left">Left</option>
+          <option value="center">Center</option>
+          <option value="right">Right</option>
+        </select>
+      </div>
+      <div>
+        <label className="block text-xs text-gray-600 mb-1">Color</label>
+        <input
+          type="color"
+          value={selectedNode.styles.color || "#000000"}
+          onChange={(e) => updateStyle("color", e.target.value)}
+          className="w-full h-8 border border-gray-300 rounded"
+        />
+      </div>
+    </div>
+  );
+
+  const renderAppearanceTab = () => (
+    <div className="space-y-4">
+      <div>
+        <label className="block text-xs text-gray-600 mb-1">Background Color</label>
+        <input
+          type="color"
+          value={selectedNode.styles.backgroundColor || "#ffffff"}
+          onChange={(e) => updateStyle("backgroundColor", e.target.value)}
+          className="w-full h-8 border border-gray-300 rounded"
+        />
+      </div>
+      <div>
+        <label className="block text-xs text-gray-600 mb-1">Border Radius</label>
+        <input
+          type="range"
+          min="0"
+          max="50"
+          value={parseInt(selectedNode.styles.borderRadius || "0")}
+          onChange={(e) => updateStyle("borderRadius", `${e.target.value}px`)}
+          className="w-full"
+        />
+      </div>
+      <div>
+        <label className="block text-xs text-gray-600 mb-1">Box Shadow</label>
+        <input
+          type="text"
+          value={selectedNode.styles.boxShadow || ""}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (/(inset\s+)?(0|([1-9]\d*))px\s+(0|([1-9]\d*))px\s+(0|([1-9]\d*))px\s+(0|([1-9]\d*))px\s+rgba\(\d+,\s*\d+,\s*\d+,\s*\d*\.?\d+\)/.test(value)) {
+              updateStyle("boxShadow", value)
+            }
+          }}
+          className="w-full p-2 text-sm border border-gray-300 rounded"
+          placeholder="e.g., 0 4px 6px rgba(0,0,0,0.1)"
+        />
+      </div>
+      <div>
+        <label className="block text-xs text-gray-600 mb-1">Opacity</label>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.1"
+          value={selectedNode.styles.opacity || 1}
+          onChange={(e) => updateStyle("opacity", e.target.value)}
+          className="w-full"
+        />
+      </div>
+    </div>
+  );
+
+  const renderResponsiveTab = () => (
+    <div className="space-y-4">
+      <div className="flex justify-around">
+        <button onClick={() => setActiveBreakpoint("base")} className={`px-3 py-1 text-sm rounded ${activeBreakpoint === "base" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>Base</button>
+        <button onClick={() => setActiveBreakpoint("sm")} className={`px-3 py-1 text-sm rounded ${activeBreakpoint === "sm" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>SM</button>
+        <button onClick={() => setActiveBreakpoint("md")} className={`px-3 py-1 text-sm rounded ${activeBreakpoint === "md" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>MD</button>
+        <button onClick={() => setActiveBreakpoint("lg")} className={`px-3 py-1 text-sm rounded ${activeBreakpoint === "lg" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>LG</button>
+      </div>
+      <div className="p-2 border rounded">
+        <h5 className="text-xs font-medium text-gray-500">{activeBreakpoint.toUpperCase()} Styles</h5>
+        <div className="space-y-4 mt-2">
+          <div>
+            <label className="block text-xs text-gray-600 mb-1">Width</label>
+            <input
+              type="text"
+              value={selectedNode.responsiveStyles?.[activeBreakpoint]?.width || ""}
+              onChange={(e) => updateResponsiveStyle("width", e.target.value)}
+              className="w-full p-2 text-sm border border-gray-300 rounded"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-600 mb-1">Display</label>
+            <select
+              value={selectedNode.responsiveStyles?.[activeBreakpoint]?.display || ""}
+              onChange={(e) => updateResponsiveStyle("display", e.target.value)}
+              className="w-full p-2 text-sm border border-gray-300 rounded"
+            >
+              <option value="">Inherit</option>
+              <option value="block">Block</option>
+              <option value="flex">Flex</option>
+              <option value="grid">Grid</option>
+              <option value="inline-block">Inline Block</option>
+              <option value="none">None</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="h-full p-4 overflow-y-auto">
@@ -80,233 +267,46 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
         </div>
       </div>
 
-      {/* Position & Size */}
-      <div className="mb-6">
-        <h4 className="text-sm font-medium text-gray-700 mb-3">
-          Position & Size
-        </h4>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">X</label>
-            <input
-              type="number"
-              value={selectedNode.position.x}
-              onChange={(e) =>
-                updatePosition("x", parseInt(e.target.value) || 0)
-              }
-              className="w-full p-2 text-sm border border-gray-300 rounded"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">Y</label>
-            <input
-              type="number"
-              value={selectedNode.position.y}
-              onChange={(e) =>
-                updatePosition("y", parseInt(e.target.value) || 0)
-              }
-              className="w-full p-2 text-sm border border-gray-300 rounded"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">Width</label>
-            <input
-              type="number"
-              value={selectedNode.size.width}
-              onChange={(e) =>
-                updateSize("width", parseInt(e.target.value) || 0)
-              }
-              className="w-full p-2 text-sm border border-gray-300 rounded"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">Height</label>
-            <input
-              type="number"
-              value={selectedNode.size.height}
-              onChange={(e) =>
-                updateSize("height", parseInt(e.target.value) || 0)
-              }
-              className="w-full p-2 text-sm border border-gray-300 rounded"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Transform */}
-      <div className="mb-6">
-        <h4 className="text-sm font-medium text-gray-700 mb-3">Transform</h4>
-        <div className="grid grid-cols-3 gap-3">
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">Rotation</label>
-            <input
-              type="number"
-              value={selectedNode.rotation || 0}
-              onChange={(e) => updateRotation(parseInt(e.target.value) || 0)}
-              className="w-full p-2 text-sm border border-gray-300 rounded"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">Skew X</label>
-            <input
-              type="number"
-              value={selectedNode.skew?.x || 0}
-              onChange={(e) => updateSkew("x", parseInt(e.target.value) || 0)}
-              className="w-full p-2 text-sm border border-gray-300 rounded"
-            />
-          </div>
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">Skew Y</label>
-            <input
-              type="number"
-              value={selectedNode.skew?.y || 0}
-              onChange={(e) => updateSkew("y", parseInt(e.target.value) || 0)}
-              className="w-full p-2 text-sm border border-gray-300 rounded"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Component-specific Properties */}
       <div className="mb-6">
         <h4 className="text-sm font-medium text-gray-700 mb-3">Content</h4>
         {selectedNode.type === "text" && (
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">
-              Text Content
-            </label>
-            <input
-              type="text"
-              value={selectedNode.props.children || ""}
-              onChange={(e) => updateProp("children", e.target.value)}
-              className="w-full p-2 text-sm border border-gray-300 rounded"
-            />
-          </div>
+          <input
+            type="text"
+            value={selectedNode.props.children || ""}
+            onChange={(e) => updateProp("children", e.target.value)}
+            className="w-full p-2 text-sm border border-gray-300 rounded"
+          />
         )}
-
         {selectedNode.type === "button" && (
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">
-              Button Text
-            </label>
-            <input
-              type="text"
-              value={selectedNode.props.children || ""}
-              onChange={(e) => updateProp("children", e.target.value)}
-              className="w-full p-2 text-sm border border-gray-300 rounded"
-            />
-          </div>
+          <input
+            type="text"
+            value={selectedNode.props.children || ""}
+            onChange={(e) => updateProp("children", e.target.value)}
+            className="w-full p-2 text-sm border border-gray-300 rounded"
+          />
         )}
-
         {selectedNode.type === "input" && (
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">
-              Placeholder
-            </label>
-            <input
-              type="text"
-              value={selectedNode.props.placeholder || ""}
-              onChange={(e) => updateProp("placeholder", e.target.value)}
-              className="w-full p-2 text-sm border border-gray-300 rounded"
-            />
-          </div>
+          <input
+            type="text"
+            value={selectedNode.props.placeholder || ""}
+            onChange={(e) => updateProp("placeholder", e.target.value)}
+            className="w-full p-2 text-sm border border-gray-300 rounded"
+          />
         )}
       </div>
 
-      {/* Styling */}
       <div className="mb-6">
-        <h4 className="text-sm font-medium text-gray-700 mb-3">Styling</h4>
-        <div className="space-y-3">
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">
-              Background Color
-            </label>
-            <input
-              type="color"
-              value={selectedNode.styles.backgroundColor || "#ffffff"}
-              onChange={(e) => updateStyle("backgroundColor", e.target.value)}
-              className="w-full h-8 border border-gray-300 rounded"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">
-              Text Color
-            </label>
-            <input
-              type="color"
-              value={selectedNode.styles.color || "#000000"}
-              onChange={(e) => updateStyle("color", e.target.value)}
-              className="w-full h-8 border border-gray-300 rounded"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">
-              Font Size
-            </label>
-            <select
-              value={selectedNode.styles.fontSize || "16px"}
-              onChange={(e) => updateStyle("fontSize", e.target.value)}
-              className="w-full p-2 text-sm border border-gray-300 rounded"
-            >
-              <option value="12px">12px</option>
-              <option value="14px">14px</option>
-              <option value="16px">16px</option>
-              <option value="18px">18px</option>
-              <option value="20px">20px</option>
-              <option value="24px">24px</option>
-              <option value="32px">32px</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-xs text-gray-600 mb-1">
-              Border Radius
-            </label>
-            <input
-              type="range"
-              min="0"
-              max="20"
-              value={parseInt(selectedNode.styles.borderRadius || "0")}
-              onChange={(e) =>
-                updateStyle("borderRadius", `${e.target.value}px`)
-              }
-              className="w-full"
-            />
-            <div className="text-xs text-gray-500 text-center">
-              {selectedNode.styles.borderRadius || "0px"}
-            </div>
-          </div>
+        <div className="flex border-b">
+          <button onClick={() => setActiveTab("layout")} className={`px-4 py-2 text-sm ${activeTab === "layout" ? "border-b-2 border-blue-500" : ""}`}>Layout</button>
+          <button onClick={() => setActiveTab("typography")} className={`px-4 py-2 text-sm ${activeTab === "typography" ? "border-b-2 border-blue-500" : ""}`}>Typography</button>
+          <button onClick={() => setActiveTab("appearance")} className={`px-4 py-2 text-sm ${activeTab === "appearance" ? "border-b-2 border-blue-500" : ""}`}>Appearance</button>
+          <button onClick={() => setActiveTab("responsive")} className={`px-4 py-2 text-sm ${activeTab === "responsive" ? "border-b-2 border-blue-500" : ""}`}>Responsive</button>
         </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div>
-        <h4 className="text-sm font-medium text-gray-700 mb-3">
-          Quick Actions
-        </h4>
-        <div className="grid grid-cols-2 gap-2">
-          <button
-            onClick={() =>
-              updateStyle("boxShadow", "0 4px 6px -1px rgba(0, 0, 0, 0.1)")
-            }
-            className="p-2 text-xs bg-gray-100 hover:bg-gray-200 rounded"
-          >
-            Add Shadow
-          </button>
-          <button
-            onClick={() => updateStyle("border", "2px solid #e5e7eb")}
-            className="p-2 text-xs bg-gray-100 hover:bg-gray-200 rounded"
-          >
-            Add Border
-          </button>
-          <button
-            onClick={() => updateStyle("opacity", "0.8")}
-            className="p-2 text-xs bg-gray-100 hover:bg-gray-200 rounded"
-          >
-            Fade
-          </button>
+        <div className="py-4">
+          {activeTab === "layout" && renderLayoutTab()}
+          {activeTab === "typography" && renderTypographyTab()}
+          {activeTab === "appearance" && renderAppearanceTab()}
+          {activeTab === "responsive" && renderResponsiveTab()}
         </div>
       </div>
     </div>
