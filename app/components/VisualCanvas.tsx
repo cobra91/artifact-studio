@@ -1,17 +1,21 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { CSSProperties, DragEvent, MouseEvent, useRef, useState } from "react";
 
-import { ComponentNode } from "../types/artifact";
+import { ComponentNode, ComponentType } from "../types/artifact";
 
 interface VisualCanvasProps {
   components: ComponentNode[];
   selectedNodeIds: string[];
-  onSelectNode: (_nodeId: string, _ctrlPressed: boolean) => void;
+  onSelectNode: (_nodeId: string | null, _ctrlPressed: boolean) => void;
   onToggleNodeInSelection: (_nodeId: string) => void;
   onSelectNodes: (_nodeIds: string[], _ctrlPressed: boolean) => void;
   onAddNodesToSelection: (_nodeIds: string[]) => void;
   onUpdateComponent: (_id: string, _updates: Partial<ComponentNode>) => void;
+  onAddComponent: (
+    _type: ComponentType,
+    _position: { x: number; y: number },
+  ) => void;
   snapToGrid: boolean;
   aspectRatioLocked: boolean;
 }
@@ -24,6 +28,7 @@ export const VisualCanvas = ({
   onSelectNodes,
   onAddNodesToSelection,
   onUpdateComponent,
+  onAddComponent,
   snapToGrid,
   aspectRatioLocked,
 }: VisualCanvasProps) => {
@@ -47,24 +52,18 @@ export const VisualCanvas = ({
   const [resizing, setResizing] = useState<string | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
 
-  const handleMouseDownOnResizeHandle = (
-    e: React.MouseEvent,
-    direction: string,
-  ) => {
+  const handleMouseDownOnResizeHandle = (e: MouseEvent, direction: string) => {
     e.stopPropagation();
     setResizing(direction);
     setDragStart({ x: e.clientX, y: e.clientY });
   };
 
-  const handleMouseDownOnRotateHandle = (_e: React.MouseEvent) => {
+  const handleMouseDownOnRotateHandle = (_e: MouseEvent) => {
     // TODO: Implement rotation functionality
     _e.stopPropagation();
   };
 
-  const handleMouseDownOnComponent = (
-    e: React.MouseEvent,
-    node: ComponentNode,
-  ) => {
+  const handleMouseDownOnComponent = (e: MouseEvent, node: ComponentNode) => {
     e.stopPropagation();
 
     const ctrlPressed = e.ctrlKey || e.metaKey;
@@ -100,7 +99,7 @@ export const VisualCanvas = ({
     setDragStart({ x: e.clientX, y: e.clientY });
   };
 
-  const handleMouseDownOnCanvas = (e: React.MouseEvent) => {
+  const handleMouseDownOnCanvas = (e: MouseEvent) => {
     if (e.target !== e.currentTarget) return;
     setIsSelecting(true);
     const canvasRect = canvasRef.current!.getBoundingClientRect();
@@ -116,7 +115,7 @@ export const VisualCanvas = ({
     }
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
+  const handleMouseMove = (e: MouseEvent) => {
     if (resizing && selectedNodeIds.length === 1 && canvasRef.current) {
       const selectedNode = components.find((c) => c.id === selectedNodeIds[0]);
       if (!selectedNode) return;
@@ -260,7 +259,7 @@ export const VisualCanvas = ({
     }
   };
 
-  const handleMouseUp = (e: React.MouseEvent) => {
+  const handleMouseUp = (e: MouseEvent) => {
     if (isSelecting && selectionRect) {
       const newSelectedNodeIds: string[] = [];
       components.forEach((c) => {
@@ -288,6 +287,26 @@ export const VisualCanvas = ({
     setGuides({ x: [], y: [] });
   };
 
+  const handleDragOver = (e: DragEvent) => {
+    e.preventDefault(); // This is crucial to allow dropping
+  };
+
+  const handleDrop = (e: DragEvent) => {
+    e.preventDefault();
+    const componentType = e.dataTransfer.getData(
+      "componentType",
+    ) as ComponentType;
+    if (!componentType || !canvasRef.current) return;
+
+    const canvasRect = canvasRef.current.getBoundingClientRect();
+    const position = {
+      x: e.clientX - canvasRect.left,
+      y: e.clientY - canvasRect.top,
+    };
+
+    onAddComponent(componentType, position);
+  };
+
   const renderComponent = (node: ComponentNode) => {
     const isSelected = selectedNodeIds.includes(node.id);
     const transform = `rotate(${node.rotation || 0}deg)`;
@@ -309,7 +328,7 @@ export const VisualCanvas = ({
             height: node.size.height,
             transform,
             ...node.styles,
-          } as React.CSSProperties
+          } as CSSProperties
         }
         onMouseDown={(e) => handleMouseDownOnComponent(e, node)}
       >
@@ -353,6 +372,9 @@ export const VisualCanvas = ({
       onMouseDown={handleMouseDownOnCanvas}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+      onClick={() => onSelectNode(null, false)}
     >
       {/* Grid background */}
       <div

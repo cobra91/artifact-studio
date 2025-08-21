@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 
 import { ComponentNode } from "../types/artifact";
 
@@ -15,7 +15,7 @@ export const AnimationPanel = ({
 }: AnimationPanelProps) => {
   const [animation, setAnimation] = useState("");
 
-  const handleAnimationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleAnimationChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const newAnimation = e.target.value;
     setAnimation(newAnimation);
     if (selectedNode) {

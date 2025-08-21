@@ -1,27 +1,92 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback,useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-import {
-  AIGenerationRequest,
-  ComponentNode,
-  SandboxResult,
-} from "../types/artifact";
+import { AIGenerationRequest, ComponentNode, ComponentType, SandboxResult, } from "../types/artifact";
+import { ABTestPanel } from "./ABTestPanel";
 import { AIPromptPanel } from "./AIPromptPanel";
 import { AnimationPanel } from "./AnimationPanel";
 import { ApiConnectionPanel } from "./ApiConnectionPanel";
 import { ComponentLibrary } from "./ComponentLibrary";
+import { LiveCursors } from "./LiveCursors";
 import { LivePreview } from "./LivePreview";
 import { PerformancePanel } from "./PerformancePanel";
 import { StateManagerPanel } from "./StateManagerPanel";
 import { StylePanel } from "./StylePanel";
+import { VersionPanel } from "./VersionPanel";
 import { VisualCanvas } from "./VisualCanvas";
 
-type RightPanelTab = "AI" | "Style" | "Animate" | "State" | "API" | "Perf";
+type RightPanelTab = "AI" | "Style" | "Animate" | "State" | "API" | "Perf" | "Versions" | "A/B";
+
+// Helper function to get default properties for a new component
+const getComponentDefaults = (type: ComponentType) => {
+  switch (type) {
+    case "container":
+      return {
+        props: { className: "p-4 bg-white rounded-lg shadow-sm border" },
+        size: { width: 300, height: 200 },
+      };
+    case "text":
+      return {
+        props: { children: "Sample text", className: "text-gray-800" },
+        size: { width: 150, height: 40 },
+      };
+    case "button":
+      return {
+        props: {
+          children: "Click me",
+          className: "bg-blue-600 text-white px-4 py-2 rounded",
+        },
+        size: { width: 120, height: 40 },
+      };
+    case "input":
+      return {
+        props: {
+          placeholder: "Enter text...",
+          className: "border border-gray-300 rounded px-3 py-2",
+        },
+        size: { width: 200, height: 40 },
+      };
+    case "image":
+      return {
+        props: {
+          src: "https://via.placeholder.com/150",
+          alt: "Image",
+          className: "rounded",
+        },
+        size: { width: 150, height: 150 },
+      };
+    default:
+      return {
+        props: {},
+        size: { width: 200, height: 100 },
+      };
+  }
+};
 
 export const ArtifactBuilder = () => {
   const [canvas, setCanvas] = useState<ComponentNode[]>([]);
+  const [history, setHistory] = useState<ComponentNode[][]>([[]]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const [framework, setFramework] = useState<"react" | "vue" | "svelte">("react");
+
+  const historyRef = useRef(history);
+  historyRef.current = history;
+  const historyIndexRef = useRef(historyIndex);
+  historyIndexRef.current = historyIndex;
+
+  const updateCanvas = useCallback((updater: ComponentNode[] | ((c: ComponentNode[]) => ComponentNode[])) => {
+    setCanvas(prevCanvas => {
+      const newCanvas = typeof updater === 'function' ? updater(prevCanvas) : updater;
+      const newHistory = historyRef.current.slice(0, historyIndexRef.current + 1);
+      newHistory.push(newCanvas);
+      setHistory(newHistory);
+      setHistoryIndex(newHistory.length - 1);
+      return newCanvas;
+    });
+  }, []);
+
   const [selectedNodeIds, setSelectedNodeIds] = useState<string[]>([]);
   const [snapToGrid, setSnapToGrid] = useState<boolean>(true);
   const [aspectRatioLocked, setAspectRatioLocked] = useState<boolean>(false);
@@ -45,8 +110,10 @@ export const ArtifactBuilder = () => {
   }, []);
 
   const handleSelectNode = useCallback(
-    (nodeId: string, ctrlPressed: boolean) => {
-      if (ctrlPressed) {
+    (nodeId: string | null, ctrlPressed: boolean) => {
+      if (nodeId === null) {
+        setSelectedNodeIds([]);
+      } else if (ctrlPressed) {
         toggleNodeSelection(nodeId);
       } else {
         setSingleNodeSelection(nodeId);
@@ -98,16 +165,58 @@ export const ArtifactBuilder = () => {
   const [livePreview, setLivePreview] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeTab, setActiveTab] = useState<RightPanelTab>("AI");
+  const [appState, setAppState] = useState<{ [key: string]: any }>({});
+  const [apiData, setApiData] = useState<{ [key: string]: any }>({});
+
+  useEffect(() => {
+    const savedCanvas = localStorage.getItem("canvas");
+    if (savedCanvas) {
+      updateCanvas(JSON.parse(savedCanvas));
+    }
+    const savedState = localStorage.getItem("appState");
+    if (savedState) {
+      setAppState(JSON.parse(savedState));
+    }
+    const savedApiData = localStorage.getItem("apiData");
+    if (savedApiData) {
+      setApiData(JSON.parse(savedApiData));
+    }
+  }, [updateCanvas]);
+
+  const handleSave = () => {
+    localStorage.setItem("canvas", JSON.stringify(canvas));
+    localStorage.setItem("appState", JSON.stringify(appState));
+    localStorage.setItem("apiData", JSON.stringify(apiData));
+    alert("Canvas, state, and API data saved!");
+  };
+
+  const handleDeploy = async () => {
+    const { aiCodeGen } = await import("../lib/aiCodeGen");
+    const code = aiCodeGen.generateReactCode(
+      canvas,
+      undefined,
+      appState,
+      apiData,
+    );
+    const blob = new Blob([code], { type: "text/javascript" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "GeneratedArtifact.tsx";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const generateFromPrompt = async (
     request: AIGenerationRequest,
   ): Promise<SandboxResult> => {
     setIsGenerating(true);
+    setFramework(request.framework);
     try {
       const { aiCodeGen } = await import("../lib/aiCodeGen");
       const result = await aiCodeGen.create(request);
 
-      setCanvas((prev) => [...prev, ...result.components]);
+      updateCanvas((prev) => [...prev, ...result.components]);
       setLivePreview(result.code);
 
       return {
@@ -127,9 +236,21 @@ export const ArtifactBuilder = () => {
     }
   };
 
-  const addComponent = useCallback((component: ComponentNode) => {
-    setCanvas((prev) => [...prev, component]);
-  }, []);
+  const addComponent = useCallback(
+    (type: ComponentType, position: { x: number; y: number }) => {
+      const defaults = getComponentDefaults(type);
+      const newComponent: ComponentNode = {
+        id: `${type}-${Date.now()}`,
+        type,
+        position,
+        props: defaults.props,
+        size: defaults.size,
+        styles: {},
+      };
+      updateCanvas((prev) => [...prev, newComponent]);
+    },
+    [updateCanvas],
+  );
 
   const groupSelectedNodes = useCallback(() => {
     if (selectedNodeIds.length < 2) return;
@@ -161,12 +282,12 @@ export const ArtifactBuilder = () => {
       })),
     };
 
-    setCanvas((prev) => [
+    updateCanvas((prev) => [
       ...prev.filter((c) => !selectedNodeIds.includes(c.id)),
       newContainer,
     ]);
     setSelectedNodeIds([newContainer.id]);
-  }, [canvas, selectedNodeIds]);
+  }, [canvas, selectedNodeIds, updateCanvas]);
 
   const ungroupSelectedNodes = useCallback(() => {
     if (selectedNodeIds.length !== 1) return;
@@ -183,17 +304,17 @@ export const ArtifactBuilder = () => {
       },
     }));
 
-    setCanvas((prev) => [
+    updateCanvas((prev) => [
       ...prev.filter((c) => c.id !== container.id),
       ...children,
     ]);
     setSelectedNodeIds(children.map((c) => c.id));
-  }, [canvas, selectedNodeIds]);
+  }, [canvas, selectedNodeIds, updateCanvas]);
 
   const updateComponent = useCallback(
     (id: string, updates: Partial<ComponentNode>) => {
       let updatedNode: ComponentNode | null = null;
-      setCanvas((prev) =>
+      updateCanvas((prev) =>
         prev.map((comp) => {
           if (comp.id === id) {
             updatedNode = { ...comp, ...updates };
@@ -203,10 +324,61 @@ export const ArtifactBuilder = () => {
         }),
       );
     },
-    [],
+    [updateCanvas],
   );
 
-  const selectedNode = canvas.find((c) => c.id === selectedNodeIds[0]) || null;
+  const handleAddState = (key: string, value: any) => {
+    setAppState((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleFetchData = async (url: string, key: string) => {
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      setApiData((prev) => ({ ...prev, [key]: data }));
+    } catch (error) {
+      console.error("Failed to fetch API data:", error);
+    }
+  };
+
+  const handleRestoreVersion = (components: ComponentNode[]) => {
+    updateCanvas(components);
+  };
+
+  const handleUndo = () => {
+    if (historyIndex > 0) {
+      setHistoryIndex(historyIndex - 1);
+      setCanvas(history[historyIndex - 1]);
+    }
+  };
+
+  const handleRedo = () => {
+    if (historyIndex < history.length - 1) {
+      setHistoryIndex(historyIndex + 1);
+      setCanvas(history[historyIndex + 1]);
+    }
+  };
+
+  const handleCopy = () => {
+    if (selectedNode) {
+      navigator.clipboard.writeText(JSON.stringify(selectedNode));
+    }
+  };
+
+  const handlePaste = async () => {
+    const text = await navigator.clipboard.readText();
+    try {
+      const node = JSON.parse(text) as ComponentNode;
+      node.id = `${node.type}-${Date.now()}`;
+      node.position.x += 10;
+      node.position.y += 10;
+      updateCanvas([...canvas, node]);
+    } catch (e) {
+      console.error("Failed to parse clipboard content", e);
+    }
+  };
+
+  const selectedNode = canvas.find(node => selectedNodeIds.includes(node.id)) || null;
 
   const renderPanel = () => {
     const panelProps = {
@@ -228,11 +400,17 @@ export const ArtifactBuilder = () => {
       case "Animate":
         return <AnimationPanel {...panelProps} />;
       case "State":
-        return <StateManagerPanel {...panelProps} />;
+        return <StateManagerPanel {...panelProps} onAddState={handleAddState} />;
       case "API":
-        return <ApiConnectionPanel {...panelProps} />;
+        return (
+          <ApiConnectionPanel {...panelProps} onFetchData={handleFetchData} />
+        );
       case "Perf":
         return <PerformancePanel selectedNode={selectedNode} />;
+      case "Versions":
+        return <VersionPanel onRestoreVersion={handleRestoreVersion} />;
+      case "A/B":
+        return <ABTestPanel selectedNode={selectedNode} />;
       default:
         return null;
     }
@@ -252,10 +430,11 @@ export const ArtifactBuilder = () => {
   );
 
   return (
-    <div className="h-screen flex bg-gray-50 font-sans">
+    <div className="h-screen flex bg-gray-50 font-sans relative">
+      <LiveCursors />
       {/* Left Sidebar */}
       <div className="w-64 bg-white border-r border-gray-200 flex-shrink-0">
-        <ComponentLibrary onAddComponent={addComponent} />
+        <ComponentLibrary />
       </div>
 
       {/* Main Area */}
@@ -266,6 +445,33 @@ export const ArtifactBuilder = () => {
             Visual Artifact Studio
           </h1>
           <div className="flex items-center gap-2">
+            <button
+              onClick={handleUndo}
+              disabled={historyIndex === 0}
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm disabled:opacity-50"
+            >
+              Undo
+            </button>
+            <button
+              onClick={handleRedo}
+              disabled={historyIndex === history.length - 1}
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm disabled:opacity-50"
+            >
+              Redo
+            </button>
+            <button
+              onClick={handleCopy}
+              disabled={!selectedNode}
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm disabled:opacity-50"
+            >
+              Copy
+            </button>
+            <button
+              onClick={handlePaste}
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm"
+            >
+              Paste
+            </button>
             <button
               className={`px-4 py-2 text-sm rounded-md ${snapToGrid ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"}`}
               onClick={() => setSnapToGrid(!snapToGrid)}
@@ -302,10 +508,16 @@ export const ArtifactBuilder = () => {
             >
               Marketplace
             </Link>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
+            <button
+              onClick={handleSave}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+            >
               Save
             </button>
-            <button className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm">
+            <button
+              onClick={handleDeploy}
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm"
+            >
               Deploy
             </button>
           </div>
@@ -318,16 +530,19 @@ export const ArtifactBuilder = () => {
               components={canvas}
               selectedNodeIds={selectedNodeIds}
               onSelectNode={handleSelectNode}
-              onToggleNodeInSelection={toggleNodeSelection}
+              onToggleNodeInSelection={(nodeId: string) =>
+                toggleNodeSelection(nodeId)
+              }
               onSelectNodes={handleSelectNodes}
               onAddNodesToSelection={handleAddNodesToSelection}
               onUpdateComponent={updateComponent}
+              onAddComponent={addComponent}
               snapToGrid={snapToGrid}
               aspectRatioLocked={aspectRatioLocked}
             />
           </div>
           <div className="w-96 flex-shrink-0 border-l border-gray-200">
-            <LivePreview code={livePreview} />
+            <LivePreview code={livePreview} framework={framework} />
           </div>
         </div>
       </div>
@@ -341,6 +556,8 @@ export const ArtifactBuilder = () => {
           <TabButton tabName="State" />
           <TabButton tabName="API" />
           <TabButton tabName="Perf" />
+          <TabButton tabName="Versions" />
+          <TabButton tabName="A/B" />
         </div>
         <div className="flex-1 overflow-y-auto">{renderPanel()}</div>
       </div>

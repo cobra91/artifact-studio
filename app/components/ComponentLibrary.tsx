@@ -1,72 +1,45 @@
 "use client";
 
-import { ComponentNode } from "../types/artifact";
+import { DragEvent } from "react";
 
-interface ComponentLibraryProps {
-  onAddComponent: (_component: ComponentNode) => void;
-}
+import { ComponentType } from "../types/artifact";
 
-export const ComponentLibrary = ({ onAddComponent }: ComponentLibraryProps) => {
+export const ComponentLibrary = () => {
   const componentTemplates = [
     {
       name: "Container",
       type: "container" as const,
       icon: "📦",
-      defaultProps: { className: "p-4 bg-white rounded-lg shadow-sm border" },
     },
     {
       name: "Text",
       type: "text" as const,
       icon: "📝",
-      defaultProps: { children: "Sample text", className: "text-gray-800" },
     },
     {
       name: "Button",
       type: "button" as const,
       icon: "🔘",
-      defaultProps: {
-        children: "Click me",
-        className: "bg-blue-600 text-white px-4 py-2 rounded",
-      },
     },
     {
       name: "Input",
       type: "input" as const,
       icon: "📝",
-      defaultProps: {
-        placeholder: "Enter text...",
-        className: "border border-gray-300 rounded px-3 py-2",
-      },
     },
     {
       name: "Image",
       type: "image" as const,
       icon: "🖼️",
-      defaultProps: {
-        src: "/placeholder.jpg",
-        alt: "Image",
-        className: "rounded",
-      },
     },
     {
       name: "Chart",
       type: "chart" as const,
       icon: "📊",
-      defaultProps: { type: "bar", data: [], className: "w-full h-full" },
     },
   ];
 
-  const createComponent = (template: (typeof componentTemplates)[0]) => {
-    const component: ComponentNode = {
-      id: `${template.type}-${Date.now()}`,
-      type: template.type,
-      props: template.defaultProps,
-      position: { x: 50, y: 50 },
-      size: { width: 200, height: 100 },
-      styles: {},
-    };
-
-    onAddComponent(component);
+  const handleDragStart = (e: DragEvent, componentType: ComponentType) => {
+    e.dataTransfer.setData("componentType", componentType);
   };
 
   return (
@@ -78,16 +51,17 @@ export const ComponentLibrary = ({ onAddComponent }: ComponentLibraryProps) => {
 
       <div className="flex-1 p-4 space-y-2">
         {componentTemplates.map((template) => (
-          <button
+          <div
             key={template.type}
-            onClick={() => createComponent(template)}
-            className="w-full p-3 text-left bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-colors"
+            draggable="true"
+            onDragStart={(e) => handleDragStart(e, template.type)}
+            className="w-full p-3 text-left bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-colors cursor-grab"
           >
             <div className="flex items-center gap-3">
               <span className="text-xl">{template.icon}</span>
               <span className="font-medium text-gray-800">{template.name}</span>
             </div>
-          </button>
+          </div>
         ))}
       </div>
 

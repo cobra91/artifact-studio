@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef,useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
   postSandboxMessage,
@@ -10,9 +10,10 @@ import {
 
 interface LivePreviewProps {
   code: string;
+  framework: "react" | "vue" | "svelte";
 }
 
-export const LivePreview = ({ code }: LivePreviewProps) => {
+export const LivePreview = ({ code, framework }: LivePreviewProps) => {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
 
   return (
@@ -46,7 +47,7 @@ export const LivePreview = ({ code }: LivePreviewProps) => {
       {/* Content */}
       <div className="flex-1 overflow-hidden">
         {activeTab === "preview" ? (
-          <PreviewPane code={code} />
+          <PreviewPane code={code} framework={framework} />
         ) : (
           <CodePane code={code} />
         )}
@@ -55,7 +56,7 @@ export const LivePreview = ({ code }: LivePreviewProps) => {
   );
 };
 
-const PreviewPane = ({ code }: { code: string }) => {
+const PreviewPane = ({ code, framework }: { code: string, framework: "react" | "vue" | "svelte" }) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isSandboxReady, setIsSandboxReady] = useState(false);
 
@@ -75,10 +76,10 @@ const PreviewPane = ({ code }: { code: string }) => {
     if (isSandboxReady && iframeRef.current && code) {
       postSandboxMessage(iframeRef.current, {
         type: RENDER_COMPONENT_MESSAGE,
-        payload: { code },
+        payload: { code, framework },
       });
     }
-  }, [code, isSandboxReady]);
+  }, [code, isSandboxReady, framework]);
 
   return (
     <div className="w-full h-full bg-white">
@@ -106,6 +107,16 @@ const CodePane = ({ code }: { code: string }) => {
     }
   };
 
+  const exportCode = () => {
+    const blob = new Blob([code], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "component.tsx";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="h-full flex flex-col">
       <div className="flex items-center justify-between p-3 bg-gray-800 text-white">
@@ -115,6 +126,12 @@ const CodePane = ({ code }: { code: string }) => {
           className="px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 rounded"
         >
           {copied ? "✓ Copied" : "📋 Copy"}
+        </button>
+        <button
+          onClick={exportCode}
+          className="ml-2 px-2 py-1 text-xs bg-green-700 hover:bg-green-600 rounded"
+        >
+          Export
         </button>
       </div>
 

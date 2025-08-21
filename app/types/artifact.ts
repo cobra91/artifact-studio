@@ -19,6 +19,7 @@ export interface ComponentNode {
   rotation?: number; // in degrees
   skew?: { x: number; y: number }; // in degrees
   styles: ComponentStyles;
+  responsiveStyles?: ResponsiveStyles;
   metadata?: ComponentMetadata;
 }
 
@@ -67,9 +68,10 @@ export interface ComponentStyles {
 
 // Responsive styles for different breakpoints
 export interface ResponsiveStyles {
-  mobile?: ComponentStyles;
-  tablet?: ComponentStyles;
-  desktop?: ComponentStyles;
+  base?: ComponentStyles;
+  sm?: ComponentStyles;
+  md?: ComponentStyles;
+  lg?: ComponentStyles;
 }
 
 // Component metadata for versioning and tracking
