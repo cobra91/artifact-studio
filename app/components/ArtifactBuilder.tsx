@@ -1,22 +1,24 @@
 "use client";
 
-import { useState, useCallback } from "react";
 import Link from "next/link";
+import { useCallback, useState } from "react";
+
 import {
-  ComponentNode,
   AIGenerationRequest,
-  SandboxResult,
+  ComponentNode,
   ComponentType,
+  SandboxResult,
 } from "../types/artifact";
-import { VisualCanvas } from "./VisualCanvas";
-import { ComponentLibrary } from "./ComponentLibrary";
-import { StylePanel } from "./StylePanel";
 import { AIPromptPanel } from "./AIPromptPanel";
-import { LivePreview } from "./LivePreview";
 import { AnimationPanel } from "./AnimationPanel";
-import { StateManagerPanel } from "./StateManagerPanel";
 import { ApiConnectionPanel } from "./ApiConnectionPanel";
+import { ComponentLibrary } from "./ComponentLibrary";
+import { LiveCursors } from "./LiveCursors";
+import { LivePreview } from "./LivePreview";
 import { PerformancePanel } from "./PerformancePanel";
+import { StateManagerPanel } from "./StateManagerPanel";
+import { StylePanel } from "./StylePanel";
+import { VisualCanvas } from "./VisualCanvas";
 
 type RightPanelTab = "AI" | "Style" | "Animate" | "State" | "API" | "Perf";
 
@@ -68,7 +70,81 @@ const getComponentDefaults = (type: ComponentType) => {
 
 export const ArtifactBuilder = () => {
   const [canvas, setCanvas] = useState<ComponentNode[]>([]);
-  const [selectedNode, setSelectedNode] = useState<ComponentNode | null>(null);
+  const [selectedNodeIds, setSelectedNodeIds] = useState<string[]>([]);
+  const [snapToGrid, setSnapToGrid] = useState<boolean>(true);
+  const [aspectRatioLocked, setAspectRatioLocked] = useState<boolean>(false);
+
+  const toggleNodeSelection = useCallback((nodeId: string) => {
+    setSelectedNodeIds((prevSelectedIds) => {
+      if (prevSelectedIds.includes(nodeId)) {
+        return prevSelectedIds.filter((id) => id !== nodeId);
+      }
+      return [...prevSelectedIds, nodeId];
+    });
+  }, []);
+
+  const setSingleNodeSelection = useCallback((nodeId: string) => {
+    setSelectedNodeIds((prevSelectedIds) => {
+      if (prevSelectedIds.length === 1 && prevSelectedIds[0] === nodeId) {
+        return [];
+      }
+      return [nodeId];
+    });
+  }, []);
+
+  const handleSelectNode = useCallback(
+    (nodeId: string | null, ctrlPressed: boolean) => {
+      if (nodeId === null) {
+        setSelectedNodeIds([]);
+      } else if (ctrlPressed) {
+        toggleNodeSelection(nodeId);
+      } else {
+        setSingleNodeSelection(nodeId);
+      }
+    },
+    [toggleNodeSelection, setSingleNodeSelection],
+  );
+
+  const addNodesToSelection = useCallback((nodeIds: string[]) => {
+    setSelectedNodeIds((prevSelectedIds) => {
+      const newIds = [...prevSelectedIds];
+      nodeIds.forEach((id) => {
+        if (!newIds.includes(id)) {
+          newIds.push(id);
+        }
+      });
+      return newIds;
+    });
+  }, []);
+
+  const setNodeSelection = useCallback((nodeIds: string[]) => {
+    setSelectedNodeIds(nodeIds);
+  }, []);
+
+  const handleAddNodesToSelection = useCallback(
+    (nodeIds: string[]) => {
+      addNodesToSelection(nodeIds);
+    },
+    [addNodesToSelection],
+  );
+
+  const handleSetNodeSelection = useCallback(
+    (nodeIds: string[]) => {
+      setNodeSelection(nodeIds);
+    },
+    [setNodeSelection],
+  );
+
+  const handleSelectNodes = useCallback(
+    (nodeIds: string[], ctrlPressed: boolean) => {
+      if (ctrlPressed) {
+        handleAddNodesToSelection(nodeIds);
+      } else {
+        handleSetNodeSelection(nodeIds);
+      }
+    },
+    [handleAddNodesToSelection, handleSetNodeSelection],
+  );
   const [livePreview, setLivePreview] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeTab, setActiveTab] = useState<RightPanelTab>("AI");
@@ -117,6 +193,65 @@ export const ArtifactBuilder = () => {
     [],
   );
 
+  const groupSelectedNodes = useCallback(() => {
+    if (selectedNodeIds.length < 2) return;
+
+    const selectedNodes = canvas.filter((c) => selectedNodeIds.includes(c.id));
+
+    const minX = Math.min(...selectedNodes.map((n) => n.position.x));
+    const minY = Math.min(...selectedNodes.map((n) => n.position.y));
+    const maxX = Math.max(
+      ...selectedNodes.map((n) => n.position.x + n.size.width),
+    );
+    const maxY = Math.max(
+      ...selectedNodes.map((n) => n.position.y + n.size.height),
+    );
+
+    const newContainer: ComponentNode = {
+      id: `container-${Date.now()}`,
+      type: "container",
+      position: { x: minX, y: minY },
+      size: { width: maxX - minX, height: maxY - minY },
+      props: {},
+      styles: {},
+      children: selectedNodes.map((node) => ({
+        ...node,
+        position: {
+          x: node.position.x - minX,
+          y: node.position.y - minY,
+        },
+      })),
+    };
+
+    setCanvas((prev) => [
+      ...prev.filter((c) => !selectedNodeIds.includes(c.id)),
+      newContainer,
+    ]);
+    setSelectedNodeIds([newContainer.id]);
+  }, [canvas, selectedNodeIds]);
+
+  const ungroupSelectedNodes = useCallback(() => {
+    if (selectedNodeIds.length !== 1) return;
+    const container = canvas.find((c) => c.id === selectedNodeIds[0]);
+
+    if (!container || container.type !== "container" || !container.children)
+      return;
+
+    const children = container.children.map((child) => ({
+      ...child,
+      position: {
+        x: child.position.x + container.position.x,
+        y: child.position.y + container.position.y,
+      },
+    }));
+
+    setCanvas((prev) => [
+      ...prev.filter((c) => c.id !== container.id),
+      ...children,
+    ]);
+    setSelectedNodeIds(children.map((c) => c.id));
+  }, [canvas, selectedNodeIds]);
+
   const updateComponent = useCallback(
     (id: string, updates: Partial<ComponentNode>) => {
       let updatedNode: ComponentNode | null = null;
@@ -129,13 +264,11 @@ export const ArtifactBuilder = () => {
           return comp;
         }),
       );
-
-      if (selectedNode?.id === id && updatedNode) {
-        setSelectedNode(updatedNode);
-      }
     },
-    [selectedNode],
+    [],
   );
+
+  const selectedNode = canvas.find((c) => c.id === selectedNodeIds[0]) || null;
 
   const renderPanel = () => {
     const panelProps = {
@@ -181,7 +314,8 @@ export const ArtifactBuilder = () => {
   );
 
   return (
-    <div className="h-screen flex bg-gray-50 font-sans">
+    <div className="h-screen flex bg-gray-50 font-sans relative">
+      <LiveCursors />
       {/* Left Sidebar */}
       <div className="w-64 bg-white border-r border-gray-200 flex-shrink-0">
         <ComponentLibrary />
@@ -195,6 +329,36 @@ export const ArtifactBuilder = () => {
             Visual Artifact Studio
           </h1>
           <div className="flex items-center gap-2">
+            <button
+              className={`px-4 py-2 text-sm rounded-md ${snapToGrid ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"}`}
+              onClick={() => setSnapToGrid(!snapToGrid)}
+            >
+              Snap to Grid
+            </button>
+            <button
+              className={`px-4 py-2 text-sm rounded-md ${aspectRatioLocked ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"}`}
+              onClick={() => setAspectRatioLocked(!aspectRatioLocked)}
+            >
+              Lock Aspect Ratio
+            </button>
+            <button
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm disabled:opacity-50"
+              onClick={groupSelectedNodes}
+              disabled={selectedNodeIds.length < 2}
+            >
+              Group
+            </button>
+            <button
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm disabled:opacity-50"
+              onClick={ungroupSelectedNodes}
+              disabled={
+                selectedNodeIds.length !== 1 ||
+                canvas.find((c) => c.id === selectedNodeIds[0])?.type !==
+                  "container"
+              }
+            >
+              Ungroup
+            </button>
             <Link
               href="/marketplace"
               className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm"
@@ -215,10 +379,17 @@ export const ArtifactBuilder = () => {
           <div className="flex-1 h-full overflow-auto">
             <VisualCanvas
               components={canvas}
-              selectedNode={selectedNode}
-              onSelectNode={setSelectedNode}
+              selectedNodeIds={selectedNodeIds}
+              onSelectNode={handleSelectNode}
+              onToggleNodeInSelection={(nodeId: string) =>
+                toggleNodeSelection(nodeId)
+              }
+              onSelectNodes={handleSelectNodes}
+              onAddNodesToSelection={handleAddNodesToSelection}
               onUpdateComponent={updateComponent}
               onAddComponent={addComponent}
+              snapToGrid={snapToGrid}
+              aspectRatioLocked={aspectRatioLocked}
             />
           </div>
           <div className="w-96 flex-shrink-0 border-l border-gray-200">

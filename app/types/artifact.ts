@@ -16,6 +16,8 @@ export interface ComponentNode {
   children?: ComponentNode[];
   position: { x: number; y: number };
   size: { width: number; height: number };
+  rotation?: number; // in degrees
+  skew?: { x: number; y: number }; // in degrees
   styles: ComponentStyles;
   metadata?: ComponentMetadata;
 }

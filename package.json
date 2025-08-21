@@ -15,13 +15,14 @@
     "@liveblocks/client": "^3.3.4",
     "@liveblocks/node": "^3.3.4",
     "@liveblocks/react": "^3.3.4",
+    "lucide-react": "^0.540.0",
     "next": "15.4.7",
     "openai": "^5.13.1",
     "pnpm": "^10.14.0",
-    "react": "19.1.0",
+    "react": "^19.1.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
-    "react-dom": "19.1.0"
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

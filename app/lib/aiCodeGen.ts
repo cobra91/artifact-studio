@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+
 import { AIGenerationRequest, ComponentNode } from "../types/artifact";
 
 // Initialize the OpenAI client
@@ -42,7 +43,9 @@ Here is an example of the required JSON structure for a "user profile card" prom
 }
 `;
 
-async function generateComponentTreeFromAI(request: AIGenerationRequest): Promise<any> {
+async function generateComponentTreeFromAI(
+  request: AIGenerationRequest,
+): Promise<any> {
   const { prompt, framework, styling, theme } = request;
 
   const userPrompt = `
@@ -82,9 +85,9 @@ export class AICodeGenerator {
     request: AIGenerationRequest,
   ): Promise<{ code: string; components: ComponentNode[] }> {
     if (!process.env.OPENAI_API_KEY) {
-        throw new Error("OPENAI_API_KEY environment variable is not set.");
+      throw new Error("OPENAI_API_KEY environment variable is not set.");
     }
-    
+
     const aiResponse = await generateComponentTreeFromAI(request);
     const components = this.buildComponentTree(aiResponse);
     const code = this.generateReactCode(components, request);
@@ -96,7 +99,10 @@ export class AICodeGenerator {
     const { layout, componentDetails } = aiResponse;
 
     if (!layout || !componentDetails) {
-      console.error("Invalid AI Response: missing layout or componentDetails", aiResponse);
+      console.error(
+        "Invalid AI Response: missing layout or componentDetails",
+        aiResponse,
+      );
       return [];
     }
 
@@ -124,27 +130,27 @@ export class AICodeGenerator {
     const childIds = new Set<string>();
 
     Object.entries(layout).forEach(([parentId, layoutInfo]: [string, any]) => {
-        const parentNode = componentMap.get(parentId);
-        if (parentNode && layoutInfo.children) {
-            layoutInfo.children.forEach((childId: string) => {
-                const childNode = componentMap.get(childId);
-                if (childNode) {
-                    // This is the fix: ensure children is always an array
-                    if (!parentNode.children) {
-                        parentNode.children = [];
-                    }
-                    parentNode.children.push(childNode);
-                    childIds.add(childId);
-                }
-            });
-        }
+      const parentNode = componentMap.get(parentId);
+      if (parentNode && layoutInfo.children) {
+        layoutInfo.children.forEach((childId: string) => {
+          const childNode = componentMap.get(childId);
+          if (childNode) {
+            // This is the fix: ensure children is always an array
+            if (!parentNode.children) {
+              parentNode.children = [];
+            }
+            parentNode.children.push(childNode);
+            childIds.add(childId);
+          }
+        });
+      }
     });
 
     // Find the root node(s) - those that are not children of any other node
     componentMap.forEach((node) => {
-        if (!childIds.has(node.id)) {
-            rootNodes.push(node);
-        }
+      if (!childIds.has(node.id)) {
+        rootNodes.push(node);
+      }
     });
 
     return rootNodes;
@@ -177,8 +183,8 @@ export default GeneratedArtifact`;
 
     const propsStr = Object.entries(combinedProps)
       .map(([key, value]) => {
-        if (key === 'children' || value === undefined) return null;
-        if (key === 'style' && Object.keys(value).length === 0) return null;
+        if (key === "children" || value === undefined) return null;
+        if (key === "style" && Object.keys(value).length === 0) return null;
 
         if (typeof value === "string") {
           return `${key}="${value}"`;
@@ -195,22 +201,22 @@ export default GeneratedArtifact`;
         .join("\n") || "";
 
     const elementMap: { [key: string]: string } = {
-        container: "div",
-        text: "p",
-        button: "button",
-        input: "input",
-        image: "img",
+      container: "div",
+      text: "p",
+      button: "button",
+      input: "input",
+      image: "img",
     };
 
     const Element = elementMap[type] || "div";
     const isSelfClosing = ["input", "img"].includes(Element);
 
     if (isSelfClosing) {
-        return `${spaces}<${Element} ${propsStr} />`;
+      return `${spaces}<${Element} ${propsStr} />`;
     }
 
     return `${spaces}<${Element} ${propsStr}>
-${childrenContent}${childrenCode ? `\n${childrenCode}\n${spaces}`: ''}
+${childrenContent}${childrenCode ? `\n${childrenCode}\n${spaces}` : ""}
 ${spaces}</${Element}>`;
   }
 }

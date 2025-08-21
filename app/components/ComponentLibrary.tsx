@@ -1,12 +1,10 @@
 "use client";
 
+import { DragEvent } from "react";
+
 import { ComponentType } from "../types/artifact";
 
-interface ComponentLibraryProps {
-  // We no longer need the onAddComponent prop here
-}
-
-export const ComponentLibrary = ({}: ComponentLibraryProps) => {
+export const ComponentLibrary = () => {
   const componentTemplates = [
     {
       name: "Container",
@@ -40,7 +38,7 @@ export const ComponentLibrary = ({}: ComponentLibraryProps) => {
     },
   ];
 
-  const handleDragStart = (e: React.DragEvent, componentType: ComponentType) => {
+  const handleDragStart = (e: DragEvent, componentType: ComponentType) => {
     e.dataTransfer.setData("componentType", componentType);
   };
 
