@@ -156,14 +156,30 @@ export class AICodeGenerator {
     return rootNodes;
   }
 
-  private generateReactCode(
+  public generateReactCode(
     components: ComponentNode[],
-    _request: AIGenerationRequest,
+    _request?: AIGenerationRequest,
+    appState: { [key: string]: any } = {},
+    apiData: { [key: string]: any } = {},
   ): string {
-    return `import React, { useState } from 'react'
+    const stateInitialization = Object.entries(appState)
+      .map(([key, value]) => `const [${key}, set${key.charAt(0).toUpperCase() + key.slice(1)}] = useState(${JSON.stringify(value)});`)
+      .join("\n  ");
+
+    const apiDataInitialization = Object.entries(apiData)
+      .map(([key, url]) => `const [${key}, set${key.charAt(0).toUpperCase() + key.slice(1)}] = useState(null);
+  useEffect(() => {
+    fetch("${url}")
+      .then(res => res.json())
+      .then(data => set${key.charAt(0).toUpperCase() + key.slice(1)}(data));
+  }, []);`)
+      .join("\n  ");
+
+    return `import React, { useState, useEffect } from 'react'
 
 export const GeneratedArtifact = () => {
-  const [state, setState] = useState({})
+  ${stateInitialization}
+  ${apiDataInitialization}
 
   return (
     <div className="generated-artifact">

@@ -7,20 +7,24 @@ import { ComponentNode } from "../types/artifact";
 interface ApiConnectionPanelProps {
   selectedNode: ComponentNode | null;
   onUpdateNode: (_updates: Partial<ComponentNode>) => void;
+  onFetchData: (_url: string, _key: string) => void;
 }
 
 export const ApiConnectionPanel = ({
   selectedNode,
   onUpdateNode,
+  onFetchData,
 }: ApiConnectionPanelProps) => {
   const [apiUrl, setApiUrl] = useState("");
+  const [dataKey, setDataKey] = useState("");
 
   const handleConnectApi = () => {
-    if (selectedNode && apiUrl) {
+    if (selectedNode && apiUrl && dataKey) {
+      onFetchData(apiUrl, dataKey);
       onUpdateNode({
         props: {
           ...selectedNode.props,
-          "data-source": apiUrl,
+          "data-source": `{${dataKey}}`,
         },
       });
     }
@@ -38,11 +42,19 @@ export const ApiConnectionPanel = ({
           className="w-full p-2 border rounded"
           disabled={!selectedNode}
         />
+        <input
+          type="text"
+          placeholder="Data Key"
+          value={dataKey}
+          onChange={(e) => setDataKey(e.target.value)}
+          className="w-full p-2 border rounded"
+          disabled={!selectedNode}
+        />
       </div>
       <button
         onClick={handleConnectApi}
         className="w-full p-2 bg-blue-600 text-white rounded"
-        disabled={!selectedNode || !apiUrl}
+        disabled={!selectedNode || !apiUrl || !dataKey}
       >
         Connect API
       </button>

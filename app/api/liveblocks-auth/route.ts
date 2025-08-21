@@ -2,7 +2,7 @@ import { Liveblocks } from "@liveblocks/node";
 import { NextRequest, NextResponse } from "next/server";
 
 // IMPORTANT: Replace this with your actual secret API key
-const LIVEBLOCKS_SECRET_KEY = "sk_YOUR_SECRET_API_KEY";
+const LIVEBLOCKS_SECRET_KEY = "sk_xxxxxxxxxxxxxxxxx";
 
 const liveblocks = new Liveblocks({
   secret: LIVEBLOCKS_SECRET_KEY,

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect,useState } from "react";
 
 import {
   AIGenerationRequest,
@@ -148,6 +148,47 @@ export const ArtifactBuilder = () => {
   const [livePreview, setLivePreview] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeTab, setActiveTab] = useState<RightPanelTab>("AI");
+  const [appState, setAppState] = useState<{ [key: string]: any }>({});
+  const [apiData, setApiData] = useState<{ [key: string]: any }>({});
+
+  useEffect(() => {
+    const savedCanvas = localStorage.getItem("canvas");
+    if (savedCanvas) {
+      setCanvas(JSON.parse(savedCanvas));
+    }
+    const savedState = localStorage.getItem("appState");
+    if (savedState) {
+      setAppState(JSON.parse(savedState));
+    }
+    const savedApiData = localStorage.getItem("apiData");
+    if (savedApiData) {
+      setApiData(JSON.parse(savedApiData));
+    }
+  }, []);
+
+  const handleSave = () => {
+    localStorage.setItem("canvas", JSON.stringify(canvas));
+    localStorage.setItem("appState", JSON.stringify(appState));
+    localStorage.setItem("apiData", JSON.stringify(apiData));
+    alert("Canvas, state, and API data saved!");
+  };
+
+  const handleDeploy = async () => {
+    const { aiCodeGen } = await import("../lib/aiCodeGen");
+    const code = aiCodeGen.generateReactCode(
+      canvas,
+      undefined,
+      appState,
+      apiData,
+    );
+    const blob = new Blob([code], { type: "text/javascript" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "GeneratedArtifact.tsx";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   const generateFromPrompt = async (
     request: AIGenerationRequest,
@@ -268,7 +309,21 @@ export const ArtifactBuilder = () => {
     [],
   );
 
-  const selectedNode = canvas.find((c) => c.id === selectedNodeIds[0]) || null;
+  const handleAddState = (key: string, value: any) => {
+    setAppState((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleFetchData = async (url: string, key: string) => {
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      setApiData((prev) => ({ ...prev, [key]: data }));
+    } catch (error) {
+      console.error("Failed to fetch API data:", error);
+    }
+  };
+
+  const selectedNode = canvas.find(node => selectedNodeIds.includes(node.id)) || null;
 
   const renderPanel = () => {
     const panelProps = {
@@ -290,9 +345,11 @@ export const ArtifactBuilder = () => {
       case "Animate":
         return <AnimationPanel {...panelProps} />;
       case "State":
-        return <StateManagerPanel {...panelProps} />;
+        return <StateManagerPanel {...panelProps} onAddState={handleAddState} />;
       case "API":
-        return <ApiConnectionPanel {...panelProps} />;
+        return (
+          <ApiConnectionPanel {...panelProps} onFetchData={handleFetchData} />
+        );
       case "Perf":
         return <PerformancePanel selectedNode={selectedNode} />;
       default:
@@ -365,10 +422,16 @@ export const ArtifactBuilder = () => {
             >
               Marketplace
             </Link>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm">
+            <button
+              onClick={handleSave}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+            >
               Save
             </button>
-            <button className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm">
+            <button
+              onClick={handleDeploy}
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm"
+            >
               Deploy
             </button>
           </div>
