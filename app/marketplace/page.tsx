@@ -10,7 +10,9 @@ import { TemplateReviewSection } from "./TemplateReviewSection"; // Import the n
 
 export default function Marketplace() {
   const [templates, setTemplates] = useState<ArtifactTemplate[]>([]);
-  const [filteredTemplates, setFilteredTemplates] = useState<ArtifactTemplate[]>([]);
+  const [filteredTemplates, setFilteredTemplates] = useState<
+    ArtifactTemplate[]
+  >([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("");
 
@@ -71,7 +73,13 @@ export default function Marketplace() {
               key={template.id}
               className="border rounded-lg p-6 hover:shadow-lg transition-shadow"
             >
-              <Image src={template.preview} alt={template.name} width={400} height={192} className="w-full h-48 object-cover mb-4 rounded-md" />
+              <Image
+                src={template.preview}
+                alt={template.name}
+                width={400}
+                height={192}
+                className="w-full h-48 object-cover mb-4 rounded-md"
+              />
               <h2 className="text-2xl font-bold mb-2">{template.name}</h2>
               <p className="text-gray-600 mb-4">{template.description}</p>
               <div className="flex justify-between items-center">
@@ -80,7 +88,10 @@ export default function Marketplace() {
                   {template.downloads} downloads
                 </div>
               </div>
-              <TemplateReviewSection templateId={template.id} currentRating={template.rating} />
+              <TemplateReviewSection
+                templateId={template.id}
+                currentRating={template.rating}
+              />
             </div>
           ))}
         </div>

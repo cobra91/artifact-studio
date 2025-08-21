@@ -69,4 +69,6 @@ export const {
   useDeleteComment,
   useAddReaction,
   useRemoveReaction,
-} = createRoomContext<Presence, Storage, UserMeta, RoomEvent, ThreadMetadata>(client);
+} = createRoomContext<Presence, Storage, UserMeta, RoomEvent, ThreadMetadata>(
+  client,
+);

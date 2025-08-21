@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { generationHistory,GenerationHistoryEntry } from "../lib/history";
+import { generationHistory, GenerationHistoryEntry } from "../lib/history";
 import { AIGenerationRequest } from "../types/artifact";
 
 interface AIPromptPanelProps {
@@ -15,10 +15,18 @@ export const AIPromptPanel = ({
   isGenerating,
 }: AIPromptPanelProps) => {
   const [prompt, setPrompt] = useState("");
-  const [framework, setFramework] = useState<"react" | "vue" | "svelte">("react");
-  const [styling, setStyling] = useState<"tailwindcss" | "css" | "styled-components">("tailwindcss");
-  const [interactivity, setInteractivity] = useState<"low" | "medium" | "high">("medium");
-  const [theme, setTheme] = useState<"default" | "modern" | "minimalist">("default");
+  const [framework, setFramework] = useState<"react" | "vue" | "svelte">(
+    "react",
+  );
+  const [styling, setStyling] = useState<
+    "tailwindcss" | "css" | "styled-components"
+  >("tailwindcss");
+  const [interactivity, setInteractivity] = useState<"low" | "medium" | "high">(
+    "medium",
+  );
+  const [theme, setTheme] = useState<"default" | "modern" | "minimalist">(
+    "default",
+  );
   const [history, setHistory] = useState<GenerationHistoryEntry[]>([]);
 
   useEffect(() => {
@@ -185,7 +193,12 @@ export const AIPromptPanel = ({
       <div className="mt-4 flex-1">
         <div className="flex justify-between items-center mb-2">
           <h4 className="text-sm font-medium text-gray-700">History</h4>
-          <button onClick={handleClearHistory} className="text-xs text-gray-500 hover:text-gray-700">Clear</button>
+          <button
+            onClick={handleClearHistory}
+            className="text-xs text-gray-500 hover:text-gray-700"
+          >
+            Clear
+          </button>
         </div>
         <div className="space-y-2 max-h-40 overflow-y-auto">
           {history.map((entry) => (

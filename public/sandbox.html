@@ -14,8 +14,15 @@
     <script type="text/javascript">
       const renderers = {
         react: (code) => {
-          const transformedCode = Babel.transform(code, { presets: ["react"] }).code;
-          const Component = new Function("React", "useState", "useEffect", `return ${transformedCode}`)(React, React.useState, React.useEffect);
+          const transformedCode = Babel.transform(code, {
+            presets: ["react"],
+          }).code;
+          const Component = new Function(
+            "React",
+            "useState",
+            "useEffect",
+            `return ${transformedCode}`,
+          )(React, React.useState, React.useEffect);
           const root = ReactDOM.createRoot(document.getElementById("root"));
           root.render(<Component />);
         },
@@ -27,9 +34,9 @@
             template,
             setup() {
               const { ref, onMounted } = Vue;
-              let setupCode = new Function('ref', 'onMounted', scriptContent);
+              let setupCode = new Function("ref", "onMounted", scriptContent);
               return setupCode(ref, onMounted);
-            }
+            },
           });
           app.mount("#root");
         },
@@ -47,13 +54,19 @@
             const { framework, code } = payload;
             if (renderers[framework]) {
               renderers[framework](code);
-              window.parent.postMessage({ type: "render-component", payload: { success: true } }, "*");
+              window.parent.postMessage(
+                { type: "render-component", payload: { success: true } },
+                "*",
+              );
             } else {
               throw new Error(`Unsupported framework: ${framework}`);
             }
           } catch (error) {
             console.error("Error rendering component:", error);
-            window.parent.postMessage({ type: "error", payload: { error: error.message } }, "*");
+            window.parent.postMessage(
+              { type: "error", payload: { error: error.message } },
+              "*",
+            );
           }
         }
       });

@@ -42,7 +42,9 @@ export const ABTestPanel = ({ selectedNode }: ABTestPanelProps) => {
   return (
     <div className="h-full p-4">
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">A/B Testing</h3>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+          A/B Testing
+        </h3>
         <div className="p-2 border rounded">
           <h4 className="text-sm font-medium text-gray-700 mb-2">New Test</h4>
           <input
@@ -71,7 +73,9 @@ export const ABTestPanel = ({ selectedNode }: ABTestPanelProps) => {
         {tests.map((test) => (
           <div key={test.id} className="p-2 border rounded">
             <h4 className="font-semibold">{test.name}</h4>
-            <div className="text-xs text-gray-500">Metric: {test.trackingMetric}</div>
+            <div className="text-xs text-gray-500">
+              Metric: {test.trackingMetric}
+            </div>
             {/* Variant management will be added here */}
           </div>
         ))}

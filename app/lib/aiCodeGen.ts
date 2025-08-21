@@ -114,7 +114,7 @@ export class AICodeGenerator {
 
     const aiResponse = await generateComponentTreeFromAI(request);
     const components = this.buildComponentTree(aiResponse);
-    
+
     let code = "";
     switch (request.framework) {
       case "vue":
@@ -199,16 +199,24 @@ export class AICodeGenerator {
     apiData: { [key: string]: any } = {},
   ): string {
     const stateInitialization = Object.entries(appState)
-      .map(([key, value]) => `const [${key}, set${key.charAt(0).toUpperCase() + key.slice(1)}] = useState(${JSON.stringify(value)});`)
+      .map(
+        ([key, value]) =>
+          `const [${key}, set${key.charAt(0).toUpperCase() + key.slice(1)}] = useState(${JSON.stringify(value)});`,
+      )
       .join("\n  ");
 
     const apiDataInitialization = Object.entries(apiData)
-      .map(([key, url]) => `const [${key}, set${key.charAt(0).toUpperCase() + key.slice(1)}] = useState(null);
+      .map(
+        ([
+          key,
+          url,
+        ]) => `const [${key}, set${key.charAt(0).toUpperCase() + key.slice(1)}] = useState(null);
   useEffect(() => {
     fetch("${url}")
       .then(res => res.json())
       .then(data => set${key.charAt(0).toUpperCase() + key.slice(1)}(data));
-  }, []);`)
+  }, []);`,
+      )
       .join("\n  ");
 
     return `import React, { useState, useEffect } from 'react';
@@ -227,7 +235,10 @@ export const GeneratedArtifact = () => {
 export default GeneratedArtifact;`;
   }
 
-  private renderReactComponent(node: ComponentNode, indent: number = 0): string {
+  private renderReactComponent(
+    node: ComponentNode,
+    indent: number = 0,
+  ): string {
     const spaces = "  ".repeat(indent);
     const { type, props, children, styles } = node;
 
@@ -283,11 +294,13 @@ ${spaces}</${Element}>`;
       .join("\n  ");
 
     const apiDataInitialization = Object.entries(apiData)
-      .map(([key, url]) => `const ${key} = ref(null);
+      .map(
+        ([key, url]) => `const ${key} = ref(null);
   onMounted(async () => {
     const response = await fetch("${url}");
     ${key}.value = await response.json();
-  });`)
+  });`,
+      )
       .join("\n  ");
 
     return `<template>
@@ -312,7 +325,10 @@ import { ref, onMounted } from 'vue';
     const spaces = "  ".repeat(indent);
     const { type, props, children, styles } = node;
 
-    const propsStr = Object.entries({ ...props, style: this.toInlineCss(styles) })
+    const propsStr = Object.entries({
+      ...props,
+      style: this.toInlineCss(styles),
+    })
       .map(([key, value]) => {
         if (key === "children" || value === undefined) return null;
         if (key === "style" && Object.keys(value).length === 0) return null;
@@ -361,11 +377,13 @@ ${spaces}</${Element}>`;
       .join("\n  ");
 
     const apiDataInitialization = Object.entries(apiData)
-      .map(([key, url]) => `let ${key} = null;
+      .map(
+        ([key, url]) => `let ${key} = null;
   onMount(async () => {
     const response = await fetch("${url}");
     ${key} = await response.json();
-  });`)
+  });`,
+      )
       .join("\n  ");
 
     return `<script>
@@ -384,11 +402,17 @@ ${spaces}</${Element}>`;
 </style>`;
   }
 
-  private renderSvelteComponent(node: ComponentNode, indent: number = 0): string {
+  private renderSvelteComponent(
+    node: ComponentNode,
+    indent: number = 0,
+  ): string {
     const spaces = "  ".repeat(indent);
     const { type, props, children, styles } = node;
 
-    const propsStr = Object.entries({ ...props, style: this.toInlineCss(styles) })
+    const propsStr = Object.entries({
+      ...props,
+      style: this.toInlineCss(styles),
+    })
       .map(([key, value]) => {
         if (key === "children" || value === undefined) return null;
         if (typeof value === "string" && value) {
@@ -428,8 +452,11 @@ ${spaces}</${Element}>`;
   private toInlineCss(styles: { [key: string]: string | undefined }): string {
     return Object.entries(styles)
       .filter(([, value]) => value !== undefined)
-      .map(([key, value]) => `${key.replace(/([A-Z])/g, "-$1").toLowerCase()}:${value}`)
-      .join(';');
+      .map(
+        ([key, value]) =>
+          `${key.replace(/([A-Z])/g, "-$1").toLowerCase()}:${value}`,
+      )
+      .join(";");
   }
 }
 

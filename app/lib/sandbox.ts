@@ -47,6 +47,9 @@ export const executeInSandbox = (
 
     window.addEventListener("message", messageHandler);
 
-    postSandboxMessage(iframe, { type: RENDER_COMPONENT_MESSAGE, payload: { code } });
+    postSandboxMessage(iframe, {
+      type: RENDER_COMPONENT_MESSAGE,
+      payload: { code },
+    });
   });
 };

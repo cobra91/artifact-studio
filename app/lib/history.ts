@@ -17,7 +17,7 @@ export class GenerationHistory {
   }
 
   private loadHistory() {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return;
     }
     try {

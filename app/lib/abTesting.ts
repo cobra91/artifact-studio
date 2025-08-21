@@ -25,7 +25,7 @@ export class ABTestingModule {
   }
 
   private loadTests() {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return;
     }
     try {
@@ -46,7 +46,11 @@ export class ABTestingModule {
     }
   }
 
-  createTest(name: string, componentId: string, trackingMetric: string): ABTest {
+  createTest(
+    name: string,
+    componentId: string,
+    trackingMetric: string,
+  ): ABTest {
     const test: ABTest = {
       id: crypto.randomUUID(),
       name,
@@ -63,7 +67,12 @@ export class ABTestingModule {
     return this.tests.filter((t) => t.componentId === componentId);
   }
 
-  addVariant(testId: string, name: string, component: ComponentNode, traffic: number): Variant | null {
+  addVariant(
+    testId: string,
+    name: string,
+    component: ComponentNode,
+    traffic: number,
+  ): Variant | null {
     const test = this.tests.find((t) => t.id === testId);
     if (!test) return null;
 
