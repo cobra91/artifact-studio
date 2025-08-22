@@ -8,12 +8,14 @@ interface ResizeHandleProps {
     direction: string,
     event: React.MouseEvent,
   ) => void;
+  onRotate: (event: React.MouseEvent) => void;
 }
 
 export const ResizeHandles = ({
   nodeId,
   isSelected,
   onResize,
+  onRotate,
 }: ResizeHandleProps) => {
   if (!isSelected) return null;
 
@@ -37,7 +39,7 @@ export const ResizeHandles = ({
           left: "50%",
           transform: "translateX(-50%)",
         }}
-        onMouseDown={(e) => e.stopPropagation()}
+        onMouseDown={onRotate}
       />
     </>
   );

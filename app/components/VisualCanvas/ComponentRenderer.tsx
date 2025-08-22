@@ -13,6 +13,7 @@ export const ComponentRenderer = ({ node, activeBreakpoint }: ComponentRendererP
   const combinedStyles = {
     ...node.styles,
     ...(activeBreakpoint !== "base" && node.responsiveStyles?.[activeBreakpoint]),
+    transform: node.rotation ? `rotate(${node.rotation}deg)` : undefined,
   } as CSSProperties;
 
   switch (node.type) {

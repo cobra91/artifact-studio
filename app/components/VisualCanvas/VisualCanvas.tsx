@@ -50,6 +50,7 @@ export const VisualCanvas = ({
     y: [],
   });
   const [resizing, setResizing] = useState<string | null>(null);
+  const [rotating, setRotating] = useState<boolean>(false);
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const handleMouseDownOnResizeHandle = (e: MouseEvent, direction: string) => {
@@ -58,9 +59,10 @@ export const VisualCanvas = ({
     setDragStart({ x: e.clientX, y: e.clientY });
   };
 
-  const handleMouseDownOnRotateHandle = (_e: MouseEvent) => {
-    // TODO: Implement rotation functionality
-    _e.stopPropagation();
+  const handleMouseDownOnRotateHandle = (e: MouseEvent) => {
+    e.stopPropagation();
+    setRotating(true);
+    setDragStart({ x: e.clientX, y: e.clientY });
   };
 
   const handleMouseDownOnComponent = (e: MouseEvent, node: ComponentNode) => {
@@ -116,7 +118,31 @@ export const VisualCanvas = ({
   };
 
   const handleMouseMove = (e: MouseEvent) => {
-    if (resizing && selectedNodeIds.length === 1 && canvasRef.current) {
+    if (rotating && selectedNodeIds.length === 1 && canvasRef.current) {
+      const selectedNode = components.find((c) => c.id === selectedNodeIds[0]);
+      if (!selectedNode) return;
+
+      const canvasRect = canvasRef.current.getBoundingClientRect();
+      const centerX = selectedNode.position.x + selectedNode.size.width / 2;
+      const centerY = selectedNode.position.y + selectedNode.size.height / 2;
+      
+      const mouseX = e.clientX - canvasRect.left;
+      const mouseY = e.clientY - canvasRect.top;
+      
+      // Calculate angle between center and mouse position
+      const deltaX = mouseX - centerX;
+      const deltaY = mouseY - centerY;
+      const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+      
+      // Convert to 0-360 range and snap to 15-degree increments
+      let rotation = (angle + 90 + 360) % 360;
+      rotation = Math.round(rotation / 15) * 15;
+      
+      onUpdateComponent(selectedNode.id, {
+        rotation: rotation,
+      });
+      setDragStart({ x: e.clientX, y: e.clientY });
+    } else if (resizing && selectedNodeIds.length === 1 && canvasRef.current) {
       const selectedNode = components.find((c) => c.id === selectedNodeIds[0]);
       if (!selectedNode) return;
 
@@ -248,6 +274,7 @@ export const VisualCanvas = ({
 
   const handleMouseUp = () => {
     setIsDragging(false);
+    setRotating(false);
     setIsSelecting(false);
     setSelectionRect(null);
 
