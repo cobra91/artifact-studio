@@ -872,6 +872,9 @@ export const ArtifactBuilder = () => {
       groupSelectedNodes,
       ungroupSelectedNodes,
       setActiveTab,
+      isLeftPanelOpen,
+      isRightPanelOpen,
+      isPreviewPanelOpen,
     ]
   );
 
@@ -1008,6 +1011,13 @@ export const ArtifactBuilder = () => {
     handleSave,
     updateCanvas,
     setSelectedNodeIds,
+    isLeftPanelOpen,
+    isRightPanelOpen,
+    isPreviewPanelOpen,
+    setIsLeftPanelOpen,
+    setIsRightPanelOpen,
+    setIsPreviewPanelOpen,
+    setIsCommandPaletteOpen,
   ]);
 
   const renderPanel = () => {

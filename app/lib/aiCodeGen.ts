@@ -167,9 +167,13 @@ export class AICodeGenerator {
       Object.entries(layout).forEach(([parentId, layoutInfo]: [string, any]) => {
         const parentNode = componentMap.get(parentId);
         if (parentNode && layoutInfo.children && Array.isArray(layoutInfo.children)) {
+          // Ensure children array exists
+          if (!parentNode.children) {
+            parentNode.children = [];
+          }
           layoutInfo.children.forEach((childId: string) => {
             const childNode = componentMap.get(childId);
-            if (childNode) {
+            if (childNode && parentNode.children) {
               parentNode.children.push(childNode);
               childIds.add(childId);
             }
