@@ -81,18 +81,25 @@ export const HelpSystem = ({
 }: HelpSystemProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    if (showOnboarding) {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (showOnboarding && isClient) {
       setIsVisible(true);
       setCurrentStep(0);
     }
-  }, [showOnboarding]);
+  }, [showOnboarding, isClient]);
 
   const finishOnboarding = useCallback(() => {
     setIsVisible(false);
     onFinishOnboarding();
-    localStorage.setItem("onboarding-completed", "true");
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("onboarding-completed", "true");
+    }
   }, [onFinishOnboarding]);
 
   const nextStep = useCallback(() => {
@@ -114,8 +121,12 @@ export const HelpSystem = ({
   }, [finishOnboarding]);
 
   const getElementPosition = useCallback((selector: string) => {
+    if (typeof window === 'undefined') {
+      return { top: 100, left: 100, width: 200, height: 100 };
+    }
+    
     const element = document.querySelector(selector);
-    if (!element) return { top: 100, left: 100 };
+    if (!element) return { top: 100, left: 100, width: 200, height: 100 };
 
     const rect = element.getBoundingClientRect();
     return {
@@ -126,7 +137,7 @@ export const HelpSystem = ({
     };
   }, []);
 
-  if (!isVisible || !showOnboarding) return null;
+  if (!isClient || !isVisible || !showOnboarding) return null;
 
   const step = ONBOARDING_STEPS[currentStep];
   const position = getElementPosition(step.target);

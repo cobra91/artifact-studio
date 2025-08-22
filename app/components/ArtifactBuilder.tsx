@@ -24,7 +24,7 @@ import { CommandPalette } from "./CommandPalette";
 import { ComponentLibrary } from "./ComponentLibrary";
 import { DeploymentPanel } from "./DeploymentPanel";
 import { ExportPackageModal } from "./ExportPackageModal";
-import { HelpSystem } from "./HelpSystem";
+import { HelpModal } from "./HelpModal";
 import { LiveCursors } from "./LiveCursors";
 import { LivePreview } from "./LivePreview";
 import { PerformancePanel } from "./PerformancePanel";
@@ -185,7 +185,7 @@ export const ArtifactBuilder = () => {
   const [isEditMode, setIsEditMode] = useState<boolean>(true);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] =
     useState<boolean>(false);
-  const [showOnboarding, setShowOnboarding] = useState<boolean>(false);
+  const [isHelpModalOpen, setIsHelpModalOpen] = useState<boolean>(false);
   const [isAnalyticsPanelOpen, setIsAnalyticsPanelOpen] =
     useState<boolean>(false);
 
@@ -194,17 +194,7 @@ export const ArtifactBuilder = () => {
     setIsEditMode(prev => !prev);
   }, []);
 
-  // Check if onboarding should be shown
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const hasCompletedOnboarding = localStorage.getItem(
-        "onboarding-completed"
-      );
-      if (!hasCompletedOnboarding) {
-        setShowOnboarding(true);
-      }
-    }
-  }, []);
+
 
   const toggleNodeSelection = useCallback((nodeId: string) => {
     setSelectedNodeIds(prevSelectedIds => {
@@ -747,7 +737,7 @@ export const ArtifactBuilder = () => {
         description: "Restart the onboarding tutorial",
         shortcut: "",
         category: "Help",
-        action: () => setShowOnboarding(true),
+        action: () => setIsHelpModalOpen(true),
       },
       // Analytics
       {
@@ -969,8 +959,7 @@ export const ArtifactBuilder = () => {
     </button>
   );
 
-  try {
-    return (
+  return (
       <div className="relative flex h-screen bg-gray-50 font-sans">
         <LiveCursors />
 
@@ -979,12 +968,6 @@ export const ArtifactBuilder = () => {
           isOpen={isCommandPaletteOpen}
           onClose={() => setIsCommandPaletteOpen(false)}
           commands={commands}
-        />
-
-        {/* Help System */}
-        <HelpSystem
-          showOnboarding={showOnboarding}
-          onFinishOnboarding={() => setShowOnboarding(false)}
         />
 
         {/* Analytics Panel */}
@@ -1173,10 +1156,12 @@ export const ArtifactBuilder = () => {
           onClose={() => setIsExportModalOpen(false)}
           components={canvas}
         />
+
+        {/* Help Modal */}
+        <HelpModal
+          isOpen={isHelpModalOpen}
+          onClose={() => setIsHelpModalOpen(false)}
+        />
       </div>
     );
-  } catch (error) {
-    console.error("ArtifactBuilder error:", error);
-    return null;
-  }
 };

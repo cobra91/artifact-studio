@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 interface Command {
   id: string;
@@ -85,19 +86,36 @@ export const CommandPalette = ({
 
   if (!isOpen) return null;
 
-  return (
-    <div className="bg-opacity-30 fixed inset-0 z-50 flex items-start justify-center bg-black pt-20 transition-all duration-200">
-      <div className="mx-4 w-full max-w-2xl scale-100 transform rounded-lg border border-gray-200 bg-white shadow-2xl transition-all duration-200">
+  const commandPaletteContent = (
+    <div 
+      className={`fixed inset-0 z-50 flex items-start justify-center pt-20 transition-all duration-200 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+      onClick={onClose}
+    >
+      <div 
+        className="mx-4 w-full max-w-2xl transform rounded-lg border border-gray-200 bg-white shadow-2xl transition-all duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Search Input */}
         <div className="border-b border-gray-200 p-4">
-          <input
-            type="text"
-            placeholder="Type a command or search..."
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            className="w-full border-none bg-transparent px-4 py-3 text-lg outline-none"
-            autoFocus
-          />
+          <div className="flex items-center">
+            <input
+              type="text"
+              placeholder="Type a command or search..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="flex-1 border-none bg-transparent px-4 py-3 text-lg outline-none"
+              autoFocus
+            />
+            <button
+              onClick={onClose}
+              className="ml-2 rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              title="Close (Esc)"
+            >
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* Commands List */}
@@ -152,4 +170,11 @@ export const CommandPalette = ({
       </div>
     </div>
   );
+
+  // Use portal to render command palette outside the main component tree
+  if (typeof window !== 'undefined') {
+    return createPortal(commandPaletteContent, document.body);
+  }
+
+  return null;
 };
