@@ -14,16 +14,24 @@ export const ComponentRenderer = ({ node, activeBreakpoint, isEditMode }: Compon
   // Generate default responsive styles for the component type
   const defaultResponsiveStyles = generateResponsiveStyles(node.type);
   
-  // Combine base styles with responsive overrides
+  // Combine base styles with responsive overrides, but preserve custom styles
   const responsiveOverrides = applyResponsiveOverrides(
     { ...defaultResponsiveStyles.base, ...node.styles },
     node.responsiveStyles || defaultResponsiveStyles,
     activeBreakpoint
   );
   
+  // Filter out responsive styles that would override custom styles
+  const filteredResponsiveOverrides = { ...responsiveOverrides };
+  Object.keys(node.styles).forEach(key => {
+    if (filteredResponsiveOverrides[key]) {
+      delete filteredResponsiveOverrides[key];
+    }
+  });
+  
   const combinedStyles = {
     ...defaultResponsiveStyles.base,
-    ...responsiveOverrides,
+    ...filteredResponsiveOverrides,
     ...node.styles, // Apply custom styles LAST to override responsive styles
     transform: node.rotation ? `rotate(${node.rotation}deg)` : undefined,
   } as CSSProperties;
