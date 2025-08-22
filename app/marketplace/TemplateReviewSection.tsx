@@ -8,7 +8,10 @@ interface TemplateReviewSectionProps {
   currentRating: number;
 }
 
-export const TemplateReviewSection = ({ templateId, currentRating }: TemplateReviewSectionProps) => {
+export const TemplateReviewSection = ({
+  templateId,
+  currentRating,
+}: TemplateReviewSectionProps) => {
   const [reviews, setReviews] = useState<TemplateReview[]>([]);
   const [userRating, setUserRating] = useState(0);
   const [userComment, setUserComment] = useState("");
@@ -46,7 +49,9 @@ export const TemplateReviewSection = ({ templateId, currentRating }: TemplateRev
     <div className="mt-4">
       {/* Rating summary section */}
       <div className="flex items-center mb-2">
-        <span className="text-lg font-bold mr-2">{currentRating.toFixed(1)}</span>
+        <span className="text-lg font-bold mr-2">
+          {currentRating.toFixed(1)}
+        </span>
         <div className="flex">
           {[1, 2, 3, 4, 5].map((star) => (
             <svg
@@ -59,7 +64,9 @@ export const TemplateReviewSection = ({ templateId, currentRating }: TemplateRev
             </svg>
           ))}
         </div>
-        <span className="ml-2 text-sm text-gray-500">({reviews.length} reviews)</span>
+        <span className="ml-2 text-sm text-gray-500">
+          ({reviews.length} reviews)
+        </span>
       </div>
 
       <button
@@ -118,7 +125,9 @@ export const TemplateReviewSection = ({ templateId, currentRating }: TemplateRev
                       <svg
                         key={star}
                         className={`w-4 h-4 ${
-                          star <= review.rating ? "text-yellow-400" : "text-gray-300"
+                          star <= review.rating
+                            ? "text-yellow-400"
+                            : "text-gray-300"
                         }`}
                         fill="currentColor"
                         viewBox="0 0 20 20"

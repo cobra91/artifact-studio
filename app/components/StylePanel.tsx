@@ -10,8 +10,12 @@ interface StylePanelProps {
 }
 
 export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
-  const [activeTab, setActiveTab] = useState<"layout" | "typography" | "appearance" | "responsive">("layout");
-  const [activeBreakpoint, setActiveBreakpoint] = useState<"base" | "sm" | "md" | "lg">("base");
+  const [activeTab, setActiveTab] = useState<
+    "layout" | "typography" | "appearance" | "responsive"
+  >("layout");
+  const [activeBreakpoint, setActiveBreakpoint] = useState<
+    "base" | "sm" | "md" | "lg"
+  >("base");
 
   if (!selectedNode) {
     return (
@@ -73,7 +77,9 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
         <div className="space-y-4 p-2 border rounded">
           <h5 className="text-xs font-medium text-gray-500">Flexbox</h5>
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Direction</label>
+            <label className="block text-xs text-gray-600 mb-1">
+              Direction
+            </label>
             <select
               value={selectedNode.styles.flexDirection || "row"}
               onChange={(e) => updateStyle("flexDirection", e.target.value)}
@@ -84,7 +90,9 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             </select>
           </div>
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Justify Content</label>
+            <label className="block text-xs text-gray-600 mb-1">
+              Justify Content
+            </label>
             <select
               value={selectedNode.styles.justifyContent || "flex-start"}
               onChange={(e) => updateStyle("justifyContent", e.target.value)}
@@ -97,7 +105,9 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             </select>
           </div>
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Align Items</label>
+            <label className="block text-xs text-gray-600 mb-1">
+              Align Items
+            </label>
             <select
               value={selectedNode.styles.alignItems || "stretch"}
               onChange={(e) => updateStyle("alignItems", e.target.value)}
@@ -124,7 +134,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
           onChange={(e) => {
             const value = e.target.value;
             if (/^\d+(px|em|rem|%)$/.test(value)) {
-              updateStyle("fontSize", value)
+              updateStyle("fontSize", value);
             }
           }}
           className="w-full p-2 text-sm border border-gray-300 rounded"
@@ -169,7 +179,9 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
   const renderAppearanceTab = () => (
     <div className="space-y-4">
       <div>
-        <label className="block text-xs text-gray-600 mb-1">Background Color</label>
+        <label className="block text-xs text-gray-600 mb-1">
+          Background Color
+        </label>
         <input
           type="color"
           value={selectedNode.styles.backgroundColor || "#ffffff"}
@@ -178,7 +190,9 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
         />
       </div>
       <div>
-        <label className="block text-xs text-gray-600 mb-1">Border Radius</label>
+        <label className="block text-xs text-gray-600 mb-1">
+          Border Radius
+        </label>
         <input
           type="range"
           min="0"
@@ -195,8 +209,12 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
           value={selectedNode.styles.boxShadow || ""}
           onChange={(e) => {
             const value = e.target.value;
-            if (/(inset\s+)?(0|([1-9]\d*))px\s+(0|([1-9]\d*))px\s+(0|([1-9]\d*))px\s+(0|([1-9]\d*))px\s+rgba\(\d+,\s*\d+,\s*\d+,\s*\d*\.?\d+\)/.test(value)) {
-              updateStyle("boxShadow", value)
+            if (
+              /(inset\s+)?(0|([1-9]\d*))px\s+(0|([1-9]\d*))px\s+(0|([1-9]\d*))px\s+(0|([1-9]\d*))px\s+rgba\(\d+,\s*\d+,\s*\d+,\s*\d*\.?\d+\)/.test(
+                value,
+              )
+            ) {
+              updateStyle("boxShadow", value);
             }
           }}
           className="w-full p-2 text-sm border border-gray-300 rounded"
@@ -221,19 +239,43 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
   const renderResponsiveTab = () => (
     <div className="space-y-4">
       <div className="flex justify-around">
-        <button onClick={() => setActiveBreakpoint("base")} className={`px-3 py-1 text-sm rounded ${activeBreakpoint === "base" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>Base</button>
-        <button onClick={() => setActiveBreakpoint("sm")} className={`px-3 py-1 text-sm rounded ${activeBreakpoint === "sm" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>SM</button>
-        <button onClick={() => setActiveBreakpoint("md")} className={`px-3 py-1 text-sm rounded ${activeBreakpoint === "md" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>MD</button>
-        <button onClick={() => setActiveBreakpoint("lg")} className={`px-3 py-1 text-sm rounded ${activeBreakpoint === "lg" ? "bg-blue-500 text-white" : "bg-gray-200"}`}>LG</button>
+        <button
+          onClick={() => setActiveBreakpoint("base")}
+          className={`px-3 py-1 text-sm rounded ${activeBreakpoint === "base" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+        >
+          Base
+        </button>
+        <button
+          onClick={() => setActiveBreakpoint("sm")}
+          className={`px-3 py-1 text-sm rounded ${activeBreakpoint === "sm" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+        >
+          SM
+        </button>
+        <button
+          onClick={() => setActiveBreakpoint("md")}
+          className={`px-3 py-1 text-sm rounded ${activeBreakpoint === "md" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+        >
+          MD
+        </button>
+        <button
+          onClick={() => setActiveBreakpoint("lg")}
+          className={`px-3 py-1 text-sm rounded ${activeBreakpoint === "lg" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
+        >
+          LG
+        </button>
       </div>
       <div className="p-2 border rounded">
-        <h5 className="text-xs font-medium text-gray-500">{activeBreakpoint.toUpperCase()} Styles</h5>
+        <h5 className="text-xs font-medium text-gray-500">
+          {activeBreakpoint.toUpperCase()} Styles
+        </h5>
         <div className="space-y-4 mt-2">
           <div>
             <label className="block text-xs text-gray-600 mb-1">Width</label>
             <input
               type="text"
-              value={selectedNode.responsiveStyles?.[activeBreakpoint]?.width || ""}
+              value={
+                selectedNode.responsiveStyles?.[activeBreakpoint]?.width || ""
+              }
               onChange={(e) => updateResponsiveStyle("width", e.target.value)}
               className="w-full p-2 text-sm border border-gray-300 rounded"
             />
@@ -241,7 +283,9 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
           <div>
             <label className="block text-xs text-gray-600 mb-1">Display</label>
             <select
-              value={selectedNode.responsiveStyles?.[activeBreakpoint]?.display || ""}
+              value={
+                selectedNode.responsiveStyles?.[activeBreakpoint]?.display || ""
+              }
               onChange={(e) => updateResponsiveStyle("display", e.target.value)}
               className="w-full p-2 text-sm border border-gray-300 rounded"
             >
@@ -297,10 +341,30 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
 
       <div className="mb-6">
         <div className="flex border-b">
-          <button onClick={() => setActiveTab("layout")} className={`px-4 py-2 text-sm ${activeTab === "layout" ? "border-b-2 border-blue-500" : ""}`}>Layout</button>
-          <button onClick={() => setActiveTab("typography")} className={`px-4 py-2 text-sm ${activeTab === "typography" ? "border-b-2 border-blue-500" : ""}`}>Typography</button>
-          <button onClick={() => setActiveTab("appearance")} className={`px-4 py-2 text-sm ${activeTab === "appearance" ? "border-b-2 border-blue-500" : ""}`}>Appearance</button>
-          <button onClick={() => setActiveTab("responsive")} className={`px-4 py-2 text-sm ${activeTab === "responsive" ? "border-b-2 border-blue-500" : ""}`}>Responsive</button>
+          <button
+            onClick={() => setActiveTab("layout")}
+            className={`px-4 py-2 text-sm ${activeTab === "layout" ? "border-b-2 border-blue-500" : ""}`}
+          >
+            Layout
+          </button>
+          <button
+            onClick={() => setActiveTab("typography")}
+            className={`px-4 py-2 text-sm ${activeTab === "typography" ? "border-b-2 border-blue-500" : ""}`}
+          >
+            Typography
+          </button>
+          <button
+            onClick={() => setActiveTab("appearance")}
+            className={`px-4 py-2 text-sm ${activeTab === "appearance" ? "border-b-2 border-blue-500" : ""}`}
+          >
+            Appearance
+          </button>
+          <button
+            onClick={() => setActiveTab("responsive")}
+            className={`px-4 py-2 text-sm ${activeTab === "responsive" ? "border-b-2 border-blue-500" : ""}`}
+          >
+            Responsive
+          </button>
         </div>
         <div className="py-4">
           {activeTab === "layout" && renderLayoutTab()}

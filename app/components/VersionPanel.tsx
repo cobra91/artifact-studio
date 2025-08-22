@@ -58,10 +58,15 @@ export const VersionPanel = ({ onRestoreVersion }: VersionPanelProps) => {
       </div>
       <div className="space-y-2">
         {versions.map((version) => (
-          <div key={version.id} className="flex justify-between items-center p-2 border rounded">
+          <div
+            key={version.id}
+            className="flex justify-between items-center p-2 border rounded"
+          >
             <div>
               <div className="font-semibold">{version.name}</div>
-              <div className="text-xs text-gray-500">{new Date(version.timestamp).toLocaleString()}</div>
+              <div className="text-xs text-gray-500">
+                {new Date(version.timestamp).toLocaleString()}
+              </div>
             </div>
             <button
               onClick={() => handleRestore(version.id)}

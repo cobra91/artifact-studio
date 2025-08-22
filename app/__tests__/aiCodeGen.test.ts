@@ -1,24 +1,24 @@
-import { AICodeGenerator } from '../lib/aiCodeGen';
+import { AICodeGenerator } from "../lib/aiCodeGen";
 
-describe('AICodeGenerator', () => {
+describe("AICodeGenerator", () => {
   let aiCodeGen: AICodeGenerator;
 
   beforeEach(() => {
     aiCodeGen = new AICodeGenerator();
   });
 
-  it('should generate React code', () => {
+  it("should generate React code", () => {
     const components = [
       {
-        id: '1',
-        type: 'container',
+        id: "1",
+        type: "container",
         props: {},
         styles: {},
         children: [
           {
-            id: '2',
-            type: 'text',
-            props: { children: 'Hello' },
+            id: "2",
+            type: "text",
+            props: { children: "Hello" },
             styles: {},
             children: [],
             position: { x: 0, y: 0 },
@@ -30,8 +30,8 @@ describe('AICodeGenerator', () => {
       },
     ];
     const code = aiCodeGen.generateReactCode(components as any);
-    expect(code).toContain('Hello');
-    expect(code).toContain('div');
-    expect(code).toContain('p');
+    expect(code).toContain("Hello");
+    expect(code).toContain("div");
+    expect(code).toContain("p");
   });
 });

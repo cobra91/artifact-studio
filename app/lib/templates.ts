@@ -22,25 +22,30 @@ export const fetchTemplates = async () => {
   }
 };
 
-export const getTemplates = async (filters: { category?: string; tags?: string[]; search?: string } = {}) => {
+export const getTemplates = async (
+  filters: { category?: string; tags?: string[]; search?: string } = {},
+) => {
   let templates = await fetchTemplates();
 
   if (filters.category) {
-    templates = templates.filter((template) => template.category === filters.category);
+    templates = templates.filter(
+      (template) => template.category === filters.category,
+    );
   }
 
   const { tags } = filters;
   if (tags && tags.length > 0) {
     templates = templates.filter((template) =>
-      tags.every((tag) => template.tags.includes(tag))
+      tags.every((tag) => template.tags.includes(tag)),
     );
   }
 
   if (filters.search) {
     const searchTerm = filters.search.toLowerCase();
-    templates = templates.filter((template) => 
-      template.name.toLowerCase().includes(searchTerm) || 
-      template.description.toLowerCase().includes(searchTerm)
+    templates = templates.filter(
+      (template) =>
+        template.name.toLowerCase().includes(searchTerm) ||
+        template.description.toLowerCase().includes(searchTerm),
     );
   }
 
@@ -52,7 +57,10 @@ export const getTemplateById = async (id: string) => {
   return templates.find((template) => template.id === id);
 };
 
-export const submitReview = async (templateId: string, review: TemplateReview) => {
+export const submitReview = async (
+  templateId: string,
+  review: TemplateReview,
+) => {
   const templates = await fetchTemplates();
   const template = templates.find((t) => t.id === templateId);
 
@@ -64,7 +72,9 @@ export const submitReview = async (templateId: string, review: TemplateReview) =
 
     // Recalculate average rating
     const totalRating = template.reviews.reduce((sum, r) => sum + r.rating, 0);
-    template.rating = parseFloat((totalRating / template.reviews.length).toFixed(1));
+    template.rating = parseFloat(
+      (totalRating / template.reviews.length).toFixed(1),
+    );
 
     // In a real app, you'd send this to a backend to update the JSON file
     // For now, we just update the in-memory array.
@@ -72,7 +82,9 @@ export const submitReview = async (templateId: string, review: TemplateReview) =
   }
 };
 
-export const getReviews = async (templateId: string): Promise<TemplateReview[]> => {
+export const getReviews = async (
+  templateId: string,
+): Promise<TemplateReview[]> => {
   const templates = await fetchTemplates();
   const template = templates.find((t) => t.id === templateId);
   return template?.reviews || [];

@@ -16,11 +16,16 @@ export const PerformancePanel = ({ selectedNode }: PerformancePanelProps) => {
     const renderTime = Math.floor(JSON.stringify(selectedNode).length / 100);
 
     // Simulate bundle size based on props and styles
-    const bundleSize = (JSON.stringify(selectedNode.props).length + JSON.stringify(selectedNode.styles).length) / 1024;
+    const bundleSize =
+      (JSON.stringify(selectedNode.props).length +
+        JSON.stringify(selectedNode.styles).length) /
+      1024;
 
     const suggestions = [];
     if (renderTime > 20) {
-      suggestions.push("Consider breaking down this component into smaller parts.");
+      suggestions.push(
+        "Consider breaking down this component into smaller parts.",
+      );
     }
     if (bundleSize > 5) {
       suggestions.push("Try to reduce the amount of props and styles.");
@@ -47,7 +52,9 @@ export const PerformancePanel = ({ selectedNode }: PerformancePanelProps) => {
               <p className="font-semibold">Optimization Suggestions:</p>
               <ul className="list-disc list-inside">
                 {performanceMetrics.suggestions.map((s, i) => (
-                  <li key={i} className="text-sm">{s}</li>
+                  <li key={i} className="text-sm">
+                    {s}
+                  </li>
                 ))}
               </ul>
             </div>

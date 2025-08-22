@@ -1,14 +1,20 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { AIGenerationRequest, ComponentNode, ComponentType, SandboxResult, } from "../types/artifact";
+import {
+  AIGenerationRequest,
+  ComponentNode,
+  ComponentType,
+  SandboxResult,
+} from "../types/artifact";
 import { ABTestPanel } from "./ABTestPanel";
 import { AIPromptPanel } from "./AIPromptPanel";
 import { AnimationPanel } from "./AnimationPanel";
 import { ApiConnectionPanel } from "./ApiConnectionPanel";
 import { ComponentLibrary } from "./ComponentLibrary";
+import { DeploymentPanel } from "./DeploymentPanel";
+import { ExportPackageModal } from "./ExportPackageModal";
 import { LiveCursors } from "./LiveCursors";
 import { LivePreview } from "./LivePreview";
 import { PerformancePanel } from "./PerformancePanel";
@@ -17,7 +23,16 @@ import { StylePanel } from "./StylePanel";
 import { VersionPanel } from "./VersionPanel";
 import { VisualCanvas } from "./VisualCanvas";
 
-type RightPanelTab = "AI" | "Style" | "Animate" | "State" | "API" | "Perf" | "Versions" | "A/B";
+type RightPanelTab =
+  | "AI"
+  | "Style"
+  | "Animate"
+  | "State"
+  | "API"
+  | "Perf"
+  | "Versions"
+  | "A/B"
+  | "Deploy";
 
 // Helper function to get default properties for a new component
 const getComponentDefaults = (type: ComponentType) => {
@@ -69,23 +84,32 @@ export const ArtifactBuilder = () => {
   const [canvas, setCanvas] = useState<ComponentNode[]>([]);
   const [history, setHistory] = useState<ComponentNode[][]>([[]]);
   const [historyIndex, setHistoryIndex] = useState(0);
-  const [framework, setFramework] = useState<"react" | "vue" | "svelte">("react");
+  const [framework, setFramework] = useState<"react" | "vue" | "svelte">(
+    "react",
+  );
 
   const historyRef = useRef(history);
   historyRef.current = history;
   const historyIndexRef = useRef(historyIndex);
   historyIndexRef.current = historyIndex;
 
-  const updateCanvas = useCallback((updater: ComponentNode[] | ((c: ComponentNode[]) => ComponentNode[])) => {
-    setCanvas(prevCanvas => {
-      const newCanvas = typeof updater === 'function' ? updater(prevCanvas) : updater;
-      const newHistory = historyRef.current.slice(0, historyIndexRef.current + 1);
-      newHistory.push(newCanvas);
-      setHistory(newHistory);
-      setHistoryIndex(newHistory.length - 1);
-      return newCanvas;
-    });
-  }, []);
+  const updateCanvas = useCallback(
+    (updater: ComponentNode[] | ((c: ComponentNode[]) => ComponentNode[])) => {
+      setCanvas((prevCanvas) => {
+        const newCanvas =
+          typeof updater === "function" ? updater(prevCanvas) : updater;
+        const newHistory = historyRef.current.slice(
+          0,
+          historyIndexRef.current + 1,
+        );
+        newHistory.push(newCanvas);
+        setHistory(newHistory);
+        setHistoryIndex(newHistory.length - 1);
+        return newCanvas;
+      });
+    },
+    [],
+  );
 
   const [selectedNodeIds, setSelectedNodeIds] = useState<string[]>([]);
   const [snapToGrid, setSnapToGrid] = useState<boolean>(true);
@@ -167,6 +191,9 @@ export const ArtifactBuilder = () => {
   const [activeTab, setActiveTab] = useState<RightPanelTab>("AI");
   const [appState, setAppState] = useState<{ [key: string]: any }>({});
   const [apiData, setApiData] = useState<{ [key: string]: any }>({});
+
+  // State for export modal
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   useEffect(() => {
     const savedCanvas = localStorage.getItem("canvas");
@@ -368,17 +395,23 @@ export const ArtifactBuilder = () => {
   const handlePaste = async () => {
     const text = await navigator.clipboard.readText();
     try {
-      const node = JSON.parse(text) as ComponentNode;
-      node.id = `${node.type}-${Date.now()}`;
-      node.position.x += 10;
-      node.position.y += 10;
-      updateCanvas([...canvas, node]);
+      // Check if the text looks like a valid JSON object
+      if (text.trim().startsWith('{') && text.trim().endsWith('}')) {
+        const node = JSON.parse(text) as ComponentNode;
+        node.id = `${node.type}-${Date.now()}`;
+        node.position.x += 10;
+        node.position.y += 10;
+        updateCanvas([...canvas, node]);
+      } else {
+        console.warn("Clipboard content is not a valid JSON object");
+      }
     } catch (e) {
       console.error("Failed to parse clipboard content", e);
     }
   };
 
-  const selectedNode = canvas.find(node => selectedNodeIds.includes(node.id)) || null;
+  const selectedNode =
+    canvas.find((node) => selectedNodeIds.includes(node.id)) || null;
 
   const renderPanel = () => {
     const panelProps = {
@@ -400,7 +433,9 @@ export const ArtifactBuilder = () => {
       case "Animate":
         return <AnimationPanel {...panelProps} />;
       case "State":
-        return <StateManagerPanel {...panelProps} onAddState={handleAddState} />;
+        return (
+          <StateManagerPanel {...panelProps} onAddState={handleAddState} />
+        );
       case "API":
         return (
           <ApiConnectionPanel {...panelProps} onFetchData={handleFetchData} />
@@ -411,6 +446,8 @@ export const ArtifactBuilder = () => {
         return <VersionPanel onRestoreVersion={handleRestoreVersion} />;
       case "A/B":
         return <ABTestPanel selectedNode={selectedNode} />;
+      case "Deploy":
+        return <DeploymentPanel />;
       default:
         return null;
     }
@@ -502,65 +539,84 @@ export const ArtifactBuilder = () => {
             >
               Ungroup
             </button>
-            <Link
-              href="/marketplace"
-              className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm"
-            >
-              Marketplace
-            </Link>
             <button
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm disabled:opacity-50"
               onClick={handleSave}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
             >
               Save
             </button>
             <button
+              className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 text-sm disabled:opacity-50"
               onClick={handleDeploy}
-              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm"
             >
               Deploy
+            </button>
+            <button
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm"
+              onClick={() => setIsExportModalOpen(true)}
+            >
+              Export Package
             </button>
           </div>
         </div>
 
-        {/* Canvas & Preview */}
-        <div className="flex-1 flex overflow-hidden">
+        {/* Main Content */}
+        <div className="flex-1 flex">
+          {/* Left Navigation */}
+          <div className="w-48 bg-white border-r border-gray-200 flex-shrink-0">
+            {(
+              [
+                "AI",
+                "Style",
+                "Animate",
+                "State",
+                "API",
+                "Perf",
+                "Versions",
+                "A/B",
+                "Deploy",
+              ] as RightPanelTab[]
+            ).map((tab) => (
+              <div key={tab}>
+                <TabButton tabName={tab} />
+              </div>
+            ))}
+          </div>
+
+          {/* Right Panel */}
+          <div className="w-80 bg-white border-r border-gray-200 flex-shrink-0 overflow-y-auto">
+            {renderPanel()}
+          </div>
+
+          {/* Canvas Area */}
           <div className="flex-1 h-full overflow-auto">
             <VisualCanvas
               components={canvas}
               selectedNodeIds={selectedNodeIds}
               onSelectNode={handleSelectNode}
-              onToggleNodeInSelection={(nodeId: string) =>
-                toggleNodeSelection(nodeId)
-              }
+              onToggleNodeInSelection={toggleNodeSelection}
               onSelectNodes={handleSelectNodes}
-              onAddNodesToSelection={handleAddNodesToSelection}
-              onUpdateComponent={updateComponent}
+              onAddNodesToSelection={addNodesToSelection}
               onAddComponent={addComponent}
               snapToGrid={snapToGrid}
               aspectRatioLocked={aspectRatioLocked}
+              onUpdateComponent={updateComponent}
             />
           </div>
-          <div className="w-96 flex-shrink-0 border-l border-gray-200">
+
+          {/* Preview */}
+          <div className="w-96 bg-gray-100 border-l border-gray-200 flex-shrink-0 overflow-y-auto">
             <LivePreview code={livePreview} framework={framework} />
           </div>
         </div>
       </div>
 
-      {/* Right Sidebar */}
-      <div className="w-80 bg-white border-l border-gray-200 flex flex-col flex-shrink-0">
-        <div className="flex justify-around border-b border-gray-200">
-          <TabButton tabName="AI" />
-          <TabButton tabName="Style" />
-          <TabButton tabName="Animate" />
-          <TabButton tabName="State" />
-          <TabButton tabName="API" />
-          <TabButton tabName="Perf" />
-          <TabButton tabName="Versions" />
-          <TabButton tabName="A/B" />
-        </div>
-        <div className="flex-1 overflow-y-auto">{renderPanel()}</div>
-      </div>
+      {/* Export Package Modal */}
+      <ExportPackageModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        components={canvas}
+      />
     </div>
   );
 };

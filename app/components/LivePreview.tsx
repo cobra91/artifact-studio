@@ -56,7 +56,13 @@ export const LivePreview = ({ code, framework }: LivePreviewProps) => {
   );
 };
 
-const PreviewPane = ({ code, framework }: { code: string, framework: "react" | "vue" | "svelte" }) => {
+const PreviewPane = ({
+  code,
+  framework,
+}: {
+  code: string;
+  framework: "react" | "vue" | "svelte";
+}) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isSandboxReady, setIsSandboxReady] = useState(false);
 
