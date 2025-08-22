@@ -6,9 +6,18 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
+import React from "react";
 
 import { ArtifactBuilder } from "../components/ArtifactBuilder";
+import { NotificationProvider } from "../components/ui/notifications";
 import { ComponentNode, ComponentType } from "../types/artifact";
+
+// Test wrapper component
+const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <NotificationProvider>
+    {children}
+  </NotificationProvider>
+);
 
 // Use the global localStorage mock from setup.ts
 const localStorageMock = window.localStorage as jest.Mocked<Storage>;
@@ -34,7 +43,11 @@ describe("Component Creation Workflows", () => {
   });
 
   test("should create component via addComponent function", async () => {
-    render(<ArtifactBuilder />);
+    render(
+      <TestWrapper>
+        <ArtifactBuilder />
+      </TestWrapper>
+    );
 
     // Wait for the canvas to be rendered
     const _canvas = await screen.findByTestId("visual-canvas");
