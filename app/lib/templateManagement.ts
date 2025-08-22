@@ -319,18 +319,21 @@ export const duplicateTemplate = (
 
 // Clone a component with new ID
 const cloneComponent = (component: ComponentNode): ComponentNode => {
-  return {
+  const cloned: ComponentNode = {
     ...component,
     id: generateComponentId(),
     children: component.children?.map(cloneComponent) || [],
-    metadata: component.metadata
-      ? {
-          ...component.metadata,
-          created: new Date(),
-          modified: new Date(),
-        }
-      : undefined,
   };
+
+  if (component.metadata) {
+    cloned.metadata = {
+      ...component.metadata,
+      created: new Date(),
+      modified: new Date(),
+    };
+  }
+
+  return cloned;
 };
 
 // Export template to JSON string

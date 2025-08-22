@@ -26,6 +26,9 @@ export const AnalyticsPanel = ({ isOpen, onClose }: AnalyticsPanelProps) => {
 
       return () => clearInterval(interval);
     }
+    
+    // Always return a cleanup function or undefined
+    return undefined;
   }, [isOpen]);
 
   if (!isOpen || !stats) return null;

@@ -30,7 +30,6 @@ export const createComponentNode = (
     rotation: 0,
     skew: { x: 0, y: 0 },
     styles,
-    responsiveStyles: undefined,
     metadata: metadata || createDefaultMetadata(),
   };
 };

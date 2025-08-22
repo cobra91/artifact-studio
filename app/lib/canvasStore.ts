@@ -40,8 +40,6 @@ export const useCanvasStore = create<CanvasStore>()(
       components: [], // Added
       selectedNodes: [], // Added
       clipboard: [], // Added
-      draggedComponent: undefined, // Added
-      hoveredComponent: undefined, // Added
       gridVisible: true, // Added
       snapToGrid: true, // Added
       zoom: 1, // Added

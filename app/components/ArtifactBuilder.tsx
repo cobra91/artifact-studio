@@ -1,6 +1,28 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+import {
+  analytics,
+  trackComponentCreate,
+  trackComponentDelete,
+  trackFeature,
+} from "../lib/analytics";
+import { useCanvasStore } from "../lib/canvasStore";
+import {
+  AIGenerationRequest,
+  ComponentNode,
+  ComponentType,
+  SandboxResult,
+} from "../types/artifact";
+import { ComponentLibrary } from "./ComponentLibrary";
+import { LiveCursors } from "./LiveCursors";
+import { ResponsivePanel } from "./ResponsivePanel";
+import { ButtonWithFeedback } from "./ui/feedback";
+import { useQuickNotifications } from "./ui/notifications";
+import { Tooltip } from "./ui/tooltip";
+import { VisualCanvas } from "./VisualCanvas/VisualCanvas";
 
 // Hook pour détecter la taille d'écran
 const useScreenSize = () => {
@@ -28,40 +50,62 @@ const useScreenSize = () => {
   return screenSize;
 };
 
-import {
-  analytics,
-  trackComponentCreate,
-  trackComponentDelete,
-  trackFeature,
-} from "../lib/analytics";
-import { useCanvasStore } from "../lib/canvasStore";
-import {
-  AIGenerationRequest,
-  ComponentNode,
-  ComponentType,
-  SandboxResult,
-} from "../types/artifact";
-import { ABTestPanel } from "./ABTestPanel";
-import { AIPromptPanel } from "./AIPromptPanel";
-import { AnalyticsPanel } from "./AnalyticsPanel";
-import { AnimationPanel } from "./AnimationPanel";
-import { ApiConnectionPanel } from "./ApiConnectionPanel";
-import { CommandPalette } from "./CommandPalette";
-import { ComponentLibrary } from "./ComponentLibrary";
-import { DeploymentPanel } from "./DeploymentPanel";
-import { ExportPackageModal } from "./ExportPackageModal";
-import { HelpModal } from "./HelpModal";
-import { LiveCursors } from "./LiveCursors";
-import { LivePreview } from "./LivePreview";
-import { PerformancePanel } from "./PerformancePanel";
-import { ResponsivePanel } from "./ResponsivePanel";
-import { StateManagerPanel } from "./StateManagerPanel";
-import { StylePanel } from "./StylePanel";
-import { ButtonWithFeedback } from "./ui/feedback";
-import { useQuickNotifications } from "./ui/notifications";
-import { Tooltip } from "./ui/tooltip";
-import { VersionPanel } from "./VersionPanel";
-import { VisualCanvas } from "./VisualCanvas/VisualCanvas";
+// Lazy load heavy components to improve initial bundle size
+const ABTestPanel = dynamic(() => import("./ABTestPanel").then(mod => ({ default: mod.ABTestPanel })), {
+  loading: () => <div className="p-4 animate-pulse">Loading A/B Testing...</div>,
+});
+
+const AIPromptPanel = dynamic(() => import("./AIPromptPanel").then(mod => ({ default: mod.AIPromptPanel })), {
+  loading: () => <div className="p-4 animate-pulse">Loading AI Panel...</div>,
+});
+
+const AnalyticsPanel = dynamic(() => import("./AnalyticsPanel").then(mod => ({ default: mod.AnalyticsPanel })), {
+  loading: () => <div className="p-4 animate-pulse">Loading Analytics...</div>,
+});
+
+const AnimationPanel = dynamic(() => import("./AnimationPanel").then(mod => ({ default: mod.AnimationPanel })), {
+  loading: () => <div className="p-4 animate-pulse">Loading Animations...</div>,
+});
+
+const ApiConnectionPanel = dynamic(() => import("./ApiConnectionPanel").then(mod => ({ default: mod.ApiConnectionPanel })), {
+  loading: () => <div className="p-4 animate-pulse">Loading API Panel...</div>,
+});
+
+const CommandPalette = dynamic(() => import("./CommandPalette").then(mod => ({ default: mod.CommandPalette })), {
+  loading: () => <div className="fixed inset-0 bg-black/50 backdrop-blur-sm animate-pulse" />,
+});
+
+const DeploymentPanel = dynamic(() => import("./DeploymentPanel").then(mod => ({ default: mod.DeploymentPanel })), {
+  loading: () => <div className="p-4 animate-pulse">Loading Deployment...</div>,
+});
+
+const ExportPackageModal = dynamic(() => import("./ExportPackageModal").then(mod => ({ default: mod.ExportPackageModal })), {
+  loading: () => <div className="fixed inset-0 bg-black/50 backdrop-blur-sm animate-pulse" />,
+});
+
+const HelpModal = dynamic(() => import("./HelpModal").then(mod => ({ default: mod.HelpModal })), {
+  loading: () => <div className="fixed inset-0 bg-black/50 backdrop-blur-sm animate-pulse" />,
+});
+
+const LivePreview = dynamic(() => import("./LivePreview").then(mod => ({ default: mod.LivePreview })), {
+  loading: () => <div className="p-4 animate-pulse">Loading Preview...</div>,
+});
+
+const PerformancePanel = dynamic(() => import("./PerformancePanel").then(mod => ({ default: mod.PerformancePanel })), {
+  loading: () => <div className="p-4 animate-pulse">Loading Performance...</div>,
+});
+
+const StateManagerPanel = dynamic(() => import("./StateManagerPanel").then(mod => ({ default: mod.StateManagerPanel })), {
+  loading: () => <div className="p-4 animate-pulse">Loading State Manager...</div>,
+});
+
+const StylePanel = dynamic(() => import("./StylePanel").then(mod => ({ default: mod.StylePanel })), {
+  loading: () => <div className="p-4 animate-pulse">Loading Style Panel...</div>,
+});
+
+const VersionPanel = dynamic(() => import("./VersionPanel").then(mod => ({ default: mod.VersionPanel })), {
+  loading: () => <div className="p-4 animate-pulse">Loading Versions...</div>,
+});
 
 type RightPanelTab =
   | "AI"

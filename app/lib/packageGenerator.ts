@@ -1074,7 +1074,7 @@ export default function Contact() {
     };
   }
 
-  protected generateIndexFile(components: ComponentNode[]): string {
+  protected override generateIndexFile(components: ComponentNode[]): string {
     const imports = components
       .map(component => {
         const componentName = this.formatComponentName(component.type);

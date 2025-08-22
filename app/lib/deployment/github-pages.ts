@@ -80,7 +80,7 @@ export class GitHubPagesDeploymentProvider extends BaseDeploymentProvider {
     return false;
   }
 
-  async getInstallUrl(): Promise<string> {
+  override async getInstallUrl(): Promise<string> {
     // GitHub uses personal access tokens directly for GitHub Pages
     // No OAuth flow needed for basic deployment
     const scopes = ["repo", "pages"];

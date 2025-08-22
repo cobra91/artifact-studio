@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, ReactNode,useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 
 import { Toast } from "./feedback";
 
@@ -73,7 +73,7 @@ export const NotificationProvider = ({ children }: NotificationProviderProps) =>
             <Toast
               message={notification.message}
               type={notification.type}
-              duration={notification.duration}
+              duration={notification.duration ?? 3000}
               onClose={() => removeNotification(notification.id)}
             />
           </div>

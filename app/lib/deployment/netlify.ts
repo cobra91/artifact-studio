@@ -70,7 +70,7 @@ export class NetlifyDeploymentProvider extends BaseDeploymentProvider {
     return true;
   }
 
-  async getInstallUrl(): Promise<string> {
+  override async getInstallUrl(): Promise<string> {
     const clientId = process.env.NETLIFY_CLIENT_ID || "mock-client-id";
     const redirectUri = `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/auth/netlify/callback`;
     const scope = "site:write deploy:write";

@@ -52,12 +52,17 @@ export class PerformanceMonitor {
     const startTime = performance.now();
     const memoryUsage = this.getMemoryUsage();
 
-    this.metrics.set(name, {
+    const metric: PerformanceMetrics = {
       name,
       startTime,
       memoryUsage,
-      customMetrics,
-    });
+    };
+
+    if (customMetrics !== undefined) {
+      metric.customMetrics = customMetrics;
+    }
+
+    this.metrics.set(name, metric);
 
     this.memoryCheckpoints.set(name, memoryUsage);
   }

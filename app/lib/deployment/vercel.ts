@@ -79,7 +79,7 @@ export class VercelDeploymentProvider extends BaseDeploymentProvider {
     return true;
   }
 
-  async getInstallUrl(): Promise<string> {
+  override async getInstallUrl(): Promise<string> {
     // Return Vercel OAuth installation URL
     const clientId = process.env.VERCEL_CLIENT_ID || "mock-client-id";
     const redirectUri = `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/auth/vercel/callback`;

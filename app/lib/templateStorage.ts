@@ -137,18 +137,21 @@ const generateTemplateId = (): string => {
 
 // Clone a component with new ID (deep clone)
 const cloneComponent = (component: ComponentNode): ComponentNode => {
-  return {
+  const cloned: ComponentNode = {
     ...component,
     id: generateComponentId(),
     children: component.children?.map(cloneComponent) || [],
-    metadata: component.metadata
-      ? {
-          ...component.metadata,
-          created: new Date(),
-          modified: new Date(),
-        }
-      : undefined,
   };
+
+  if (component.metadata) {
+    cloned.metadata = {
+      ...component.metadata,
+      created: new Date(),
+      modified: new Date(),
+    };
+  }
+
+  return cloned;
 };
 
 // Generate unique component ID

@@ -30,15 +30,26 @@ export abstract class BaseDeploymentProvider implements DeploymentProvider {
     url?: string,
     error?: string
   ): DeploymentStatus {
-    return {
+    const result: DeploymentStatus = {
       id: deploymentId,
       status,
-      url,
-      error,
       createdAt: new Date(),
-      progress:
-        status === "success" ? 100 : status === "failed" ? 0 : undefined,
     };
+
+    if (url !== undefined) {
+      result.url = url;
+    }
+    if (error !== undefined) {
+      result.error = error;
+    }
+    if (status === "success") {
+      result.progress = 100;
+    } else if (status === "failed") {
+      result.progress = 0;
+    }
+    // Don't set progress for other statuses to avoid exactOptionalPropertyTypes issue
+
+    return result;
   }
 
   protected async simulateDeploymentProgress(
