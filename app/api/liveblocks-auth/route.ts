@@ -27,8 +27,18 @@ export async function POST(request: NextRequest) {
     userInfo: user.info,
   });
 
-  // Get the room from the request body
-  const { room } = await request.json();
+  // Get the room from the request body (with error handling for empty body)
+  let room = null;
+  try {
+    const body = await request.text();
+    if (body.trim()) {
+      const parsed = JSON.parse(body);
+      room = parsed.room;
+    }
+  } catch (error) {
+    console.warn("Failed to parse request body:", error);
+    // Continue with room = null
+  }
 
   // If the user has access to the room, authorize them
   if (room) {

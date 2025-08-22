@@ -78,7 +78,7 @@ export interface DeploymentFormState {
 export interface DeploymentEvents {
   onAuthComplete: (
     platform: DeploymentPlatform,
-    credentials: DeploymentCredentials,
+    credentials: DeploymentCredentials
   ) => void;
   onDeploymentStart: (config: DeploymentConfig) => void;
   onDeploymentUpdate: (status: DeploymentStatus) => void;

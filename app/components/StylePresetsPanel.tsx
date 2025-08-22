@@ -23,13 +23,13 @@ export const StylePresetsPanel: React.FC<StylePresetsPanelProps> = ({
   return (
     <div className="space-y-6 p-4">
       <div>
-        <h3 className="text-lg font-semibold mb-3">Property Presets</h3>
+        <h3 className="mb-3 text-lg font-semibold">Property Presets</h3>
         <div className="grid grid-cols-2 gap-3">
-          {propertyPresets.map((preset) => (
+          {propertyPresets.map(preset => (
             <button
               key={preset.id}
               onClick={() => handleApplyPreset(preset)}
-              className="bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm py-2 px-3 rounded-md text-left"
+              className="rounded-md bg-gray-100 px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-200"
             >
               <div className="font-medium">{preset.name}</div>
               <div className="text-xs text-gray-600">{preset.description}</div>
@@ -39,13 +39,13 @@ export const StylePresetsPanel: React.FC<StylePresetsPanelProps> = ({
       </div>
 
       <div>
-        <h3 className="text-lg font-semibold mb-3">Style Templates</h3>
+        <h3 className="mb-3 text-lg font-semibold">Style Templates</h3>
         <div className="grid grid-cols-1 gap-3">
-          {styleTemplates.map((template) => (
+          {styleTemplates.map(template => (
             <button
               key={template.id}
               onClick={() => handleApplyTemplate(template)}
-              className="bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm py-2 px-3 rounded-md text-left"
+              className="rounded-md bg-gray-100 px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-200"
             >
               <div className="font-medium">{template.name}</div>
               <div className="text-xs text-gray-600">

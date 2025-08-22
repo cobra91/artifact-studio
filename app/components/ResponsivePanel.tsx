@@ -13,14 +13,14 @@ export const ResponsivePanel: React.FC = () => {
   ];
 
   return (
-    <div className="p-4 border-b">
-      <h3 className="text-lg font-semibold mb-3">Responsive Design</h3>
+    <div className="border-b p-4">
+      <h3 className="mb-3 text-lg font-semibold">Responsive Design</h3>
       <div className="flex space-x-2">
-        {breakpoints.map((bp) => (
+        {breakpoints.map(bp => (
           <button
             key={bp.value}
             onClick={() => setActiveBreakpoint(bp.value)}
-            className={`px-4 py-2 rounded-md text-sm font-medium ${
+            className={`rounded-md px-4 py-2 text-sm font-medium ${
               activeBreakpoint === bp.value
                 ? "bg-blue-500 text-white"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"

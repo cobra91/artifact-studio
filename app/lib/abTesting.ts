@@ -49,7 +49,7 @@ export class ABTestingModule {
   createTest(
     name: string,
     componentId: string,
-    trackingMetric: string,
+    trackingMetric: string
   ): ABTest {
     const test: ABTest = {
       id: crypto.randomUUID(),
@@ -64,16 +64,16 @@ export class ABTestingModule {
   }
 
   getTestsForComponent(componentId: string): ABTest[] {
-    return this.tests.filter((t) => t.componentId === componentId);
+    return this.tests.filter(t => t.componentId === componentId);
   }
 
   addVariant(
     testId: string,
     name: string,
     component: ComponentNode,
-    traffic: number,
+    traffic: number
   ): Variant | null {
-    const test = this.tests.find((t) => t.id === testId);
+    const test = this.tests.find(t => t.id === testId);
     if (!test) return null;
 
     const variant: Variant = {

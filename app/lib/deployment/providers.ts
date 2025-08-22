@@ -28,7 +28,7 @@ export abstract class BaseDeploymentProvider implements DeploymentProvider {
     status: DeploymentStatus["status"],
     deploymentId: string,
     url?: string,
-    error?: string,
+    error?: string
   ): DeploymentStatus {
     return {
       id: deploymentId,
@@ -44,7 +44,7 @@ export abstract class BaseDeploymentProvider implements DeploymentProvider {
   protected async simulateDeploymentProgress(
     deploymentId: string,
     updateStatus: (status: DeploymentStatus) => void,
-    onProgress?: (progress: number) => void,
+    onProgress?: (progress: number) => void
   ): Promise<DeploymentStatus> {
     const stages = [
       { status: "building" as const, duration: 3000, progress: 30 },
@@ -55,7 +55,7 @@ export abstract class BaseDeploymentProvider implements DeploymentProvider {
     let currentStatus = this.createStatus("pending", deploymentId);
 
     for (const stage of stages) {
-      await new Promise((resolve) => setTimeout(resolve, stage.duration));
+      await new Promise(resolve => setTimeout(resolve, stage.duration));
 
       currentStatus = {
         ...currentStatus,
@@ -79,7 +79,7 @@ export class DeploymentProviderManager {
 
   registerProvider(
     platform: DeploymentPlatform,
-    provider: DeploymentProvider,
+    provider: DeploymentProvider
   ): void {
     this.providers.set(platform, provider);
   }
@@ -94,7 +94,7 @@ export class DeploymentProviderManager {
 
   async authenticatePlatform(
     platform: DeploymentPlatform,
-    credentials: DeploymentCredentials,
+    credentials: DeploymentCredentials
   ): Promise<boolean> {
     const provider = this.getProvider(platform);
     if (!provider) {
@@ -106,7 +106,7 @@ export class DeploymentProviderManager {
 
   async deployToPlatform(
     platform: DeploymentPlatform,
-    config: DeploymentConfig,
+    config: DeploymentConfig
   ): Promise<DeploymentStatus> {
     const provider = this.getProvider(platform);
     if (!provider) {
@@ -118,7 +118,7 @@ export class DeploymentProviderManager {
 
   async getStatus(
     platform: DeploymentPlatform,
-    deploymentId: string,
+    deploymentId: string
   ): Promise<DeploymentStatus> {
     const provider = this.getProvider(platform);
     if (!provider) {
@@ -129,7 +129,7 @@ export class DeploymentProviderManager {
   }
 
   async getDeploymentHistory(
-    platform: DeploymentPlatform,
+    platform: DeploymentPlatform
   ): Promise<DeploymentHistory[]> {
     const provider = this.getProvider(platform);
     if (!provider) {
@@ -141,7 +141,7 @@ export class DeploymentProviderManager {
 
   async cancelDeployment(
     platform: DeploymentPlatform,
-    deploymentId: string,
+    deploymentId: string
   ): Promise<boolean> {
     const provider = this.getProvider(platform);
     if (!provider) {

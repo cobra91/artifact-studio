@@ -30,8 +30,8 @@ export const RecentColors = ({
   const _addRecentColor = (color: string) => {
     const normalizedColor = ColorUtils.normalizeHex(color);
 
-    setRecentColors((prev) => {
-      const filtered = prev.filter((c) => c !== normalizedColor);
+    setRecentColors(prev => {
+      const filtered = prev.filter(c => c !== normalizedColor);
       const updated = [normalizedColor, ...filtered].slice(0, maxColors);
 
       localStorage.setItem("recentColors", JSON.stringify(updated));
@@ -65,7 +65,7 @@ export const RecentColors = ({
           <button
             key={`${color}-${index}`}
             onClick={() => onColorSelect(color)}
-            className="w-8 h-8 rounded border border-gray-300 hover:border-gray-400 transition-colors"
+            className="h-8 w-8 rounded border border-gray-300 transition-colors hover:border-gray-400"
             style={{ backgroundColor: color }}
             title={color}
             aria-label={`Select recent color ${color}`}

@@ -34,12 +34,12 @@ export class NetlifyDeploymentProvider extends BaseDeploymentProvider {
     try {
       const status = await this.simulateDeploymentProgress(
         deploymentId,
-        (status) => {
+        status => {
           console.log("Deployment update:", status);
         },
-        (progress) => {
+        progress => {
           console.log("Deployment progress:", progress + "%");
-        },
+        }
       );
 
       return {
@@ -52,7 +52,7 @@ export class NetlifyDeploymentProvider extends BaseDeploymentProvider {
         "failed",
         deploymentId,
         undefined,
-        error instanceof Error ? error.message : "Deployment failed",
+        error instanceof Error ? error.message : "Deployment failed"
       );
     }
   }
@@ -79,7 +79,7 @@ export class NetlifyDeploymentProvider extends BaseDeploymentProvider {
   }
 
   private async mockValidateToken(token: string): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     if (!token || token.length < 10) {
       throw new Error("Invalid token");

@@ -39,33 +39,33 @@ export const StateManagerPanel = ({
 
   return (
     <div className="p-4">
-      <h3 className="text-lg font-semibold mb-4">State Management</h3>
-      <div className="flex gap-2 mb-2">
+      <h3 className="mb-4 text-lg font-semibold">State Management</h3>
+      <div className="mb-2 flex gap-2">
         <input
           type="text"
           placeholder="State Key"
           value={stateKey}
-          onChange={(e) => setStateKey(e.target.value)}
-          className="w-1/2 p-2 border rounded"
+          onChange={e => setStateKey(e.target.value)}
+          className="w-1/2 rounded border p-2"
         />
         <input
           type="text"
           placeholder="Default Value"
           value={stateValue}
-          onChange={(e) => setStateValue(e.target.value)}
-          className="w-1/2 p-2 border rounded"
+          onChange={e => setStateValue(e.target.value)}
+          className="w-1/2 rounded border p-2"
         />
       </div>
       <button
         onClick={handleAddState}
-        className="w-full p-2 bg-blue-600 text-white rounded mb-2"
+        className="mb-2 w-full rounded bg-blue-600 p-2 text-white"
         disabled={!stateKey}
       >
         Add State Variable
       </button>
       <button
         onClick={handleUseState}
-        className="w-full p-2 bg-green-600 text-white rounded"
+        className="w-full rounded bg-green-600 p-2 text-white"
         disabled={!selectedNode || !stateKey}
       >
         Use State in Selected Component

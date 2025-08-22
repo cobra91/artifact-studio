@@ -25,7 +25,7 @@ export const AppearanceTab = ({
   activeBreakpoint: _activeBreakpoint,
 }: AppearanceTabProps) => {
   const [activeTab, setActiveTab] = useState<"fill" | "stroke" | "gradient">(
-    "fill",
+    "fill"
   );
   const [strokeWidthError, setStrokeWidthError] = useState<string | null>(null);
   const { addRecentColor } = useCanvasStore();
@@ -83,7 +83,7 @@ export const AppearanceTab = ({
   const handleStrokeWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseFloat(e.target.value);
     const strokeWidthProperty = styleProperties.find(
-      (prop) => prop.property === "strokeWidth",
+      prop => prop.property === "strokeWidth"
     );
 
     if (strokeWidthProperty && strokeWidthProperty.validation) {
@@ -110,10 +110,10 @@ export const AppearanceTab = ({
     selectedElement.styles.stroke ||
     "#000000";
   const currentFillOpacity = parseFloat(
-    selectedElement.styles.fillOpacity || "1",
+    selectedElement.styles.fillOpacity || "1"
   );
   const currentStrokeOpacity = parseFloat(
-    selectedElement.styles.strokeOpacity || "1",
+    selectedElement.styles.strokeOpacity || "1"
   );
 
   return (
@@ -122,7 +122,7 @@ export const AppearanceTab = ({
         <div className="flex space-x-4 px-4">
           <button
             onClick={() => setActiveTab("fill")}
-            className={`py-2 px-1 text-sm font-medium border-b-2 ${
+            className={`border-b-2 px-1 py-2 text-sm font-medium ${
               activeTab === "fill"
                 ? "border-blue-500 text-blue-600"
                 : "border-transparent text-gray-500 hover:text-gray-700"
@@ -132,7 +132,7 @@ export const AppearanceTab = ({
           </button>
           <button
             onClick={() => setActiveTab("stroke")}
-            className={`py-2 px-1 text-sm font-medium border-b-2 ${
+            className={`border-b-2 px-1 py-2 text-sm font-medium ${
               activeTab === "stroke"
                 ? "border-blue-500 text-blue-600"
                 : "border-transparent text-gray-500 hover:text-gray-700"
@@ -142,7 +142,7 @@ export const AppearanceTab = ({
           </button>
           <button
             onClick={() => setActiveTab("gradient")}
-            className={`py-2 px-1 text-sm font-medium border-b-2 ${
+            className={`border-b-2 px-1 py-2 text-sm font-medium ${
               activeTab === "gradient"
                 ? "border-blue-500 text-blue-600"
                 : "border-transparent text-gray-500 hover:text-gray-700"
@@ -153,24 +153,24 @@ export const AppearanceTab = ({
         </div>
       </div>
 
-      <div className="px-4 space-y-4">
+      <div className="space-y-4 px-4">
         {activeTab === "fill" && (
           <>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Fill Color
               </label>
               <ColorPicker
                 color={currentFill}
-                onChange={(color) => handleColorChange(color, "fill")}
+                onChange={color => handleColorChange(color, "fill")}
                 showAlpha={true}
                 alpha={currentFillOpacity}
-                onAlphaChange={(alpha) => handleOpacityChange(alpha, "fill")}
+                onAlphaChange={alpha => handleOpacityChange(alpha, "fill")}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Opacity
               </label>
               <input
@@ -179,7 +179,7 @@ export const AppearanceTab = ({
                 max="1"
                 step="0.1"
                 value={currentFillOpacity}
-                onChange={(e) =>
+                onChange={e =>
                   handleOpacityChange(parseFloat(e.target.value), "fill")
                 }
                 className="w-full"
@@ -191,20 +191,20 @@ export const AppearanceTab = ({
         {activeTab === "stroke" && (
           <>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Stroke Color
               </label>
               <ColorPicker
                 color={currentStroke}
-                onChange={(color) => handleColorChange(color, "stroke")}
+                onChange={color => handleColorChange(color, "stroke")}
                 showAlpha={true}
                 alpha={currentStrokeOpacity}
-                onAlphaChange={(alpha) => handleOpacityChange(alpha, "stroke")}
+                onAlphaChange={alpha => handleOpacityChange(alpha, "stroke")}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Opacity
               </label>
               <input
@@ -213,7 +213,7 @@ export const AppearanceTab = ({
                 max="1"
                 step="0.1"
                 value={currentStrokeOpacity}
-                onChange={(e) =>
+                onChange={e =>
                   handleOpacityChange(parseFloat(e.target.value), "stroke")
                 }
                 className="w-full"
@@ -221,7 +221,7 @@ export const AppearanceTab = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-700">
                 Stroke Width
               </label>
               <input
@@ -229,12 +229,12 @@ export const AppearanceTab = ({
                 min="0"
                 value={parseFloat(selectedElement.styles.strokeWidth || "1")}
                 onChange={handleStrokeWidthChange}
-                className={`w-full px-3 py-2 border rounded ${
+                className={`w-full rounded border px-3 py-2 ${
                   strokeWidthError ? "border-red-500" : ""
                 }`}
               />
               {strokeWidthError && (
-                <p className="text-red-500 text-xs mt-1">{strokeWidthError}</p>
+                <p className="mt-1 text-xs text-red-500">{strokeWidthError}</p>
               )}
             </div>
           </>
@@ -254,33 +254,33 @@ export const AppearanceTab = ({
         )}
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="mb-2 block text-sm font-medium text-gray-700">
             Color Palette
           </label>
           <ColorPalette
-            onColorSelect={(color) =>
+            onColorSelect={color =>
               handleColorChange(color, activeTab === "fill" ? "fill" : "stroke")
             }
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="mb-2 block text-sm font-medium text-gray-700">
             Recent Colors
           </label>
           <RecentColors
-            onColorSelect={(color) =>
+            onColorSelect={color =>
               handleColorChange(color, activeTab === "fill" ? "fill" : "stroke")
             }
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="mb-2 block text-sm font-medium text-gray-700">
             Eyedropper
           </label>
           <Eyedropper
-            onColorSelect={(color) =>
+            onColorSelect={color =>
               handleColorChange(color, activeTab === "fill" ? "fill" : "stroke")
             }
           />

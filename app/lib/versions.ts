@@ -56,7 +56,7 @@ export class VersionControl {
   }
 
   restoreVersion(id: string): ComponentNode[] | null {
-    const version = this.versions.find((v) => v.id === id);
+    const version = this.versions.find(v => v.id === id);
     return version ? version.components : null;
   }
 

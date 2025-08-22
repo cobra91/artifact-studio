@@ -14,9 +14,9 @@ export const ResponsiveTester = ({ selectedNode }: ResponsiveTesterProps) => {
 
   if (!selectedNode) {
     return (
-      <div className="h-full p-4 flex items-center justify-center text-gray-500">
+      <div className="flex h-full items-center justify-center p-4 text-gray-500">
         <div className="text-center">
-          <div className="text-4xl mb-2">📱</div>
+          <div className="mb-2 text-4xl">📱</div>
           <p>Select a component to test responsive styles</p>
         </div>
       </div>
@@ -24,10 +24,10 @@ export const ResponsiveTester = ({ selectedNode }: ResponsiveTesterProps) => {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="p-4 border-b bg-gray-50">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+      <div className="border-b bg-gray-50 p-4">
+        <h3 className="mb-2 text-lg font-semibold text-gray-800">
           Responsive Tester
         </h3>
         <p className="text-sm text-gray-600">
@@ -36,9 +36,9 @@ export const ResponsiveTester = ({ selectedNode }: ResponsiveTesterProps) => {
       </div>
 
       {/* Breakpoint Switcher */}
-      <div className="p-4 border-b">
+      <div className="border-b p-4">
         <div className="flex gap-2">
-          {(["base", "sm", "md", "lg"] as const).map((breakpoint) => {
+          {(["base", "sm", "md", "lg"] as const).map(breakpoint => {
             const info = breakpointInfo[breakpoint];
             const isActive = activeBreakpoint === breakpoint;
 
@@ -46,14 +46,14 @@ export const ResponsiveTester = ({ selectedNode }: ResponsiveTesterProps) => {
               <button
                 key={breakpoint}
                 onClick={() => setActiveBreakpoint(breakpoint)}
-                className={`flex-1 p-3 rounded-lg border transition-all ${
+                className={`flex-1 rounded-lg border p-3 transition-all ${
                   isActive
-                    ? "bg-blue-500 text-white border-blue-500"
-                    : "bg-white text-gray-700 border-gray-200 hover:border-blue-300"
+                    ? "border-blue-500 bg-blue-500 text-white"
+                    : "border-gray-200 bg-white text-gray-700 hover:border-blue-300"
                 }`}
               >
                 <div className="text-center">
-                  <div className="font-medium text-sm">{info.label}</div>
+                  <div className="text-sm font-medium">{info.label}</div>
                   <div className="text-xs opacity-75">{info.width}</div>
                 </div>
               </button>
@@ -63,10 +63,10 @@ export const ResponsiveTester = ({ selectedNode }: ResponsiveTesterProps) => {
       </div>
 
       {/* Preview Area */}
-      <div className="flex-1 p-4 bg-gray-100 overflow-auto">
+      <div className="flex-1 overflow-auto bg-gray-100 p-4">
         <div className="flex justify-center">
           <div
-            className="bg-white shadow-lg border border-gray-200 transition-all duration-300"
+            className="border border-gray-200 bg-white shadow-lg transition-all duration-300"
             style={{
               width: breakpointInfo[activeBreakpoint].width,
               maxWidth: "100%",
@@ -75,12 +75,12 @@ export const ResponsiveTester = ({ selectedNode }: ResponsiveTesterProps) => {
             }}
           >
             {/* Device Frame */}
-            <div className="absolute inset-0 border-4 border-gray-800 rounded-lg pointer-events-none">
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-gray-800 rounded-b-lg"></div>
+            <div className="pointer-events-none absolute inset-0 rounded-lg border-4 border-gray-800">
+              <div className="absolute top-0 left-1/2 h-1 w-12 -translate-x-1/2 transform rounded-b-lg bg-gray-800"></div>
             </div>
 
             {/* Content Area */}
-            <div className="p-4 h-full flex items-center justify-center">
+            <div className="flex h-full items-center justify-center p-4">
               <div
                 style={{
                   width: selectedNode.size.width,
@@ -100,7 +100,7 @@ export const ResponsiveTester = ({ selectedNode }: ResponsiveTesterProps) => {
       </div>
 
       {/* Info Panel */}
-      <div className="p-4 border-t bg-gray-50">
+      <div className="border-t bg-gray-50 p-4">
         <div className="grid grid-cols-2 gap-4 text-xs">
           <div>
             <span className="font-medium text-gray-700">

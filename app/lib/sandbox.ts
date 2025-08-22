@@ -12,7 +12,7 @@ const EXECUTION_TIMEOUT = 5000; // 5 seconds
 
 export const postSandboxMessage = (
   iframe: HTMLIFrameElement,
-  message: SandboxMessage,
+  message: SandboxMessage
 ) => {
   if (iframe.contentWindow) {
     iframe.contentWindow.postMessage(message, "*");
@@ -21,7 +21,7 @@ export const postSandboxMessage = (
 
 export const executeInSandbox = (
   iframe: HTMLIFrameElement,
-  code: string,
+  code: string
 ): Promise<any> => {
   return new Promise((resolve, reject) => {
     const timeoutId = setTimeout(() => {

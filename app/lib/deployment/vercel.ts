@@ -37,14 +37,14 @@ export class VercelDeploymentProvider extends BaseDeploymentProvider {
       // Simulate Vercel deployment process
       const status = await this.simulateDeploymentProgress(
         deploymentId,
-        (status) => {
+        status => {
           // In real implementation, this would update a state store
           console.log("Deployment update:", status);
         },
-        (progress) => {
+        progress => {
           // Handle progress updates
           console.log("Deployment progress:", progress + "%");
-        },
+        }
       );
 
       // In real implementation, this would parse the actual Vercel response
@@ -58,7 +58,7 @@ export class VercelDeploymentProvider extends BaseDeploymentProvider {
         "failed",
         deploymentId,
         undefined,
-        error instanceof Error ? error.message : "Deployment failed",
+        error instanceof Error ? error.message : "Deployment failed"
       );
     }
   }
@@ -90,7 +90,7 @@ export class VercelDeploymentProvider extends BaseDeploymentProvider {
 
   private async mockValidateToken(token: string): Promise<void> {
     // Simulate API call with delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     if (!token || token.length < 10) {
       throw new Error("Invalid token");

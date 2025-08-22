@@ -15,7 +15,7 @@ interface VisualCanvasProps {
   onUpdateComponent: (_id: string, _updates: Partial<ComponentNode>) => void;
   onAddComponent: (
     _type: ComponentType,
-    _position: { x: number; y: number },
+    _position: { x: number; y: number }
   ) => void;
   snapToGrid: boolean;
   aspectRatioLocked: boolean;
@@ -86,13 +86,13 @@ export const VisualCanvas = ({
     const currentSelection =
       e.ctrlKey || e.metaKey
         ? selectedNodeIds.includes(node.id)
-          ? selectedNodeIds.filter((id) => id !== node.id)
+          ? selectedNodeIds.filter(id => id !== node.id)
           : [...selectedNodeIds, node.id]
         : [node.id];
 
     components
-      .filter((c) => currentSelection.includes(c.id))
-      .forEach((c) => {
+      .filter(c => currentSelection.includes(c.id))
+      .forEach(c => {
         newInitialPositions.set(c.id, c.position);
       });
     setInitialDragPositions(newInitialPositions);
@@ -123,7 +123,7 @@ export const VisualCanvas = ({
 
   const handleMouseMove = (e: MouseEvent) => {
     if (rotating && selectedNodeIds.length === 1 && canvasRef.current) {
-      const selectedNode = components.find((c) => c.id === selectedNodeIds[0]);
+      const selectedNode = components.find(c => c.id === selectedNodeIds[0]);
       if (!selectedNode) return;
 
       const canvasRect = canvasRef.current.getBoundingClientRect();
@@ -147,7 +147,7 @@ export const VisualCanvas = ({
       });
       setDragStart({ x: e.clientX, y: e.clientY });
     } else if (resizing && selectedNodeIds.length === 1 && canvasRef.current) {
-      const selectedNode = components.find((c) => c.id === selectedNodeIds[0]);
+      const selectedNode = components.find(c => c.id === selectedNodeIds[0]);
       if (!selectedNode) return;
 
       const dx = e.clientX - dragStart.x;
@@ -196,7 +196,7 @@ export const VisualCanvas = ({
 
       const updatedPositions = new Map<string, { x: number; y: number }>();
 
-      selectedNodeIds.forEach((nodeId) => {
+      selectedNodeIds.forEach(nodeId => {
         const initialPos = initialDragPositions.get(nodeId);
         if (!initialPos) return;
 
@@ -218,18 +218,18 @@ export const VisualCanvas = ({
       }> = [];
 
       updatedPositions.forEach((newPos, nodeId) => {
-        const component = components.find((c) => c.id === nodeId);
+        const component = components.find(c => c.id === nodeId);
         if (!component) return;
 
         const adjustedPos = { ...newPos };
 
         // Simple collision detection with guides
         const nearOtherComponents = components
-          .filter((c) => c.id !== nodeId)
-          .some((other) => {
+          .filter(c => c.id !== nodeId)
+          .some(other => {
             const dist = Math.sqrt(
               Math.pow(other.position.x - newPos.x, 2) +
-                Math.pow(other.position.y - newPos.y, 2),
+                Math.pow(other.position.y - newPos.y, 2)
             );
             return dist < 10;
           });
@@ -259,7 +259,7 @@ export const VisualCanvas = ({
 
       setSelectionRect({ x, y, width, height });
 
-      const selectedInRect = components.filter((component) => {
+      const selectedInRect = components.filter(component => {
         const componentRight = component.position.x + component.size.width;
         const componentBottom = component.position.y + component.size.height;
 
@@ -271,7 +271,7 @@ export const VisualCanvas = ({
         );
       });
 
-      const nodeIds = selectedInRect.map((c) => c.id);
+      const nodeIds = selectedInRect.map(c => c.id);
       onSelectNodes(nodeIds, false);
     }
   };
@@ -284,7 +284,7 @@ export const VisualCanvas = ({
 
     // Clear guides and perform final position updates
     if (selectedNodeIds.length === 1) {
-      const selectedNode = components.find((c) => c.id === selectedNodeIds[0]);
+      const selectedNode = components.find(c => c.id === selectedNodeIds[0]);
       if (selectedNode) {
         onUpdateComponent(selectedNode.id, { position: selectedNode.position });
       }
@@ -336,7 +336,7 @@ export const VisualCanvas = ({
   return (
     <div
       ref={canvasRef}
-      className="relative w-full h-full bg-gray-50 border border-gray-200 cursor-crosshair"
+      className="relative h-full w-full cursor-crosshair border border-gray-200 bg-gray-50"
       onMouseDown={handleMouseDownOnCanvas}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -346,25 +346,25 @@ export const VisualCanvas = ({
       onDragOver={handleDragOver}
     >
       {/* Breakpoint indicator */}
-      <div className="absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded-md text-sm font-medium shadow-lg z-20">
+      <div className="absolute top-2 right-2 z-20 rounded-md bg-blue-500 px-3 py-1 text-sm font-medium text-white shadow-lg">
         {activeBreakpoint.toUpperCase()}
       </div>
 
       {/* Selection indicator */}
-      <div className="absolute top-2 left-2 bg-green-500 text-white px-3 py-1 rounded-md text-sm font-medium shadow-lg z-20">
+      <div className="absolute top-2 left-2 z-20 rounded-md bg-green-500 px-3 py-1 text-sm font-medium text-white shadow-lg">
         Selected: {selectedNodeIds.length}{" "}
         {selectedNodeIds.length > 0 && `(${selectedNodeIds.join(", ")})`}
       </div>
 
       {/* Mode indicator */}
       <div
-        className={`absolute top-2 left-48 px-3 py-1 rounded-md text-sm font-medium shadow-lg z-20 ${isEditMode ? "bg-blue-500 text-white" : "bg-orange-500 text-white"}`}
+        className={`absolute top-2 left-48 z-20 rounded-md px-3 py-1 text-sm font-medium shadow-lg ${isEditMode ? "bg-blue-500 text-white" : "bg-orange-500 text-white"}`}
       >
         {isEditMode ? "EDIT MODE" : "PREVIEW MODE"}
       </div>
       {/* Canvas grid background */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="pointer-events-none absolute inset-0"
         style={{
           backgroundImage: snapToGrid
             ? "repeating-linear-gradient(0deg, #f3f4f6 0px, #f3f4f6 1px, transparent 1px, transparent 20px), repeating-linear-gradient(90deg, #f3f4f6 0px, #f3f4f6 1px, transparent 1px, transparent 20px)"
@@ -376,34 +376,34 @@ export const VisualCanvas = ({
       {guides.x.map((guideX, index) => (
         <div
           key={`x-guide-${index}`}
-          className="absolute top-0 bottom-0 border-l-2 border-blue-400 opacity-50 pointer-events-none"
+          className="pointer-events-none absolute top-0 bottom-0 border-l-2 border-blue-400 opacity-50"
           style={{ left: guideX }}
         />
       ))}
       {guides.y.map((guideY, index) => (
         <div
           key={`y-guide-${index}`}
-          className="absolute left-0 right-0 border-t-2 border-blue-400 opacity-50 pointer-events-none"
+          className="pointer-events-none absolute right-0 left-0 border-t-2 border-blue-400 opacity-50"
           style={{ top: guideY }}
         />
       ))}
 
       {/* Components */}
-      {components.map((node) => (
+      {components.map(node => (
         <div
           key={node.id}
-          onMouseDown={(e) => {
+          onMouseDown={e => {
             console.log(
               "🔍 DIV mousedown triggered for:",
               node.id,
               "target:",
               e.target,
               "currentTarget:",
-              e.currentTarget,
+              e.currentTarget
             );
             handleMouseDownOnComponent(e, node);
           }}
-          className={`absolute cursor-move transition-all duration-200 ${selectedNodeIds.includes(node.id) ? "ring-2 ring-blue-500 rounded" : ""}`}
+          className={`absolute cursor-move transition-all duration-200 ${selectedNodeIds.includes(node.id) ? "rounded ring-2 ring-blue-500" : ""}`}
           style={{
             left: node.position.x,
             top: node.position.y,
@@ -419,19 +419,19 @@ export const VisualCanvas = ({
           />
 
           {/* Resize handles */}
-          {getResizeHandles(node).map((direction) => (
+          {getResizeHandles(node).map(direction => (
             <div
               key={`resize-${direction}`}
-              className="absolute w-2 h-2 bg-blue-500 rounded-full cursor-pointer"
+              className="absolute h-2 w-2 cursor-pointer rounded-full bg-blue-500"
               style={getResizeHandleStyle(direction, node.size)}
-              onMouseDown={(e) => handleMouseDownOnResizeHandle(e, direction)}
+              onMouseDown={e => handleMouseDownOnResizeHandle(e, direction)}
             />
           ))}
 
           {/* Rotate handle */}
           {selectedNodeIds.length === 1 && selectedNodeIds[0] === node.id && (
             <div
-              className="absolute w-3 h-3 bg-gray-600 rounded-full cursor-pointer"
+              className="absolute h-3 w-3 cursor-pointer rounded-full bg-gray-600"
               style={{
                 top: -10,
                 left: "50%",
@@ -446,7 +446,7 @@ export const VisualCanvas = ({
       {/* Selection rectangle */}
       {isSelecting && selectionRect && (
         <div
-          className="absolute border-2 border-blue-500 border-dashed bg-blue-100 bg-opacity-30 pointer-events-none"
+          className="bg-opacity-30 pointer-events-none absolute border-2 border-dashed border-blue-500 bg-blue-100"
           style={{
             left: selectionRect.x,
             top: selectionRect.y,
@@ -461,7 +461,7 @@ export const VisualCanvas = ({
 
 function getResizeHandleStyle(
   direction: string,
-  _size: { width: number; height: number },
+  _size: { width: number; height: number }
 ) {
   const style: CSSProperties = {};
 

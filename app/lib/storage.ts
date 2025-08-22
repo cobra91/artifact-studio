@@ -40,7 +40,7 @@ export class ColorStorage {
 
   static addRecentColor(
     color: string,
-    type: "solid" | "gradient" = "solid",
+    type: "solid" | "gradient" = "solid"
   ): void {
     try {
       const recent = this.getRecentColors();
@@ -51,7 +51,7 @@ export class ColorStorage {
       };
 
       // Remove duplicates
-      const filtered = recent.filter((item) => item.color !== color);
+      const filtered = recent.filter(item => item.color !== color);
 
       // Add new color at the beginning
       const updated = [newItem, ...filtered].slice(0, 50);
@@ -81,7 +81,7 @@ export class ColorStorage {
         const updated = [...custom, color].slice(0, 100);
         localStorage.setItem(
           STORAGE_KEYS.CUSTOM_COLORS,
-          JSON.stringify(updated),
+          JSON.stringify(updated)
         );
       }
     } catch {
@@ -92,7 +92,7 @@ export class ColorStorage {
   static removeCustomColor(color: string): void {
     try {
       const custom = this.getCustomColors();
-      const updated = custom.filter((c) => c !== color);
+      const updated = custom.filter(c => c !== color);
       localStorage.setItem(STORAGE_KEYS.CUSTOM_COLORS, JSON.stringify(updated));
     } catch {
       // Ignore storage errors
@@ -115,14 +115,14 @@ export class ColorStorage {
       const presets = this.getGradientPresets();
 
       // Remove if exists
-      const filtered = presets.filter((p) => p.id !== preset.id);
+      const filtered = presets.filter(p => p.id !== preset.id);
 
       // Add new preset
       const updated = [...filtered, preset];
 
       localStorage.setItem(
         STORAGE_KEYS.GRADIENT_PRESETS,
-        JSON.stringify(updated),
+        JSON.stringify(updated)
       );
     } catch {
       // Ignore storage errors
@@ -132,11 +132,11 @@ export class ColorStorage {
   static deleteGradientPreset(id: string): void {
     try {
       const presets = this.getGradientPresets();
-      const updated = presets.filter((p) => p.id !== id);
+      const updated = presets.filter(p => p.id !== id);
 
       localStorage.setItem(
         STORAGE_KEYS.GRADIENT_PRESETS,
-        JSON.stringify(updated),
+        JSON.stringify(updated)
       );
     } catch {
       // Ignore storage errors
@@ -198,7 +198,7 @@ export class ColorStorage {
 
   static clearAll(): void {
     try {
-      Object.values(STORAGE_KEYS).forEach((key) => {
+      Object.values(STORAGE_KEYS).forEach(key => {
         localStorage.removeItem(key);
       });
     } catch {

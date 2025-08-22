@@ -40,7 +40,7 @@ export class GenerationHistory {
 
   addGeneration(
     request: AIGenerationRequest,
-    components: ComponentNode[],
+    components: ComponentNode[]
   ): GenerationHistoryEntry {
     const entry: GenerationHistoryEntry = {
       id: crypto.randomUUID(),

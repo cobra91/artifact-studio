@@ -68,7 +68,7 @@ Here is an example of the required JSON structure for a "user profile card" prom
 `;
 
 async function generateComponentTreeFromAI(
-  request: AIGenerationRequest,
+  request: AIGenerationRequest
 ): Promise<any> {
   const { prompt, framework, styling, theme } = request;
 
@@ -106,7 +106,7 @@ async function generateComponentTreeFromAI(
 
 export class AICodeGenerator {
   async create(
-    request: AIGenerationRequest,
+    request: AIGenerationRequest
   ): Promise<{ code: string; components: ComponentNode[] }> {
     if (!process.env.OPENAI_API_KEY) {
       throw new Error("OPENAI_API_KEY environment variable is not set.");
@@ -138,7 +138,7 @@ export class AICodeGenerator {
     if (!layout || !componentDetails) {
       console.error(
         "Invalid AI Response: missing layout or componentDetails",
-        aiResponse,
+        aiResponse
       );
       return [];
     }
@@ -183,7 +183,7 @@ export class AICodeGenerator {
     });
 
     // Find the root node(s) - those that are not children of any other node
-    componentMap.forEach((node) => {
+    componentMap.forEach(node => {
       if (!childIds.has(node.id)) {
         rootNodes.push(node);
       }
@@ -196,12 +196,12 @@ export class AICodeGenerator {
     components: ComponentNode[],
     _request?: AIGenerationRequest,
     appState: { [key: string]: any } = {},
-    apiData: { [key: string]: any } = {},
+    apiData: { [key: string]: any } = {}
   ): string {
     const stateInitialization = Object.entries(appState)
       .map(
         ([key, value]) =>
-          `const [${key}, set${key.charAt(0).toUpperCase() + key.slice(1)}] = useState(${JSON.stringify(value)});`,
+          `const [${key}, set${key.charAt(0).toUpperCase() + key.slice(1)}] = useState(${JSON.stringify(value)});`
       )
       .join("\n  ");
 
@@ -215,7 +215,7 @@ export class AICodeGenerator {
     fetch("${url}")
       .then(res => res.json())
       .then(data => set${key.charAt(0).toUpperCase() + key.slice(1)}(data));
-  }, []);`,
+  }, []);`
       )
       .join("\n  ");
 
@@ -227,7 +227,7 @@ export const GeneratedArtifact = () => {
 
   return (
     <div className="generated-artifact">
-      ${components.map((comp) => this.renderReactComponent(comp, 1)).join("\n")}
+      ${components.map(comp => this.renderReactComponent(comp, 1)).join("\n")}
     </div>
   );
 };
@@ -237,7 +237,7 @@ export default GeneratedArtifact;`;
 
   private renderReactComponent(
     node: ComponentNode,
-    indent: number = 0,
+    indent: number = 0
   ): string {
     const spaces = "  ".repeat(indent);
     const { type, props, children, styles } = node;
@@ -260,7 +260,7 @@ export default GeneratedArtifact;`;
     const childrenContent = props.children || "";
     const childrenCode =
       children
-        ?.map((child) => this.renderReactComponent(child, indent + 1))
+        ?.map(child => this.renderReactComponent(child, indent + 1))
         .join("\n") || "";
 
     const elementMap: { [key: string]: string } = {
@@ -287,7 +287,7 @@ ${spaces}</${Element}>`;
     components: ComponentNode[],
     _request?: AIGenerationRequest,
     appState: { [key: string]: any } = {},
-    apiData: { [key: string]: any } = {},
+    apiData: { [key: string]: any } = {}
   ): string {
     const stateInitialization = Object.entries(appState)
       .map(([key, value]) => `const ${key} = ref(${JSON.stringify(value)});`)
@@ -299,13 +299,13 @@ ${spaces}</${Element}>`;
   onMounted(async () => {
     const response = await fetch("${url}");
     ${key}.value = await response.json();
-  });`,
+  });`
       )
       .join("\n  ");
 
     return `<template>
   <div class="generated-artifact">
-    ${components.map((comp) => this.renderVueComponent(comp, 2)).join("\n")}
+    ${components.map(comp => this.renderVueComponent(comp, 2)).join("\n")}
   </div>
 </template>
 
@@ -343,7 +343,7 @@ import { ref, onMounted } from 'vue';
     const childrenContent = props.children || "";
     const childrenCode =
       children
-        ?.map((child) => this.renderVueComponent(child, indent + 1))
+        ?.map(child => this.renderVueComponent(child, indent + 1))
         .join("\n") || "";
 
     const elementMap: { [key: string]: string } = {
@@ -370,7 +370,7 @@ ${spaces}</${Element}>`;
     components: ComponentNode[],
     _request?: AIGenerationRequest,
     appState: { [key: string]: any } = {},
-    apiData: { [key: string]: any } = {},
+    apiData: { [key: string]: any } = {}
   ): string {
     const stateInitialization = Object.entries(appState)
       .map(([key, value]) => `let ${key} = ${JSON.stringify(value)};`)
@@ -382,7 +382,7 @@ ${spaces}</${Element}>`;
   onMount(async () => {
     const response = await fetch("${url}");
     ${key} = await response.json();
-  });`,
+  });`
       )
       .join("\n  ");
 
@@ -394,7 +394,7 @@ ${spaces}</${Element}>`;
 </script>
 
 <div class="generated-artifact">
-  ${components.map((comp) => this.renderSvelteComponent(comp, 1)).join("\n")}
+  ${components.map(comp => this.renderSvelteComponent(comp, 1)).join("\n")}
 </div>
 
 <style>
@@ -404,7 +404,7 @@ ${spaces}</${Element}>`;
 
   private renderSvelteComponent(
     node: ComponentNode,
-    indent: number = 0,
+    indent: number = 0
   ): string {
     const spaces = "  ".repeat(indent);
     const { type, props, children, styles } = node;
@@ -426,7 +426,7 @@ ${spaces}</${Element}>`;
     const childrenContent = props.children || "";
     const childrenCode =
       children
-        ?.map((child) => this.renderSvelteComponent(child, indent + 1))
+        ?.map(child => this.renderSvelteComponent(child, indent + 1))
         .join("\n") || "";
 
     const elementMap: { [key: string]: string } = {
@@ -454,7 +454,7 @@ ${spaces}</${Element}>`;
       .filter(([, value]) => value !== undefined)
       .map(
         ([key, value]) =>
-          `${key.replace(/([A-Z])/g, "-$1").toLowerCase()}:${value}`,
+          `${key.replace(/([A-Z])/g, "-$1").toLowerCase()}:${value}`
       )
       .join(";");
   }

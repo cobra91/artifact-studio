@@ -12,7 +12,7 @@ export function initializeDeploymentProviders() {
     // Client-side initialization
     console.log(
       "Deployment providers initialized:",
-      deploymentManager.getAvailablePlatforms(),
+      deploymentManager.getAvailablePlatforms()
     );
   }
 }
@@ -24,7 +24,7 @@ export function getDeploymentPlatforms() {
 
 // Helper function to check if a platform is authenticated
 export async function isPlatformAuthenticated(
-  _platform: string,
+  _platform: string
 ): Promise<boolean> {
   try {
     // In a real implementation, this would check stored credentials

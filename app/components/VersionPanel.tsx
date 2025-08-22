@@ -39,28 +39,28 @@ export const VersionPanel = ({ onRestoreVersion }: VersionPanelProps) => {
   return (
     <div className="h-full p-4">
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">Versions</h3>
+        <h3 className="mb-2 text-lg font-semibold text-gray-800">Versions</h3>
         <div className="flex">
           <input
             type="text"
             placeholder="Enter version name..."
-            className="w-full p-2 border rounded-l-md"
+            className="w-full rounded-l-md border p-2"
             value={versionName}
-            onChange={(e) => setVersionName(e.target.value)}
+            onChange={e => setVersionName(e.target.value)}
           />
           <button
             onClick={handleSaveVersion}
-            className="px-4 py-2 bg-blue-600 text-white rounded-r-md hover:bg-blue-700"
+            className="rounded-r-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
           >
             Save
           </button>
         </div>
       </div>
       <div className="space-y-2">
-        {versions.map((version) => (
+        {versions.map(version => (
           <div
             key={version.id}
-            className="flex justify-between items-center p-2 border rounded"
+            className="flex items-center justify-between rounded border p-2"
           >
             <div>
               <div className="font-semibold">{version.name}</div>
@@ -70,7 +70,7 @@ export const VersionPanel = ({ onRestoreVersion }: VersionPanelProps) => {
             </div>
             <button
               onClick={() => handleRestore(version.id)}
-              className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded"
+              className="rounded bg-gray-200 px-2 py-1 text-xs hover:bg-gray-300"
             >
               Restore
             </button>
