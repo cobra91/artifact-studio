@@ -1,7 +1,10 @@
 import Image from "next/image";
 import { CSSProperties } from "react";
 
-import { applyResponsiveOverrides, generateResponsiveStyles } from "../../lib/responsiveStyles";
+import {
+  applyResponsiveOverrides,
+  generateResponsiveStyles,
+} from "../../lib/responsiveStyles";
 import { ComponentNode } from "../../types/artifact";
 
 interface ComponentRendererProps {
@@ -10,25 +13,29 @@ interface ComponentRendererProps {
   isEditMode: boolean;
 }
 
-export const ComponentRenderer = ({ node, activeBreakpoint, isEditMode }: ComponentRendererProps) => {
+export const ComponentRenderer = ({
+  node,
+  activeBreakpoint,
+  isEditMode,
+}: ComponentRendererProps) => {
   // Generate default responsive styles for the component type
   const defaultResponsiveStyles = generateResponsiveStyles(node.type);
-  
+
   // Combine base styles with responsive overrides, but preserve custom styles
   const responsiveOverrides = applyResponsiveOverrides(
     { ...defaultResponsiveStyles.base, ...node.styles },
     node.responsiveStyles || defaultResponsiveStyles,
-    activeBreakpoint
+    activeBreakpoint,
   );
-  
+
   // Filter out responsive styles that would override custom styles
   const filteredResponsiveOverrides = { ...responsiveOverrides };
-  Object.keys(node.styles).forEach(key => {
+  Object.keys(node.styles).forEach((key) => {
     if (filteredResponsiveOverrides[key]) {
       delete filteredResponsiveOverrides[key];
     }
   });
-  
+
   const combinedStyles = {
     ...defaultResponsiveStyles.base,
     ...filteredResponsiveOverrides,
@@ -37,16 +44,19 @@ export const ComponentRenderer = ({ node, activeBreakpoint, isEditMode }: Compon
   } as CSSProperties;
 
   // Debug: Log styles for gradient debugging
-  if (node.styles.backgroundColor && node.styles.backgroundColor.includes('gradient')) {
-    console.log('🎨 Component styles:', node.styles);
-    console.log('🎨 Combined styles:', combinedStyles);
+  if (
+    node.styles.backgroundColor &&
+    node.styles.backgroundColor.includes("gradient")
+  ) {
+    console.log("🎨 Component styles:", node.styles);
+    console.log("🎨 Combined styles:", combinedStyles);
   }
 
   switch (node.type) {
     case "text":
       return (
-        <span 
-          className={`block p-2 text-gray-800 ${isEditMode ? 'pointer-events-none' : ''}`}
+        <span
+          className={`block p-2 text-gray-800 ${isEditMode ? "pointer-events-none" : ""}`}
           style={combinedStyles}
           onMouseDown={isEditMode ? (e) => e.stopPropagation() : undefined}
         >
@@ -57,12 +67,15 @@ export const ComponentRenderer = ({ node, activeBreakpoint, isEditMode }: Compon
     case "button":
       return (
         <button
-          className={`w-full h-full rounded px-4 py-2 ${isEditMode ? 'pointer-events-none' : ''}`}
+          className={`w-full h-full rounded px-4 py-2 ${isEditMode ? "pointer-events-none" : ""}`}
           style={{
             ...combinedStyles,
-            color: combinedStyles.color || 'white',
+            color: combinedStyles.color || "white",
             // Force the backgroundColor to be applied last
-            backgroundColor: node.styles.backgroundColor || combinedStyles.backgroundColor || '#3b82f6',
+            backgroundColor:
+              node.styles.backgroundColor ||
+              combinedStyles.backgroundColor ||
+              "#3b82f6",
           }}
         >
           {node.props.children || "Button"}
@@ -72,11 +85,11 @@ export const ComponentRenderer = ({ node, activeBreakpoint, isEditMode }: Compon
     case "input":
       return (
         <input
-          className={`w-full h-full rounded px-3 py-2 ${isEditMode ? 'pointer-events-none' : ''}`}
+          className={`w-full h-full rounded px-3 py-2 ${isEditMode ? "pointer-events-none" : ""}`}
           placeholder={node.props.placeholder || "Input field"}
           style={{
             ...combinedStyles,
-            border: combinedStyles.border || '1px solid #d1d5db',
+            border: combinedStyles.border || "1px solid #d1d5db",
           }}
         />
       );
@@ -84,11 +97,16 @@ export const ComponentRenderer = ({ node, activeBreakpoint, isEditMode }: Compon
     case "container":
       return (
         <div
-          className={`w-full h-full bg-white border border-gray-200 rounded p-2 ${isEditMode ? 'pointer-events-none' : ''}`}
+          className={`w-full h-full bg-white border border-gray-200 rounded p-2 ${isEditMode ? "pointer-events-none" : ""}`}
           style={combinedStyles}
         >
           {node.children?.map((child) => (
-            <ComponentRenderer key={child.id} node={child} activeBreakpoint={activeBreakpoint} isEditMode={isEditMode} />
+            <ComponentRenderer
+              key={child.id}
+              node={child}
+              activeBreakpoint={activeBreakpoint}
+              isEditMode={isEditMode}
+            />
           ))}
         </div>
       );
@@ -96,7 +114,7 @@ export const ComponentRenderer = ({ node, activeBreakpoint, isEditMode }: Compon
     case "image":
       return (
         <Image
-          className={`w-full h-full object-cover rounded ${isEditMode ? 'pointer-events-none' : ''}`}
+          className={`w-full h-full object-cover rounded ${isEditMode ? "pointer-events-none" : ""}`}
           src={
             node.props.src || "https://via.placeholder.com/300x200?text=Image"
           }
@@ -111,8 +129,8 @@ export const ComponentRenderer = ({ node, activeBreakpoint, isEditMode }: Compon
 
     default:
       return (
-        <div 
-          className={`w-full h-full bg-gray-200 border border-gray-300 rounded flex items-center justify-center ${isEditMode ? 'pointer-events-none' : ''}`}
+        <div
+          className={`w-full h-full bg-gray-200 border border-gray-300 rounded flex items-center justify-center ${isEditMode ? "pointer-events-none" : ""}`}
         >
           <span className="text-gray-600 text-sm">{node.type}</span>
         </div>

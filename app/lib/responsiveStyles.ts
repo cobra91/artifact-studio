@@ -1,4 +1,4 @@
-import { ComponentStyles } from "../types/artifact";
+import { ComponentStyles, ResponsiveStyles } from "../types/artifact";
 
 // Default responsive styles for different breakpoints
 export const defaultResponsiveStyles: Record<string, ComponentStyles> = {
@@ -33,7 +33,10 @@ export const defaultResponsiveStyles: Record<string, ComponentStyles> = {
 };
 
 // Component-specific responsive styles
-export const componentResponsiveStyles: Record<string, Record<string, ComponentStyles>> = {
+export const componentResponsiveStyles: Record<
+  string,
+  Record<string, ComponentStyles>
+> = {
   text: {
     base: {
       fontSize: "14px",
@@ -118,7 +121,7 @@ export const componentResponsiveStyles: Record<string, Record<string, ComponentS
 export const getResponsiveStyle = (
   baseStyles: ComponentStyles,
   responsiveStyles: Record<string, ComponentStyles> | undefined,
-  breakpoint: string
+  breakpoint: string,
 ): ComponentStyles => {
   if (!responsiveStyles || !responsiveStyles[breakpoint]) {
     return baseStyles;
@@ -130,7 +133,9 @@ export const getResponsiveStyle = (
   };
 };
 
-export const generateResponsiveStyles = (componentType: string): Record<string, ComponentStyles> => {
+export const generateResponsiveStyles = (
+  componentType: string,
+): Record<string, ComponentStyles> => {
   const componentStyles = componentResponsiveStyles[componentType];
   if (!componentStyles) {
     return defaultResponsiveStyles;
@@ -144,16 +149,25 @@ export const generateResponsiveStyles = (componentType: string): Record<string, 
 
 export const applyResponsiveOverrides = (
   baseStyles: ComponentStyles,
-  responsiveStyles: Record<string, ComponentStyles> | undefined,
-  breakpoint: string
+  responsiveStyles: Record<string, ComponentStyles> | ResponsiveStyles | undefined,
+  breakpoint: string,
 ): ComponentStyles => {
-  if (breakpoint === "base" || !responsiveStyles || !responsiveStyles[breakpoint]) {
+  if (breakpoint === "base" || !responsiveStyles) {
+    return baseStyles;
+  }
+
+  // Handle both Record<string, ComponentStyles> and ResponsiveStyles
+  const breakpointStyles = 'base' in responsiveStyles 
+    ? responsiveStyles[breakpoint as keyof ResponsiveStyles]
+    : (responsiveStyles as Record<string, ComponentStyles>)[breakpoint];
+
+  if (!breakpointStyles) {
     return baseStyles;
   }
 
   return {
     ...baseStyles,
-    ...responsiveStyles[breakpoint],
+    ...breakpointStyles,
   };
 };
 
@@ -175,19 +189,19 @@ export const mediaQueries = {
 // Generate CSS for responsive styles
 export const generateResponsiveCSS = (
   componentId: string,
-  responsiveStyles: Record<string, ComponentStyles>
+  responsiveStyles: Record<string, ComponentStyles>,
 ): string => {
   let css = `#${componentId} {\n`;
-  
+
   // Base styles
   if (responsiveStyles.base) {
     Object.entries(responsiveStyles.base).forEach(([property, value]) => {
       css += `  ${property}: ${value};\n`;
     });
   }
-  
+
   css += "}\n\n";
-  
+
   // Responsive overrides
   Object.entries(responsiveStyles).forEach(([breakpoint, styles]) => {
     if (breakpoint !== "base" && Object.keys(styles).length > 0) {
@@ -200,7 +214,6 @@ export const generateResponsiveCSS = (
       css += "}\n\n";
     }
   });
-  
+
   return css;
 };
-

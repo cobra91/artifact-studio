@@ -9,26 +9,39 @@ interface ResponsivePreviewProps {
   selectedNodeIds: string[];
 }
 
-export const ResponsivePreview = ({ components, selectedNodeIds }: ResponsivePreviewProps) => {
+export const ResponsivePreview = ({
+  components,
+  selectedNodeIds,
+}: ResponsivePreviewProps) => {
   const { activeBreakpoint } = useCanvasStore();
 
   const getPreviewWidth = () => {
     switch (activeBreakpoint) {
-      case "base": return "100%";
-      case "sm": return "640px";
-      case "md": return "768px";
-      case "lg": return "1024px";
-      default: return "100%";
+      case "base":
+        return "100%";
+      case "sm":
+        return "640px";
+      case "md":
+        return "768px";
+      case "lg":
+        return "1024px";
+      default:
+        return "100%";
     }
   };
 
   const getPreviewLabel = () => {
     switch (activeBreakpoint) {
-      case "base": return "Mobile (< 640px)";
-      case "sm": return "Small (640px+)";
-      case "md": return "Medium (768px+)";
-      case "lg": return "Large (1024px+)";
-      default: return "Mobile";
+      case "base":
+        return "Mobile (< 640px)";
+      case "sm":
+        return "Small (640px+)";
+      case "md":
+        return "Medium (768px+)";
+      case "lg":
+        return "Large (1024px+)";
+      default:
+        return "Mobile";
     }
   };
 
@@ -36,7 +49,9 @@ export const ResponsivePreview = ({ components, selectedNodeIds }: ResponsivePre
     <div className="h-full flex flex-col">
       {/* Header */}
       <div className="p-4 border-b bg-gray-50">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">Responsive Preview</h3>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+          Responsive Preview
+        </h3>
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <span>Current breakpoint:</span>
           <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded font-medium">
@@ -49,13 +64,13 @@ export const ResponsivePreview = ({ components, selectedNodeIds }: ResponsivePre
       {/* Preview Container */}
       <div className="flex-1 p-4 bg-gray-100 overflow-auto">
         <div className="flex justify-center">
-          <div 
+          <div
             className="bg-white shadow-lg border border-gray-200 transition-all duration-300"
             style={{
               width: getPreviewWidth(),
               maxWidth: "100%",
               minHeight: "400px",
-              position: "relative"
+              position: "relative",
             }}
           >
             {/* Device Frame */}
@@ -70,7 +85,9 @@ export const ResponsivePreview = ({ components, selectedNodeIds }: ResponsivePre
                   <div className="text-center">
                     <div className="text-4xl mb-2">📱</div>
                     <p>No components to preview</p>
-                    <p className="text-sm">Add components to the canvas to see them here</p>
+                    <p className="text-sm">
+                      Add components to the canvas to see them here
+                    </p>
                   </div>
                 </div>
               ) : (
@@ -79,8 +96,8 @@ export const ResponsivePreview = ({ components, selectedNodeIds }: ResponsivePre
                     <div
                       key={component.id}
                       className={`absolute ${
-                        selectedNodeIds.includes(component.id) 
-                          ? "ring-2 ring-blue-500 ring-opacity-50" 
+                        selectedNodeIds.includes(component.id)
+                          ? "ring-2 ring-blue-500 ring-opacity-50"
                           : ""
                       }`}
                       style={{
@@ -91,9 +108,10 @@ export const ResponsivePreview = ({ components, selectedNodeIds }: ResponsivePre
                         zIndex: selectedNodeIds.includes(component.id) ? 10 : 1,
                       }}
                     >
-                      <ComponentRenderer 
-                        node={component} 
+                      <ComponentRenderer
+                        node={component}
                         activeBreakpoint={activeBreakpoint}
+                        isEditMode={false}
                       />
                     </div>
                   ))}
@@ -114,4 +132,3 @@ export const ResponsivePreview = ({ components, selectedNodeIds }: ResponsivePre
     </div>
   );
 };
-

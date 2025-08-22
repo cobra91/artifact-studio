@@ -10,7 +10,6 @@ interface VisualCanvasProps {
   components: ComponentNode[];
   selectedNodeIds: string[];
   onSelectNode: (_nodeId: string | null, _ctrlPressed: boolean) => void;
-  onToggleNodeInSelection: (_nodeId: string) => void;
   onSelectNodes: (_nodeIds: string[], _ctrlPressed: boolean) => void;
   onAddNodesToSelection: (_nodeIds: string[]) => void;
   onUpdateComponent: (_id: string, _updates: Partial<ComponentNode>) => void;
@@ -28,7 +27,6 @@ export const VisualCanvas = ({
   components,
   selectedNodeIds,
   onSelectNode,
-  onToggleNodeInSelection,
   onSelectNodes,
   onUpdateComponent,
   onAddComponent,
@@ -70,7 +68,11 @@ export const VisualCanvas = ({
   };
 
   const handleMouseDownOnComponent = (e: MouseEvent, node: ComponentNode) => {
-    console.log('🔍 Component mousedown:', { nodeId: node.id, target: e.target, currentTarget: e.currentTarget });
+    console.log("🔍 Component mousedown:", {
+      nodeId: node.id,
+      target: e.target,
+      currentTarget: e.currentTarget,
+    });
     e.preventDefault();
     e.stopPropagation();
 
@@ -81,12 +83,13 @@ export const VisualCanvas = ({
 
     const newInitialPositions = new Map<string, { x: number; y: number }>();
     // Always use the current selection, not trying to predict the next one
-    const currentSelection = e.ctrlKey || e.metaKey 
-      ? (selectedNodeIds.includes(node.id) 
-          ? selectedNodeIds.filter(id => id !== node.id)
-          : [...selectedNodeIds, node.id])
-      : [node.id];
-    
+    const currentSelection =
+      e.ctrlKey || e.metaKey
+        ? selectedNodeIds.includes(node.id)
+          ? selectedNodeIds.filter((id) => id !== node.id)
+          : [...selectedNodeIds, node.id]
+        : [node.id];
+
     components
       .filter((c) => currentSelection.includes(c.id))
       .forEach((c) => {
@@ -97,7 +100,11 @@ export const VisualCanvas = ({
   };
 
   const handleMouseDownOnCanvas = (e: MouseEvent) => {
-    console.log('🔍 Canvas mousedown:', { target: e.target, currentTarget: e.currentTarget, shouldDeselect: e.target === e.currentTarget });
+    console.log("🔍 Canvas mousedown:", {
+      target: e.target,
+      currentTarget: e.currentTarget,
+      shouldDeselect: e.target === e.currentTarget,
+    });
     if (e.target !== e.currentTarget) return;
     setIsSelecting(true);
     const canvasRect = canvasRef.current!.getBoundingClientRect();
@@ -109,7 +116,7 @@ export const VisualCanvas = ({
       height: 0,
     });
     if (!e.ctrlKey && !e.metaKey) {
-      console.log('🔍 Deselecting from canvas click');
+      console.log("🔍 Deselecting from canvas click");
       onSelectNodes([], false);
     }
   };
@@ -122,19 +129,19 @@ export const VisualCanvas = ({
       const canvasRect = canvasRef.current.getBoundingClientRect();
       const centerX = selectedNode.position.x + selectedNode.size.width / 2;
       const centerY = selectedNode.position.y + selectedNode.size.height / 2;
-      
+
       const mouseX = e.clientX - canvasRect.left;
       const mouseY = e.clientY - canvasRect.top;
-      
+
       // Calculate angle between center and mouse position
       const deltaX = mouseX - centerX;
       const deltaY = mouseY - centerY;
       const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
-      
+
       // Convert to 0-360 range and snap to 15-degree increments
       let rotation = (angle + 90 + 360) % 360;
       rotation = Math.round(rotation / 15) * 15;
-      
+
       onUpdateComponent(selectedNode.id, {
         rotation: rotation,
       });
@@ -342,15 +349,18 @@ export const VisualCanvas = ({
       <div className="absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded-md text-sm font-medium shadow-lg z-20">
         {activeBreakpoint.toUpperCase()}
       </div>
-      
+
       {/* Selection indicator */}
       <div className="absolute top-2 left-2 bg-green-500 text-white px-3 py-1 rounded-md text-sm font-medium shadow-lg z-20">
-        Selected: {selectedNodeIds.length} {selectedNodeIds.length > 0 && `(${selectedNodeIds.join(', ')})`}
+        Selected: {selectedNodeIds.length}{" "}
+        {selectedNodeIds.length > 0 && `(${selectedNodeIds.join(", ")})`}
       </div>
-      
+
       {/* Mode indicator */}
-      <div className={`absolute top-2 left-48 px-3 py-1 rounded-md text-sm font-medium shadow-lg z-20 ${isEditMode ? 'bg-blue-500 text-white' : 'bg-orange-500 text-white'}`}>
-        {isEditMode ? 'EDIT MODE' : 'PREVIEW MODE'}
+      <div
+        className={`absolute top-2 left-48 px-3 py-1 rounded-md text-sm font-medium shadow-lg z-20 ${isEditMode ? "bg-blue-500 text-white" : "bg-orange-500 text-white"}`}
+      >
+        {isEditMode ? "EDIT MODE" : "PREVIEW MODE"}
       </div>
       {/* Canvas grid background */}
       <div
@@ -383,7 +393,14 @@ export const VisualCanvas = ({
         <div
           key={node.id}
           onMouseDown={(e) => {
-            console.log('🔍 DIV mousedown triggered for:', node.id, 'target:', e.target, 'currentTarget:', e.currentTarget);
+            console.log(
+              "🔍 DIV mousedown triggered for:",
+              node.id,
+              "target:",
+              e.target,
+              "currentTarget:",
+              e.currentTarget,
+            );
             handleMouseDownOnComponent(e, node);
           }}
           className={`absolute cursor-move transition-all duration-200 ${selectedNodeIds.includes(node.id) ? "ring-2 ring-blue-500 rounded" : ""}`}
@@ -395,7 +412,11 @@ export const VisualCanvas = ({
             zIndex: selectedNodeIds.includes(node.id) ? 10 : 1,
           }}
         >
-          <ComponentRenderer node={node} activeBreakpoint={_useCanvasStore.getState().activeBreakpoint} isEditMode={isEditMode} />
+          <ComponentRenderer
+            node={node}
+            activeBreakpoint={_useCanvasStore.getState().activeBreakpoint}
+            isEditMode={isEditMode}
+          />
 
           {/* Resize handles */}
           {getResizeHandles(node).map((direction) => (

@@ -88,10 +88,13 @@ export const useCanvasStore = create<CanvasStore>()(
           recentColors: [],
         })),
 
-      setActiveBreakpoint: (breakpoint) => set(() => ({ activeBreakpoint: breakpoint })),
-      setSelectedNodes: (nodes) => set((state) => ({
-        selectedNodes: typeof nodes === "function" ? nodes(state.selectedNodes) : nodes,
-      })),
+      setActiveBreakpoint: (breakpoint) =>
+        set(() => ({ activeBreakpoint: breakpoint })),
+      setSelectedNodes: (nodes) =>
+        set((state) => ({
+          selectedNodes:
+            typeof nodes === "function" ? nodes(state.selectedNodes) : nodes,
+        })),
       setSnapToGrid: (snap) => set(() => ({ snapToGrid: snap })),
     }),
     {

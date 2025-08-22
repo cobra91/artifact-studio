@@ -27,7 +27,9 @@ export const ResponsiveTester = ({ selectedNode }: ResponsiveTesterProps) => {
     <div className="h-full flex flex-col">
       {/* Header */}
       <div className="p-4 border-b bg-gray-50">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">Responsive Tester</h3>
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+          Responsive Tester
+        </h3>
         <p className="text-sm text-gray-600">
           Test how your component looks across different screen sizes
         </p>
@@ -39,7 +41,7 @@ export const ResponsiveTester = ({ selectedNode }: ResponsiveTesterProps) => {
           {(["base", "sm", "md", "lg"] as const).map((breakpoint) => {
             const info = breakpointInfo[breakpoint];
             const isActive = activeBreakpoint === breakpoint;
-            
+
             return (
               <button
                 key={breakpoint}
@@ -63,13 +65,13 @@ export const ResponsiveTester = ({ selectedNode }: ResponsiveTesterProps) => {
       {/* Preview Area */}
       <div className="flex-1 p-4 bg-gray-100 overflow-auto">
         <div className="flex justify-center">
-          <div 
+          <div
             className="bg-white shadow-lg border border-gray-200 transition-all duration-300"
             style={{
               width: breakpointInfo[activeBreakpoint].width,
               maxWidth: "100%",
               minHeight: "300px",
-              position: "relative"
+              position: "relative",
             }}
           >
             {/* Device Frame */}
@@ -79,16 +81,17 @@ export const ResponsiveTester = ({ selectedNode }: ResponsiveTesterProps) => {
 
             {/* Content Area */}
             <div className="p-4 h-full flex items-center justify-center">
-              <div 
+              <div
                 style={{
                   width: selectedNode.size.width,
                   height: selectedNode.size.height,
-                  position: "relative"
+                  position: "relative",
                 }}
               >
-                <ComponentRenderer 
-                  node={selectedNode} 
+                <ComponentRenderer
+                  node={selectedNode}
                   activeBreakpoint={activeBreakpoint}
+                  isEditMode={false}
                 />
               </div>
             </div>
@@ -100,9 +103,12 @@ export const ResponsiveTester = ({ selectedNode }: ResponsiveTesterProps) => {
       <div className="p-4 border-t bg-gray-50">
         <div className="grid grid-cols-2 gap-4 text-xs">
           <div>
-            <span className="font-medium text-gray-700">Current Breakpoint:</span>
+            <span className="font-medium text-gray-700">
+              Current Breakpoint:
+            </span>
             <div className="text-gray-600">
-              {breakpointInfo[activeBreakpoint].label} ({breakpointInfo[activeBreakpoint].width})
+              {breakpointInfo[activeBreakpoint].label} (
+              {breakpointInfo[activeBreakpoint].width})
             </div>
           </div>
           <div>

@@ -64,7 +64,7 @@ export const AppearanceTab = ({
   };
 
   const handleGradientChange = (gradient: string) => {
-    console.log('🎨 Gradient applied:', gradient);
+    console.log("🎨 Gradient applied:", gradient);
     onUpdateElement({
       styles: {
         backgroundColor: gradient,
@@ -101,10 +101,20 @@ export const AppearanceTab = ({
     });
   };
 
-  const currentFill = selectedElement.styles.backgroundColor || selectedElement.styles.fill || "#000000";
-  const currentStroke = selectedElement.styles.borderColor || selectedElement.styles.stroke || "#000000";
-  const currentFillOpacity = parseFloat(selectedElement.styles.fillOpacity || "1");
-  const currentStrokeOpacity = parseFloat(selectedElement.styles.strokeOpacity || "1");
+  const currentFill =
+    selectedElement.styles.backgroundColor ||
+    selectedElement.styles.fill ||
+    "#000000";
+  const currentStroke =
+    selectedElement.styles.borderColor ||
+    selectedElement.styles.stroke ||
+    "#000000";
+  const currentFillOpacity = parseFloat(
+    selectedElement.styles.fillOpacity || "1",
+  );
+  const currentStrokeOpacity = parseFloat(
+    selectedElement.styles.strokeOpacity || "1",
+  );
 
   return (
     <div className="space-y-4">
@@ -224,9 +234,7 @@ export const AppearanceTab = ({
                 }`}
               />
               {strokeWidthError && (
-                <p className="text-red-500 text-xs mt-1">
-                  {strokeWidthError}
-                </p>
+                <p className="text-red-500 text-xs mt-1">{strokeWidthError}</p>
               )}
             </div>
           </>

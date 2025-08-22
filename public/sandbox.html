@@ -8,7 +8,7 @@
     <script src="/sandbox-libs/vue.global.prod.js"></script>
     <script src="/sandbox-libs/svelte.compiler.js"></script>
     <!-- Tailwind CSS will be processed locally -->
-    <link rel="stylesheet" href="/sandbox-libs/tailwind.css">
+    <link rel="stylesheet" href="/sandbox-libs/tailwind.css" />
   </head>
   <body>
     <div id="root"></div>
@@ -23,7 +23,7 @@
               "React",
               "useState",
               "useEffect",
-              `return (${transformedCode})`
+              `return (${transformedCode})`,
             )(React, React.useState, React.useEffect);
             const root = ReactDOM.createRoot(document.getElementById("root"));
             root.render(React.createElement(Component));

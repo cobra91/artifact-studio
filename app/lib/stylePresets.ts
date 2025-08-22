@@ -1,4 +1,8 @@
-import { ComponentStyles,PropertyPreset, StyleTemplate } from "../types/artifact";
+import {
+  ComponentStyles,
+  PropertyPreset,
+  StyleTemplate,
+} from "../types/artifact";
 
 export const propertyPresets: PropertyPreset[] = [
   {

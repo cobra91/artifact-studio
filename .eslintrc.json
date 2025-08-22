@@ -70,5 +70,6 @@
         "@typescript-eslint/no-non-null-assertion": "off"
       }
     }
-  ]
+  ],
+  "ignorePatterns": ["public/sandbox-libs/**"]
 }

@@ -121,8 +121,16 @@ export const ArtifactBuilder = () => {
       responsiveStyles: {
         base: { width: "100%", fontSize: "14px", padding: "8px 16px" },
         sm: { width: "auto", fontSize: "16px", padding: "10px 20px" },
-        md: { fontSize: "18px", padding: "12px 24px", backgroundColor: "#1d4ed8" },
-        lg: { fontSize: "20px", padding: "14px 28px", backgroundColor: "#1e40af" },
+        md: {
+          fontSize: "18px",
+          padding: "12px 24px",
+          backgroundColor: "#1d4ed8",
+        },
+        lg: {
+          fontSize: "20px",
+          padding: "14px 28px",
+          backgroundColor: "#1e40af",
+        },
       },
     },
     {
@@ -194,22 +202,26 @@ export const ArtifactBuilder = () => {
   }, []);
 
   const setSingleNodeSelection = useCallback((nodeId: string) => {
-    console.log('🔍 setSingleNodeSelection called with:', nodeId);
+    console.log("🔍 setSingleNodeSelection called with:", nodeId);
     setSelectedNodeIds([nodeId]);
   }, []);
 
   const handleSelectNode = useCallback(
     (nodeId: string | null, ctrlPressed: boolean) => {
-      console.log('🔍 handleSelectNode called:', { nodeId, ctrlPressed, currentSelection: selectedNodeIds });
-      
+      console.log("🔍 handleSelectNode called:", {
+        nodeId,
+        ctrlPressed,
+        currentSelection: selectedNodeIds,
+      });
+
       if (nodeId === null) {
-        console.log('🔍 Deselecting all');
+        console.log("🔍 Deselecting all");
         setSelectedNodeIds([]);
       } else if (ctrlPressed) {
-        console.log('🔍 Toggle selection for:', nodeId);
+        console.log("🔍 Toggle selection for:", nodeId);
         toggleNodeSelection(nodeId);
       } else {
-        console.log('🔍 Single selection for:', nodeId);
+        console.log("🔍 Single selection for:", nodeId);
         setSingleNodeSelection(nodeId);
       }
     },
@@ -352,7 +364,9 @@ export const ArtifactBuilder = () => {
   const groupSelectedNodes = useCallback(() => {
     if (selectedNodeIds.length < 2) return;
 
-    const selectedNodesArray = canvas.filter((c) => selectedNodeIds.includes(c.id));
+    const selectedNodesArray = canvas.filter((c) =>
+      selectedNodeIds.includes(c.id),
+    );
 
     const minX = Math.min(...selectedNodesArray.map((n) => n.position.x));
     const minY = Math.min(...selectedNodesArray.map((n) => n.position.y));
@@ -478,7 +492,7 @@ export const ArtifactBuilder = () => {
     const text = await navigator.clipboard.readText();
     try {
       // Check if the text looks like a valid JSON object
-      if (text.trim().startsWith('{') && text.trim().endsWith('}')) {
+      if (text.trim().startsWith("{") && text.trim().endsWith("}")) {
         const node = JSON.parse(text) as ComponentNode;
         node.id = `${node.type}-${Date.now()}`;
         node.position.x += 10;
@@ -685,7 +699,6 @@ export const ArtifactBuilder = () => {
               components={canvas}
               selectedNodeIds={selectedNodeIds}
               onSelectNode={handleSelectNode}
-              onToggleNodeInSelection={toggleNodeSelection}
               onSelectNodes={handleSelectNodes}
               onAddNodesToSelection={addNodesToSelection}
               onAddComponent={addComponent}

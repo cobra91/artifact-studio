@@ -179,23 +179,22 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
     </div>
   );
 
-  
-
   const renderResponsiveTab = () => (
     <div className="space-y-4">
       {/* Breakpoint Selector */}
       <div className="flex justify-around">
         {(["base", "sm", "md", "lg"] as const).map((breakpoint) => {
-          const hasCustomStyles = selectedNode.responsiveStyles?.[breakpoint] && 
+          const hasCustomStyles =
+            selectedNode.responsiveStyles?.[breakpoint] &&
             Object.keys(selectedNode.responsiveStyles[breakpoint]).length > 0;
-          
+
           return (
             <button
               key={breakpoint}
               onClick={() => setActiveBreakpoint(breakpoint)}
               className={`px-3 py-1 text-sm rounded relative ${
-                activeBreakpoint === breakpoint 
-                  ? "bg-blue-500 text-white" 
+                activeBreakpoint === breakpoint
+                  ? "bg-blue-500 text-white"
                   : "bg-gray-200 hover:bg-gray-300"
               }`}
             >
@@ -213,20 +212,29 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
         <h5 className="text-xs font-medium text-gray-500 mb-2">
           Preview: {activeBreakpoint.toUpperCase()}
         </h5>
-        <div 
+        <div
           className="border-2 border-dashed border-gray-300 bg-white p-2"
           style={{
-            width: activeBreakpoint === "base" ? "100%" : 
-                   activeBreakpoint === "sm" ? "640px" :
-                   activeBreakpoint === "md" ? "768px" : "1024px",
+            width:
+              activeBreakpoint === "base"
+                ? "100%"
+                : activeBreakpoint === "sm"
+                  ? "640px"
+                  : activeBreakpoint === "md"
+                    ? "768px"
+                    : "1024px",
             maxWidth: "100%",
-            margin: "0 auto"
+            margin: "0 auto",
           }}
         >
           <div className="text-xs text-gray-500 mb-1">
-            {activeBreakpoint === "base" ? "Mobile (< 640px)" :
-             activeBreakpoint === "sm" ? "Small (640px+)" :
-             activeBreakpoint === "md" ? "Medium (768px+)" : "Large (1024px+)"}
+            {activeBreakpoint === "base"
+              ? "Mobile (< 640px)"
+              : activeBreakpoint === "sm"
+                ? "Small (640px+)"
+                : activeBreakpoint === "md"
+                  ? "Medium (768px+)"
+                  : "Large (1024px+)"}
           </div>
         </div>
       </div>
@@ -243,7 +251,9 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             <input
               type="text"
               placeholder="e.g., 100%, 200px, auto"
-              value={selectedNode.responsiveStyles?.[activeBreakpoint]?.width || ""}
+              value={
+                selectedNode.responsiveStyles?.[activeBreakpoint]?.width || ""
+              }
               onChange={(e) => updateResponsiveStyle("width", e.target.value)}
               className="w-full p-2 text-sm border border-gray-300 rounded"
             />
@@ -253,7 +263,9 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             <input
               type="text"
               placeholder="e.g., 100px, auto"
-              value={selectedNode.responsiveStyles?.[activeBreakpoint]?.height || ""}
+              value={
+                selectedNode.responsiveStyles?.[activeBreakpoint]?.height || ""
+              }
               onChange={(e) => updateResponsiveStyle("height", e.target.value)}
               className="w-full p-2 text-sm border border-gray-300 rounded"
             />
@@ -261,7 +273,9 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
           <div>
             <label className="block text-xs text-gray-600 mb-1">Display</label>
             <select
-              value={selectedNode.responsiveStyles?.[activeBreakpoint]?.display || ""}
+              value={
+                selectedNode.responsiveStyles?.[activeBreakpoint]?.display || ""
+              }
               onChange={(e) => updateResponsiveStyle("display", e.target.value)}
               className="w-full p-2 text-sm border border-gray-300 rounded"
             >
@@ -273,23 +287,37 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
               <option value="none">None</option>
             </select>
           </div>
-          
+
           {/* Typography Properties */}
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Font Size</label>
+            <label className="block text-xs text-gray-600 mb-1">
+              Font Size
+            </label>
             <input
               type="text"
               placeholder="e.g., 16px, 1.2rem"
-              value={selectedNode.responsiveStyles?.[activeBreakpoint]?.fontSize || ""}
-              onChange={(e) => updateResponsiveStyle("fontSize", e.target.value)}
+              value={
+                selectedNode.responsiveStyles?.[activeBreakpoint]?.fontSize ||
+                ""
+              }
+              onChange={(e) =>
+                updateResponsiveStyle("fontSize", e.target.value)
+              }
               className="w-full p-2 text-sm border border-gray-300 rounded"
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Text Align</label>
+            <label className="block text-xs text-gray-600 mb-1">
+              Text Align
+            </label>
             <select
-              value={selectedNode.responsiveStyles?.[activeBreakpoint]?.textAlign || ""}
-              onChange={(e) => updateResponsiveStyle("textAlign", e.target.value)}
+              value={
+                selectedNode.responsiveStyles?.[activeBreakpoint]?.textAlign ||
+                ""
+              }
+              onChange={(e) =>
+                updateResponsiveStyle("textAlign", e.target.value)
+              }
               className="w-full p-2 text-sm border border-gray-300 rounded"
             >
               <option value="">Inherit</option>
@@ -306,7 +334,9 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             <input
               type="text"
               placeholder="e.g., 10px, 1rem"
-              value={selectedNode.responsiveStyles?.[activeBreakpoint]?.padding || ""}
+              value={
+                selectedNode.responsiveStyles?.[activeBreakpoint]?.padding || ""
+              }
               onChange={(e) => updateResponsiveStyle("padding", e.target.value)}
               className="w-full p-2 text-sm border border-gray-300 rounded"
             />
@@ -316,7 +346,9 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             <input
               type="text"
               placeholder="e.g., 10px, 1rem"
-              value={selectedNode.responsiveStyles?.[activeBreakpoint]?.margin || ""}
+              value={
+                selectedNode.responsiveStyles?.[activeBreakpoint]?.margin || ""
+              }
               onChange={(e) => updateResponsiveStyle("margin", e.target.value)}
               className="w-full p-2 text-sm border border-gray-300 rounded"
             />
@@ -340,11 +372,16 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
               <button
                 onClick={() => {
                   // Apply default responsive styles for this component type
-                  const defaultStyles = generateResponsiveStyles(selectedNode.type);
-                  const currentBreakpointStyles = defaultStyles[activeBreakpoint];
-                  Object.entries(currentBreakpointStyles).forEach(([key, value]) => {
-                    if (value) updateResponsiveStyle(key, value);
-                  });
+                  const defaultStyles = generateResponsiveStyles(
+                    selectedNode.type,
+                  );
+                  const currentBreakpointStyles =
+                    defaultStyles[activeBreakpoint];
+                  Object.entries(currentBreakpointStyles).forEach(
+                    ([key, value]) => {
+                      if (value) updateResponsiveStyle(key, value);
+                    },
+                  );
                 }}
                 className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200"
               >
@@ -356,8 +393,8 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
                   onUpdateNode({
                     responsiveStyles: {
                       ...selectedNode.responsiveStyles,
-                      [activeBreakpoint]: {}
-                    }
+                      [activeBreakpoint]: {},
+                    },
                   });
                 }}
                 className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200"

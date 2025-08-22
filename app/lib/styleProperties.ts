@@ -1,4 +1,7 @@
-import { StyleCategory as _StyleCategory,StyleProperty } from "../types/artifact";
+import {
+  StyleCategory as _StyleCategory,
+  StyleProperty,
+} from "../types/artifact";
 
 export const styleProperties: StyleProperty[] = [
   {

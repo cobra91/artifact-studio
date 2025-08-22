@@ -48,7 +48,9 @@ export const StylePresetsPanel: React.FC<StylePresetsPanelProps> = ({
               className="bg-gray-100 hover:bg-gray-200 text-gray-800 text-sm py-2 px-3 rounded-md text-left"
             >
               <div className="font-medium">{template.name}</div>
-              <div className="text-xs text-gray-600">{template.description}</div>
+              <div className="text-xs text-gray-600">
+                {template.description}
+              </div>
             </button>
           ))}
         </div>

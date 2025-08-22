@@ -90,12 +90,12 @@ const PreviewPane = ({
   return (
     <div className="w-full h-full bg-white">
       <iframe
-          ref={iframeRef}
-          src="/sandbox.html"
-          title="Live Preview"
-          className="w-full h-full border-0"
-          sandbox="allow-scripts allow-same-origin"
-        />
+        ref={iframeRef}
+        src="/sandbox.html"
+        title="Live Preview"
+        className="w-full h-full border-0"
+        sandbox="allow-scripts allow-same-origin"
+      />
     </div>
   );
 };
