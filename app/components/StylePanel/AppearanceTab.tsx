@@ -4,6 +4,8 @@ import { useState } from "react";
 
 import { useCanvasStore } from "../../lib/canvasStore";
 import { ColorUtils } from "../../lib/colorUtils";
+import { styleProperties } from "../../lib/styleProperties";
+import { validateProperty } from "../../lib/validationUtils";
 import { ColorPalette } from "../ColorPalette";
 import { ColorPicker } from "../ColorPicker";
 import { Eyedropper } from "../Eyedropper";
@@ -22,6 +24,7 @@ export const AppearanceTab = ({
   const [activeTab, setActiveTab] = useState<"fill" | "stroke" | "gradient">(
     "fill",
   );
+  const [strokeWidthError, setStrokeWidthError] = useState<string | null>(null);
   const { addRecentColor } = useCanvasStore();
 
   if (!selectedElement) {
@@ -50,6 +53,25 @@ export const AppearanceTab = ({
   const handleOpacityChange = (opacity: number, type: "fill" | "stroke") => {
     onUpdateElement(selectedElement.id, {
       [`${type}Opacity`]: opacity,
+    });
+  };
+
+  const handleStrokeWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = parseFloat(e.target.value);
+    const strokeWidthProperty = styleProperties.find(
+      (prop) => prop.property === "strokeWidth",
+    );
+
+    if (strokeWidthProperty && strokeWidthProperty.validation) {
+      const error = validateProperty(newValue, strokeWidthProperty.validation);
+      setStrokeWidthError(error);
+      if (error) {
+        return; // Don't update if there's an error
+      }
+    }
+
+    onUpdateElement(selectedElement.id, {
+      strokeWidth: newValue,
     });
   };
 
@@ -170,13 +192,16 @@ export const AppearanceTab = ({
                 type="number"
                 min="0"
                 value={selectedElement.strokeWidth || 1}
-                onChange={(e) =>
-                  onUpdateElement(selectedElement.id, {
-                    strokeWidth: parseFloat(e.target.value),
-                  })
-                }
-                className="w-full px-3 py-2 border rounded"
+                onChange={handleStrokeWidthChange}
+                className={`w-full px-3 py-2 border rounded ${
+                  strokeWidthError ? "border-red-500" : ""
+                }`}
               />
+              {strokeWidthError && (
+                <p className="text-red-500 text-xs mt-1">
+                  {strokeWidthError}
+                </p>
+              )}
             </div>
           </>
         )}
