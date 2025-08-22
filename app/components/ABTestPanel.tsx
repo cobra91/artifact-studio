@@ -46,7 +46,7 @@ export const ABTestPanel = ({ selectedNode }: ABTestPanelProps) => {
           A/B Testing
         </h3>
         <div className="rounded border p-2">
-          <h4 className="mb-2 text-sm font-medium text-gray-700">New Test</h4>
+          <h4 className="mb-2 text-sm font-medium">New Test</h4>
           <input
             type="text"
             placeholder="Test name..."

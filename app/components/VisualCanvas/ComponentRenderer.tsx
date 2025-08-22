@@ -145,7 +145,7 @@ export const ComponentRenderer = ({
         <div
           className={`flex h-full w-full items-center justify-center rounded border border-gray-300 bg-gray-200 ${isEditMode ? "pointer-events-none" : ""}`}
         >
-          <span className="text-sm text-gray-600">{node.type}</span>
+          <span className="text-sm">{node.type}</span>
         </div>
       );
   }

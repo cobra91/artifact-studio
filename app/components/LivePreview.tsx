@@ -17,26 +17,26 @@ export const LivePreview = ({ code, framework }: LivePreviewProps) => {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
 
   return (
-    <div className="flex h-full flex-col bg-white">
+    <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-gray-200 p-3">
+      <div className="glass border-border/20 flex items-center justify-between border-b p-3">
         <div className="flex">
           <button
             onClick={() => setActiveTab("preview")}
-            className={`rounded-l px-3 py-1 text-sm ${
+            className={`rounded-l px-3 py-1 text-sm transition-all duration-200 ${
               activeTab === "preview"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                ? "bg-primary text-primary-foreground"
+                : "glass text-muted-foreground hover:text-foreground hover:bg-accent"
             }`}
           >
             Preview
           </button>
           <button
             onClick={() => setActiveTab("code")}
-            className={`rounded-r px-3 py-1 text-sm ${
+            className={`rounded-r px-3 py-1 text-sm transition-all duration-200 ${
               activeTab === "code"
-                ? "bg-blue-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                ? "bg-primary text-primary-foreground"
+                : "glass text-muted-foreground hover:text-foreground hover:bg-accent"
             }`}
           >
             Code
@@ -88,12 +88,12 @@ const PreviewPane = ({
   }, [code, isSandboxReady, framework]);
 
   return (
-    <div className="h-full w-full bg-white">
+    <div className="glass h-full w-full">
       <iframe
         ref={iframeRef}
         src="/sandbox.html"
         title="Live Preview"
-        className="h-full w-full border-0"
+        className="h-full w-full rounded border-0"
         sandbox="allow-scripts allow-same-origin"
       />
     </div>
@@ -125,24 +125,26 @@ const CodePane = ({ code }: { code: string }) => {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center justify-between bg-gray-800 p-3 text-white">
+      <div className="glass text-foreground flex items-center justify-between p-3">
         <span className="font-mono text-sm">Generated Code</span>
-        <button
-          onClick={copyCode}
-          className="rounded bg-gray-700 px-2 py-1 text-xs hover:bg-gray-600"
-        >
-          {copied ? "✓ Copied" : "📋 Copy"}
-        </button>
-        <button
-          onClick={exportCode}
-          className="ml-2 rounded bg-green-700 px-2 py-1 text-xs hover:bg-green-600"
-        >
-          Export
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={copyCode}
+            className="glass text-foreground hover:bg-accent rounded px-2 py-1 text-xs transition-all duration-200"
+          >
+            {copied ? "✓ Copied" : "📋 Copy"}
+          </button>
+          <button
+            onClick={exportCode}
+            className="glass bg-primary text-primary-foreground hover:bg-primary/90 rounded px-2 py-1 text-xs transition-all duration-200"
+          >
+            Export
+          </button>
+        </div>
       </div>
 
-      <div className="flex-1 overflow-auto bg-gray-900 p-4 text-gray-100">
-        <pre className="font-mono text-sm whitespace-pre-wrap">
+      <div className="glass flex-1 overflow-auto p-4">
+        <pre className="text-foreground font-mono text-sm whitespace-pre-wrap">
           <code>{code || "Generate a component to see the code here."}</code>
         </pre>
       </div>

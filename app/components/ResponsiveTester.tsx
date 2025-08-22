@@ -49,7 +49,7 @@ export const ResponsiveTester = ({ selectedNode }: ResponsiveTesterProps) => {
                 className={`flex-1 rounded-lg border p-3 transition-all ${
                   isActive
                     ? "border-blue-500 bg-blue-500 text-white"
-                    : "border-gray-200 bg-white text-gray-700 hover:border-blue-300"
+                    : "border-gray-200 bg-white text-gray-800 hover:border-blue-300"
                 }`}
               >
                 <div className="text-center">
@@ -106,14 +106,14 @@ export const ResponsiveTester = ({ selectedNode }: ResponsiveTesterProps) => {
             <span className="font-medium text-gray-700">
               Current Breakpoint:
             </span>
-            <div className="text-gray-600">
+            <div className="text-gray-900">
               {breakpointInfo[activeBreakpoint].label} (
               {breakpointInfo[activeBreakpoint].width})
             </div>
           </div>
           <div>
             <span className="font-medium text-gray-700">Component Size:</span>
-            <div className="text-gray-600">
+            <div className="text-gray-900">
               {selectedNode.size.width} × {selectedNode.size.height}
             </div>
           </div>

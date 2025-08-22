@@ -87,13 +87,13 @@ export const CommandPalette = ({
   if (!isOpen) return null;
 
   const commandPaletteContent = (
-    <div 
-      className={`fixed inset-0 z-50 flex items-start justify-center pt-20 transition-all duration-200 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+    <div
+      className={`fixed inset-0 z-50 flex items-start justify-center pt-20 transition-all duration-200 ${isOpen ? "opacity-100" : "pointer-events-none opacity-0"}`}
       onClick={onClose}
     >
-      <div 
+      <div
         className="mx-4 w-full max-w-2xl transform rounded-lg border border-gray-200 bg-white shadow-2xl transition-all duration-200"
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
       >
         {/* Search Input */}
         <div className="border-b border-gray-200 p-4">
@@ -108,11 +108,21 @@ export const CommandPalette = ({
             />
             <button
               onClick={onClose}
-              className="ml-2 rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              className="hover: ml-2 rounded-md p-2 text-gray-400 hover:bg-gray-100"
               title="Close (Esc)"
             >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -149,7 +159,7 @@ export const CommandPalette = ({
                       </div>
                     </div>
                     {command.shortcut && (
-                      <div className="ml-4 rounded bg-gray-100 px-2 py-1 font-mono text-xs text-gray-600">
+                      <div className="ml-4 rounded bg-gray-100 px-2 py-1 font-mono text-xs">
                         {command.shortcut}
                       </div>
                     )}
@@ -172,7 +182,7 @@ export const CommandPalette = ({
   );
 
   // Use portal to render command palette outside the main component tree
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     return createPortal(commandPaletteContent, document.body);
   }
 

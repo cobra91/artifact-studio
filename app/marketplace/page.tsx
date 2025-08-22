@@ -106,7 +106,7 @@ export default function Marketplace() {
                 className="mb-4 h-48 w-full rounded-md object-cover"
               />
               <h2 className="mb-2 text-2xl font-bold">{template.name}</h2>
-              <p className="mb-4 text-gray-600">{template.description}</p>
+              <p className="mb-4">{template.description}</p>
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-500">{template.author}</div>
                 <div className="text-sm font-bold text-blue-600">

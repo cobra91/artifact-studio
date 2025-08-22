@@ -23,11 +23,13 @@ export const HelpModal = ({ isOpen, onClose }: HelpModalProps) => {
   const features = [
     {
       title: "Visual Editor",
-      description: "Drag and drop components, resize, and position them visually",
+      description:
+        "Drag and drop components, resize, and position them visually",
     },
     {
       title: "Responsive Design",
-      description: "Create responsive layouts with breakpoints (Base, Small, Medium, Large)",
+      description:
+        "Create responsive layouts with breakpoints (Base, Small, Medium, Large)",
     },
     {
       title: "Style Panel",
@@ -44,7 +46,12 @@ export const HelpModal = ({ isOpen, onClose }: HelpModalProps) => {
   ];
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Help & Keyboard Shortcuts" size="lg">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Help & Keyboard Shortcuts"
+      size="lg"
+    >
       <div className="space-y-6">
         {/* Welcome Section */}
         <div className="rounded-lg bg-blue-50 p-4">
@@ -52,20 +59,26 @@ export const HelpModal = ({ isOpen, onClose }: HelpModalProps) => {
             Welcome to Visual Artifact Studio! 🎨
           </h3>
           <p className="text-blue-700">
-            Create stunning UI components with our powerful visual editor. Use the keyboard shortcuts below to work efficiently.
+            Create stunning UI components with our powerful visual editor. Use
+            the keyboard shortcuts below to work efficiently.
           </p>
         </div>
 
         {/* Keyboard Shortcuts */}
         <div>
-          <h3 className="mb-3 text-lg font-semibold text-gray-900">Keyboard Shortcuts</h3>
+          <h3 className="mb-3 text-lg font-semibold text-gray-900">
+            Keyboard Shortcuts
+          </h3>
           <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-            {shortcuts.map((shortcut) => (
-              <div key={shortcut.key} className="flex items-center justify-between rounded-md border border-gray-200 p-3">
-                <span className="font-mono text-sm font-medium text-gray-600">
+            {shortcuts.map(shortcut => (
+              <div
+                key={shortcut.key}
+                className="flex items-center justify-between rounded-md border border-gray-200 p-3"
+              >
+                <span className="font-mono text-sm font-medium">
                   {shortcut.key}
                 </span>
-                <span className="text-sm text-gray-700">{shortcut.description}</span>
+                <span className="text-sm">{shortcut.description}</span>
               </div>
             ))}
           </div>
@@ -73,12 +86,19 @@ export const HelpModal = ({ isOpen, onClose }: HelpModalProps) => {
 
         {/* Features */}
         <div>
-          <h3 className="mb-3 text-lg font-semibold text-gray-900">Key Features</h3>
+          <h3 className="mb-3 text-lg font-semibold text-gray-900">
+            Key Features
+          </h3>
           <div className="space-y-3">
-            {features.map((feature) => (
-              <div key={feature.title} className="rounded-lg border border-gray-200 p-4">
-                <h4 className="mb-1 font-semibold text-gray-900">{feature.title}</h4>
-                <p className="text-sm text-gray-600">{feature.description}</p>
+            {features.map(feature => (
+              <div
+                key={feature.title}
+                className="rounded-lg border border-gray-200 p-4"
+              >
+                <h4 className="mb-1 font-semibold text-gray-900">
+                  {feature.title}
+                </h4>
+                <p className="text-sm">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -86,10 +106,16 @@ export const HelpModal = ({ isOpen, onClose }: HelpModalProps) => {
 
         {/* Quick Tips */}
         <div className="rounded-lg bg-green-50 p-4">
-          <h3 className="mb-2 text-lg font-semibold text-green-900">💡 Quick Tips</h3>
+          <h3 className="mb-2 text-lg font-semibold text-green-900">
+            💡 Quick Tips
+          </h3>
           <ul className="space-y-1 text-sm text-green-700">
-            <li>• Use the Command Palette (Ctrl+K) to quickly access any feature</li>
-            <li>• Switch between Edit and Preview modes to test your components</li>
+            <li>
+              • Use the Command Palette (Ctrl+K) to quickly access any feature
+            </li>
+            <li>
+              • Switch between Edit and Preview modes to test your components
+            </li>
             <li>• Use the responsive panel to test different screen sizes</li>
             <li>• Group components together for easier management</li>
             <li>• Export your work as a package to share with others</li>
@@ -100,7 +126,7 @@ export const HelpModal = ({ isOpen, onClose }: HelpModalProps) => {
         <div className="flex justify-end space-x-3 border-t border-gray-200 pt-4">
           <button
             onClick={onClose}
-            className="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-300"
+            className="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium hover:bg-gray-300"
           >
             Got it!
           </button>

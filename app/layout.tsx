@@ -1,12 +1,13 @@
 import "./globals.css";
 
 import type { Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Inter } from "next/font/google";
 
+import { NotificationProvider } from "./components/ui/notifications";
 import { Providers } from "./providers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
@@ -39,9 +40,13 @@ export default function RootLayout({
         <meta name="theme-color" content="#ffffff" />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${geistMono.variable} dark antialiased`}
       >
-        <Providers>{children}</Providers>
+        <Providers>
+          <NotificationProvider>
+            {children}
+          </NotificationProvider>
+        </Providers>
       </body>
     </html>
   );

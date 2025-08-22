@@ -72,7 +72,7 @@ export const ColorPicker = ({
           className={`px-3 py-1 text-sm font-medium ${
             activeTab === "hex"
               ? "border-b-2 border-blue-500 text-blue-600"
-              : "text-gray-500 hover:text-gray-700"
+              : "hover: text-gray-500"
           }`}
         >
           HEX
@@ -82,7 +82,7 @@ export const ColorPicker = ({
           className={`px-3 py-1 text-sm font-medium ${
             activeTab === "rgb"
               ? "border-b-2 border-blue-500 text-blue-600"
-              : "text-gray-500 hover:text-gray-700"
+              : "hover: text-gray-500"
           }`}
         >
           RGB
@@ -92,7 +92,7 @@ export const ColorPicker = ({
           className={`px-3 py-1 text-sm font-medium ${
             activeTab === "hsl"
               ? "border-b-2 border-blue-500 text-blue-600"
-              : "text-gray-500 hover:text-gray-700"
+              : "hover: text-gray-500"
           }`}
         >
           HSL
@@ -122,7 +122,7 @@ export const ColorPicker = ({
       {activeTab === "rgb" && (
         <div className="space-y-3">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Red</label>
+            <label className="text-sm font-medium">Red</label>
             <div className="flex items-center space-x-2">
               <input
                 type="range"
@@ -144,7 +144,7 @@ export const ColorPicker = ({
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Green</label>
+            <label className="text-sm font-medium">Green</label>
             <div className="flex items-center space-x-2">
               <input
                 type="range"
@@ -166,7 +166,7 @@ export const ColorPicker = ({
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Blue</label>
+            <label className="text-sm font-medium">Blue</label>
             <div className="flex items-center space-x-2">
               <input
                 type="range"
@@ -192,7 +192,7 @@ export const ColorPicker = ({
       {activeTab === "hsl" && (
         <div className="space-y-3">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Hue</label>
+            <label className="text-sm font-medium">Hue</label>
             <div className="flex items-center space-x-2">
               <input
                 type="range"
@@ -214,9 +214,7 @@ export const ColorPicker = ({
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              Saturation
-            </label>
+            <label className="text-sm font-medium">Saturation</label>
             <div className="flex items-center space-x-2">
               <input
                 type="range"
@@ -238,9 +236,7 @@ export const ColorPicker = ({
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              Lightness
-            </label>
+            <label className="text-sm font-medium">Lightness</label>
             <div className="flex items-center space-x-2">
               <input
                 type="range"
@@ -265,7 +261,7 @@ export const ColorPicker = ({
 
       {showAlpha && onAlphaChange && (
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Alpha</label>
+          <label className="text-sm font-medium">Alpha</label>
           <div className="flex items-center space-x-2">
             <input
               type="range"
@@ -290,7 +286,7 @@ export const ColorPicker = ({
       )}
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-gray-700">Preview</label>
+        <label className="text-sm font-medium">Preview</label>
         <div
           className="h-12 rounded border"
           style={{

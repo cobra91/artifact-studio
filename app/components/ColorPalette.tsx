@@ -46,7 +46,7 @@ export const ColorPalette = ({
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-medium text-gray-700">{title}</h3>
+      <h3 className="text-sm font-medium">{title}</h3>
       <div className="grid grid-cols-6 gap-1">
         {colorsToShow.map((color, index) => (
           <button
