@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { CSSProperties } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 
 import {
   applyResponsiveOverrides,
@@ -18,27 +18,36 @@ export const ComponentRenderer = ({
   activeBreakpoint,
   isEditMode,
 }: ComponentRendererProps) => {
+  // Fix hydration mismatch by only applying responsive styles after client-side mount
+  const [isClient, setIsClient] = useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   // Generate default responsive styles for the component type
   const defaultResponsiveStyles = generateResponsiveStyles(node.type);
 
-  // Combine base styles with responsive overrides, but preserve custom styles
-  const responsiveOverrides = applyResponsiveOverrides(
+  // Only apply responsive overrides on client side to avoid hydration mismatch
+  const responsiveOverrides = isClient ? applyResponsiveOverrides(
     { ...defaultResponsiveStyles.base, ...node.styles },
     node.responsiveStyles || defaultResponsiveStyles,
     activeBreakpoint
-  );
+  ) : defaultResponsiveStyles.base;
 
-  // Filter out responsive styles that would override custom styles
-  const filteredResponsiveOverrides = { ...responsiveOverrides };
-  Object.keys(node.styles).forEach(key => {
-    if (filteredResponsiveOverrides[key]) {
-      delete filteredResponsiveOverrides[key];
-    }
-  });
+  // Filter out responsive styles that would override custom styles (only on client)
+  const filteredResponsiveOverrides = isClient ? { ...responsiveOverrides } : {};
+  if (isClient) {
+    Object.keys(node.styles).forEach(key => {
+      if (filteredResponsiveOverrides[key]) {
+        delete filteredResponsiveOverrides[key];
+      }
+    });
+  }
 
   const combinedStyles = {
     ...defaultResponsiveStyles.base,
-    ...filteredResponsiveOverrides,
+    ...(isClient ? filteredResponsiveOverrides : {}),
     ...node.styles, // Apply custom styles LAST to override responsive styles
     transform: node.rotation ? `rotate(${node.rotation}deg)` : undefined,
   } as CSSProperties;

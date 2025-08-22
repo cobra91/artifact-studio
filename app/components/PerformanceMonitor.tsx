@@ -1,205 +1,298 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
+
+import { performanceMonitor } from "../lib/performanceUtils";
 
 interface PerformanceMetrics {
-  renderTime: number;
-  componentCount: number;
-  memoryUsage?: number;
-  fps: number;
-  lastUpdate: number;
+  name: string;
+  duration: number;
+  memoryUsage: number;
+  operationsPerSecond: number;
+  timestamp: number;
 }
 
 interface PerformanceMonitorProps {
-  componentCount: number;
-  onMetricsUpdate?: (metrics: PerformanceMetrics) => void;
+  isActive?: boolean;
+  showDetails?: boolean;
+  className?: string;
 }
 
-export const PerformanceMonitor = ({
-  componentCount,
-  onMetricsUpdate,
-}: PerformanceMonitorProps) => {
-  const [metrics, setMetrics] = useState<PerformanceMetrics>({
-    renderTime: 0,
-    componentCount: 0,
-    fps: 60,
-    lastUpdate: Date.now(),
-  });
-  const [isVisible, setIsVisible] = useState(false);
-
-  const renderStartTime = useRef<number>(Date.now());
-  const frameCount = useRef<number>(0);
-  const lastFpsUpdate = useRef<number>(Date.now());
-
-  // Monitor render performance
-  useEffect(() => {
-    renderStartTime.current = performance.now();
-  });
+export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
+  isActive = true,
+  showDetails = false,
+  className = "",
+}) => {
+  const [metrics, setMetrics] = useState<PerformanceMetrics[]>([]);
+  const [currentMemory, setCurrentMemory] = useState<{
+    used: number;
+    total: number;
+    limit: number;
+  } | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
 
   useEffect(() => {
-    const renderTime = performance.now() - renderStartTime.current;
+    if (!isActive) return;
 
-    const newMetrics: PerformanceMetrics = {
-      renderTime,
-      componentCount,
-      memoryUsage: (performance as any).memory?.usedJSHeapSize || undefined,
-      fps: metrics.fps,
-      lastUpdate: Date.now(),
-    };
+    const updateInterval = setInterval(() => {
+      const memoryInfo = performanceMonitor.getMemoryUsage();
+      setCurrentMemory({
+        used: Math.round((memoryInfo.usedJSHeapSize / 1024 / 1024) * 100) / 100,
+        total:
+          Math.round((memoryInfo.totalJSHeapSize / 1024 / 1024) * 100) / 100,
+        limit:
+          Math.round((memoryInfo.jsHeapSizeLimit / 1024 / 1024) * 100) / 100,
+      });
+    }, 1000);
 
-    setMetrics(newMetrics);
-    onMetricsUpdate?.(newMetrics);
-  }, [componentCount, onMetricsUpdate, metrics.fps]);
+    return () => clearInterval(updateInterval);
+  }, [isActive]);
 
-  // Monitor FPS
-  useEffect(() => {
-    let animationId: number;
+  const startRecording = () => {
+    setIsRecording(true);
+    setMetrics([]);
+  };
 
-    const updateFPS = () => {
-      frameCount.current++;
-      const now = Date.now();
+  const stopRecording = () => {
+    setIsRecording(false);
+  };
 
-      if (now - lastFpsUpdate.current >= 1000) {
-        const fps = Math.round(
-          (frameCount.current * 1000) / (now - lastFpsUpdate.current)
-        );
-        setMetrics(prev => ({ ...prev, fps }));
-        frameCount.current = 0;
-        lastFpsUpdate.current = now;
-      }
+  const clearMetrics = () => {
+    setMetrics([]);
+  };
 
-      animationId = requestAnimationFrame(updateFPS);
-    };
+  const exportMetrics = () => {
+    const dataStr = JSON.stringify(metrics, null, 2);
+    const dataUri =
+      "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
 
-    updateFPS();
+    const exportFileDefaultName = `performance-metrics-${new Date().toISOString().split("T")[0]}.json`;
 
-    return () => {
-      if (animationId) {
-        cancelAnimationFrame(animationId);
-      }
-    };
-  }, []);
+    const linkElement = document.createElement("a");
+    linkElement.setAttribute("href", dataUri);
+    linkElement.setAttribute("download", exportFileDefaultName);
+    linkElement.click();
+  };
 
-  const getPerformanceStatus = useCallback(() => {
-    if (metrics.renderTime > 100)
-      return { status: "poor", color: "text-red-600" };
-    if (metrics.renderTime > 50)
-      return { status: "fair", color: "text-yellow-600" };
-    return { status: "good", color: "text-green-600" };
-  }, [metrics.renderTime]);
+  const getMemoryUsagePercentage = () => {
+    if (!currentMemory) return 0;
+    return (currentMemory.used / currentMemory.limit) * 100;
+  };
 
-  const getFpsStatus = useCallback(() => {
-    if (metrics.fps < 30) return { status: "poor", color: "text-red-600" };
-    if (metrics.fps < 50) return { status: "fair", color: "text-yellow-600" };
-    return { status: "good", color: "text-green-600" };
-  }, [metrics.fps]);
+  const getMemoryStatus = () => {
+    const percentage = getMemoryUsagePercentage();
+    if (percentage > 80) return "critical";
+    if (percentage > 60) return "warning";
+    return "normal";
+  };
 
-  if (!isVisible) {
-    return (
-      <button
-        onClick={() => setIsVisible(true)}
-        className="fixed right-4 bottom-4 z-40 rounded-full bg-gray-800 p-2 text-white hover:bg-gray-700"
-        title="Show Performance Monitor"
-      >
-        📊
-      </button>
-    );
-  }
-
-  const performanceStatus = getPerformanceStatus();
-  const fpsStatus = getFpsStatus();
+  if (!isActive) return null;
 
   return (
-    <div className="fixed right-4 bottom-4 z-40 min-w-64 rounded-lg border bg-white p-4 shadow-lg">
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-semibold text-gray-900">Performance</h3>
-        <button
-          onClick={() => setIsVisible(false)}
-          className="text-gray-500 hover:text-gray-700"
-        >
-          ✕
-        </button>
-      </div>
-
-      <div className="space-y-2 text-sm">
-        <div className="flex justify-between">
-          <span>Render Time:</span>
-          <span className={performanceStatus.color}>
-            {metrics.renderTime.toFixed(1)}ms ({performanceStatus.status})
-          </span>
+    <div
+      className={`fixed top-4 right-4 z-50 rounded-lg border bg-white shadow-lg dark:bg-gray-800 ${className}`}
+    >
+      <div className="min-w-80 p-4">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Performance Monitor
+          </h3>
+          <div className="flex space-x-2">
+            {!isRecording ? (
+              <button
+                onClick={startRecording}
+                className="rounded bg-green-500 px-3 py-1 text-sm text-white transition-colors hover:bg-green-600"
+              >
+                Start
+              </button>
+            ) : (
+              <button
+                onClick={stopRecording}
+                className="rounded bg-red-500 px-3 py-1 text-sm text-white transition-colors hover:bg-red-600"
+              >
+                Stop
+              </button>
+            )}
+            <button
+              onClick={clearMetrics}
+              className="rounded bg-gray-500 px-3 py-1 text-sm text-white transition-colors hover:bg-gray-600"
+            >
+              Clear
+            </button>
+            <button
+              onClick={exportMetrics}
+              className="rounded bg-blue-500 px-3 py-1 text-sm text-white transition-colors hover:bg-blue-600"
+            >
+              Export
+            </button>
+          </div>
         </div>
 
-        <div className="flex justify-between">
-          <span>Components:</span>
-          <span className="text-gray-700">{metrics.componentCount}</span>
-        </div>
-
-        <div className="flex justify-between">
-          <span>FPS:</span>
-          <span className={fpsStatus.color}>
-            {metrics.fps} ({fpsStatus.status})
-          </span>
-        </div>
-
-        {metrics.memoryUsage && (
-          <div className="flex justify-between">
-            <span>Memory:</span>
-            <span className="text-gray-700">
-              {(metrics.memoryUsage / 1024 / 1024).toFixed(1)}MB
+        {/* Memory Usage */}
+        <div className="mb-4">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              Memory Usage
             </span>
+            {currentMemory && (
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                {currentMemory.used}MB / {currentMemory.limit}MB
+              </span>
+            )}
+          </div>
+          <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+            <div
+              className={`h-2 rounded-full transition-all duration-300 ${
+                getMemoryStatus() === "critical"
+                  ? "bg-red-500"
+                  : getMemoryStatus() === "warning"
+                    ? "bg-yellow-500"
+                    : "bg-green-500"
+              }`}
+              style={{ width: `${getMemoryUsagePercentage()}%` }}
+            ></div>
+          </div>
+          <div className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            {getMemoryStatus() === "critical" &&
+              "Critical: High memory usage detected"}
+            {getMemoryStatus() === "warning" && "Warning: Memory usage is high"}
+            {getMemoryStatus() === "normal" && "Normal memory usage"}
+          </div>
+        </div>
+
+        {/* Performance Metrics */}
+        {showDetails && (
+          <div className="mb-4">
+            <h4 className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Recent Metrics ({metrics.length})
+            </h4>
+            <div className="max-h-40 space-y-1 overflow-y-auto">
+              {metrics.slice(-10).map((metric, index) => (
+                <div
+                  key={index}
+                  className="rounded bg-gray-50 p-2 text-xs dark:bg-gray-700"
+                >
+                  <div className="flex justify-between">
+                    <span className="truncate font-medium">{metric.name}</span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      {metric.duration.toFixed(2)}ms
+                    </span>
+                  </div>
+                  <div className="text-gray-500 dark:text-gray-400">
+                    {metric.operationsPerSecond.toFixed(0)} ops/s •{" "}
+                    {metric.memoryUsage.toFixed(1)}MB
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
-        <div className="border-t border-gray-200 pt-2">
-          <div className="text-xs text-gray-500">Performance tips:</div>
-          <ul className="mt-1 space-y-1 text-xs text-gray-600">
-            {metrics.renderTime > 50 && <li>• Reduce component complexity</li>}
-            {metrics.componentCount > 50 && (
-              <li>• Consider component virtualization</li>
-            )}
-            {metrics.fps < 50 && (
-              <li>• Optimize animations and interactions</li>
-            )}
-          </ul>
-        </div>
+        {/* Summary Stats */}
+        {metrics.length > 0 && (
+          <div className="border-t pt-3 dark:border-gray-700">
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <div className="text-gray-600 dark:text-gray-400">
+                  Total Operations
+                </div>
+                <div className="font-semibold text-gray-900 dark:text-white">
+                  {metrics.length}
+                </div>
+              </div>
+              <div>
+                <div className="text-gray-600 dark:text-gray-400">
+                  Avg. Ops/sec
+                </div>
+                <div className="font-semibold text-gray-900 dark:text-white">
+                  {metrics.length > 0
+                    ? (
+                        metrics.reduce(
+                          (sum, m) => sum + m.operationsPerSecond,
+                          0
+                        ) / metrics.length
+                      ).toFixed(0)
+                    : "0"}
+                </div>
+              </div>
+              <div>
+                <div className="text-gray-600 dark:text-gray-400">
+                  Avg. Duration
+                </div>
+                <div className="font-semibold text-gray-900 dark:text-white">
+                  {metrics.length > 0
+                    ? (
+                        metrics.reduce((sum, m) => sum + m.duration, 0) /
+                        metrics.length
+                      ).toFixed(2)
+                    : "0"}
+                  ms
+                </div>
+              </div>
+              <div>
+                <div className="text-gray-600 dark:text-gray-400">
+                  Peak Memory
+                </div>
+                <div className="font-semibold text-gray-900 dark:text-white">
+                  {metrics.length > 0
+                    ? Math.max(...metrics.map(m => m.memoryUsage)).toFixed(1)
+                    : "0"}
+                  MB
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Recording Indicator */}
+        {isRecording && (
+          <div className="mt-3 flex items-center space-x-2">
+            <div className="h-2 w-2 animate-pulse rounded-full bg-red-500"></div>
+            <span className="text-sm font-medium text-red-600 dark:text-red-400">
+              Recording...
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-// Hook for performance monitoring
-export const usePerformanceMonitoring = () => {
-  const [metrics, setMetrics] = useState<PerformanceMetrics | null>(null);
-  const [alerts, setAlerts] = useState<string[]>([]);
+// Hook for using performance monitoring in components
+export const usePerformanceMonitor = () => {
+  const [isMonitoring, setIsMonitoring] = useState(false);
 
-  const handleMetricsUpdate = useCallback((newMetrics: PerformanceMetrics) => {
-    setMetrics(newMetrics);
+  const startMeasurement = (name: string) => {
+    performanceMonitor.startMeasurement(name);
+    setIsMonitoring(true);
+  };
 
-    // Generate performance alerts
-    const newAlerts: string[] = [];
+  const endMeasurement = (name: string) => {
+    const metrics = performanceMonitor.endMeasurement(name);
+    setIsMonitoring(false);
+    return metrics;
+  };
 
-    if (newMetrics.renderTime > 100) {
-      newAlerts.push(
-        "High render time detected. Consider optimizing component structure."
-      );
+  const measureExecutionTime = async <T,>(
+    fn: () => Promise<T>,
+    name: string
+  ): Promise<{ result: T; metrics: any }> => {
+    startMeasurement(name);
+    try {
+      const result = await fn();
+      const metrics = endMeasurement(name);
+      return { result, metrics };
+    } catch (error) {
+      endMeasurement(name);
+      throw error;
     }
-
-    if (newMetrics.componentCount > 100) {
-      newAlerts.push(
-        "Large number of components. Consider implementing virtualization."
-      );
-    }
-
-    if (newMetrics.fps < 30) {
-      newAlerts.push("Low FPS detected. Check for performance bottlenecks.");
-    }
-
-    setAlerts(newAlerts);
-  }, []);
+  };
 
   return {
-    metrics,
-    alerts,
-    handleMetricsUpdate,
+    isMonitoring,
+    startMeasurement,
+    endMeasurement,
+    measureExecutionTime,
+    memoryUsage: performanceMonitor.getMemoryUsage(),
   };
 };

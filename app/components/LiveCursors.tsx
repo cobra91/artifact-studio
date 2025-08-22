@@ -5,11 +5,18 @@ import { useCallback } from "react";
 import { useOthers, useUpdateMyPresence } from "../liveblocks.config";
 
 export function LiveCursors() {
+  // Check if Liveblocks is configured
+  const isLiveblocksConfigured =
+    process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY &&
+    process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY !== "pk_xxxxxxxxxxxxxxxxx";
+
+  // Always call hooks first, before any conditional returns
   const updateMyPresence = useUpdateMyPresence();
   const others = useOthers();
 
   const handlePointerMove = useCallback(
     (event: React.PointerEvent) => {
+      if (!isLiveblocksConfigured) return;
       updateMyPresence({
         cursor: {
           x: Math.round(event.clientX),
@@ -17,12 +24,18 @@ export function LiveCursors() {
         },
       });
     },
-    [updateMyPresence]
+    [updateMyPresence, isLiveblocksConfigured]
   );
 
   const handlePointerLeave = useCallback(() => {
+    if (!isLiveblocksConfigured) return;
     updateMyPresence({ cursor: null });
-  }, [updateMyPresence]);
+  }, [updateMyPresence, isLiveblocksConfigured]);
+
+  // If Liveblocks is not configured, return null
+  if (!isLiveblocksConfigured) {
+    return null;
+  }
 
   return (
     <div

@@ -1,19 +1,21 @@
 // Template storage utilities for loading and managing templates in localStorage
-import {
-  ArtifactTemplate,
-  ComponentNode,
-} from "../types/artifact";
+import { ArtifactTemplate, ComponentNode } from "../types/artifact";
 
 // Error class for template storage operations
 export class TemplateStorageError extends Error {
-  constructor(message: string, public templateId?: string) {
+  constructor(
+    message: string,
+    public templateId?: string
+  ) {
     super(message);
     this.name = "TemplateStorageError";
   }
 }
 
 // Load a single template from localStorage
-export const loadTemplateFromStorage = (templateId: string): ArtifactTemplate | null => {
+export const loadTemplateFromStorage = (
+  templateId: string
+): ArtifactTemplate | null => {
   try {
     const key = `template_${templateId}`;
     const storedData = localStorage.getItem(key);
@@ -54,7 +56,9 @@ export const loadTemplateIndex = (): string[] => {
     const parsedIndex = JSON.parse(storedIndex);
 
     // Filter out invalid entries
-    return parsedIndex.filter((id: any) => typeof id === "string" && id.trim().length > 0);
+    return parsedIndex.filter(
+      (id: any) => typeof id === "string" && id.trim().length > 0
+    );
   } catch (error) {
     throw new TemplateStorageError(
       `Failed to load template index: ${error instanceof Error ? error.message : "Unknown error"}`
@@ -207,14 +211,18 @@ export const getTemplateStorageStats = (): TemplateStorageStats => {
         }
       } catch (_error) {
         // Skip templates that can't be loaded
-        console.warn(`Skipping template ${templateId} in stats calculation:`, _error);
+        console.warn(
+          `Skipping template ${templateId} in stats calculation:`,
+          _error
+        );
       }
     }
 
     return {
       totalTemplates: templateIds.length,
       totalSize,
-      averageSize: templateIds.length > 0 ? Math.round(totalSize / templateIds.length) : 0,
+      averageSize:
+        templateIds.length > 0 ? Math.round(totalSize / templateIds.length) : 0,
       largestTemplate,
       oldestTemplate,
       newestTemplate,
@@ -240,7 +248,9 @@ export const cleanupOrphanedTemplates = (): number => {
 
     // Get all template keys from localStorage
     const allKeys = Object.keys(localStorage);
-    const templateKeys = allKeys.filter(key => key.startsWith("template_template_"));
+    const templateKeys = allKeys.filter(key =>
+      key.startsWith("template_template_")
+    );
 
     for (const key of templateKeys) {
       const templateId = key.replace("template_", "");
@@ -258,7 +268,9 @@ export const cleanupOrphanedTemplates = (): number => {
 };
 
 // Validate template data integrity
-export const validateTemplateIntegrity = (templateId: string): {
+export const validateTemplateIntegrity = (
+  templateId: string
+): {
   isValid: boolean;
   errors: string[];
 } => {
@@ -276,8 +288,10 @@ export const validateTemplateIntegrity = (templateId: string): {
 
     // Check required fields
     if (!template.id) errors.push("Missing template ID");
-    if (!template.name || template.name.trim().length === 0) errors.push("Missing or empty template name");
-    if (!template.author || template.author.trim().length === 0) errors.push("Missing or empty author");
+    if (!template.name || template.name.trim().length === 0)
+      errors.push("Missing or empty template name");
+    if (!template.author || template.author.trim().length === 0)
+      errors.push("Missing or empty author");
     if (!template.components) errors.push("Missing components array");
     if (!template.category) errors.push("Missing category");
     if (!template.preview) errors.push("Missing preview");
@@ -296,21 +310,35 @@ export const validateTemplateIntegrity = (templateId: string): {
     }
 
     // Check dates
-    if (!(template.created instanceof Date) || isNaN(template.created.getTime())) {
+    if (
+      !(template.created instanceof Date) ||
+      isNaN(template.created.getTime())
+    ) {
       errors.push("Invalid created date");
     }
-    if (!(template.modified instanceof Date) || isNaN(template.modified.getTime())) {
+    if (
+      !(template.modified instanceof Date) ||
+      isNaN(template.modified.getTime())
+    ) {
       errors.push("Invalid modified date");
     }
 
     // Check component structure
     template.components.forEach((component, index) => {
-      if (!component.id) errors.push(`Component ${index}: Missing component ID`);
-      if (!component.type) errors.push(`Component ${index}: Missing component type`);
-      if (typeof component.position.x !== "number" || typeof component.position.y !== "number") {
+      if (!component.id)
+        errors.push(`Component ${index}: Missing component ID`);
+      if (!component.type)
+        errors.push(`Component ${index}: Missing component type`);
+      if (
+        typeof component.position.x !== "number" ||
+        typeof component.position.y !== "number"
+      ) {
         errors.push(`Component ${index}: Invalid position`);
       }
-      if (typeof component.size.width !== "number" || typeof component.size.height !== "number") {
+      if (
+        typeof component.size.width !== "number" ||
+        typeof component.size.height !== "number"
+      ) {
         errors.push(`Component ${index}: Invalid size`);
       }
     });
@@ -322,7 +350,9 @@ export const validateTemplateIntegrity = (templateId: string): {
   } catch (error) {
     return {
       isValid: false,
-      errors: [`Failed to validate template: ${error instanceof Error ? error.message : "Unknown error"}`],
+      errors: [
+        `Failed to validate template: ${error instanceof Error ? error.message : "Unknown error"}`,
+      ],
     };
   }
 };

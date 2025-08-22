@@ -34,10 +34,14 @@ describe("Template Loading and Instantiation", () => {
     Object.keys(storageData).forEach(key => delete storageData[key]);
 
     // Reset mock implementations to default
-    localStorageMock.getItem.mockImplementation((key: string) => storageData[key] || null);
-    localStorageMock.setItem.mockImplementation((key: string, value: string) => {
-      storageData[key] = value;
-    });
+    localStorageMock.getItem.mockImplementation(
+      (key: string) => storageData[key] || null
+    );
+    localStorageMock.setItem.mockImplementation(
+      (key: string, value: string) => {
+        storageData[key] = value;
+      }
+    );
   });
 
   describe("Template Loading from Storage", () => {

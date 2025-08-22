@@ -85,7 +85,7 @@ export class PerformanceMonitor {
   }
 
   getMemoryUsage(): MemoryInfo {
-    if ('memory' in performance) {
+    if ("memory" in performance) {
       const mem = (performance as any).memory;
       return {
         usedJSHeapSize: mem.usedJSHeapSize,
@@ -143,7 +143,7 @@ export class BenchmarkRunner {
     }
 
     // Force garbage collection if available
-    if ('gc' in window) {
+    if ("gc" in window) {
       (window as any).gc();
     }
 
@@ -201,7 +201,12 @@ export class BenchmarkRunner {
   ): Promise<BenchmarkResult & { memoryLeak: number }> {
     const startMemory = this.monitor.getMemoryUsage();
 
-    const result = await this.runBenchmark(name, setup, benchmarkFn, iterations);
+    const result = await this.runBenchmark(
+      name,
+      setup,
+      benchmarkFn,
+      iterations
+    );
 
     const endMemory = this.monitor.getMemoryUsage();
     const memoryLeak = endMemory.usedJSHeapSize - startMemory.usedJSHeapSize;
@@ -212,23 +217,43 @@ export class BenchmarkRunner {
     };
   }
 
-  validateThresholds(result: BenchmarkResult, thresholds: PerformanceThresholds): string[] {
+  validateThresholds(
+    result: BenchmarkResult,
+    thresholds: PerformanceThresholds
+  ): string[] {
     const violations: string[] = [];
 
     if (thresholds.maxDuration && result.duration > thresholds.maxDuration) {
-      violations.push(`Duration ${result.duration.toFixed(2)}ms exceeds threshold ${thresholds.maxDuration}ms`);
+      violations.push(
+        `Duration ${result.duration.toFixed(2)}ms exceeds threshold ${thresholds.maxDuration}ms`
+      );
     }
 
-    if (thresholds.maxMemoryUsage && result.memoryUsage.usedJSHeapSize > thresholds.maxMemoryUsage) {
-      violations.push(`Memory usage ${result.memoryUsage.usedJSHeapSize} bytes exceeds threshold ${thresholds.maxMemoryUsage} bytes`);
+    if (
+      thresholds.maxMemoryUsage &&
+      result.memoryUsage.usedJSHeapSize > thresholds.maxMemoryUsage
+    ) {
+      violations.push(
+        `Memory usage ${result.memoryUsage.usedJSHeapSize} bytes exceeds threshold ${thresholds.maxMemoryUsage} bytes`
+      );
     }
 
-    if (thresholds.minOperationsPerSecond && result.operationsPerSecond < thresholds.minOperationsPerSecond) {
-      violations.push(`Operations per second ${result.operationsPerSecond.toFixed(2)} below threshold ${thresholds.minOperationsPerSecond}`);
+    if (
+      thresholds.minOperationsPerSecond &&
+      result.operationsPerSecond < thresholds.minOperationsPerSecond
+    ) {
+      violations.push(
+        `Operations per second ${result.operationsPerSecond.toFixed(2)} below threshold ${thresholds.minOperationsPerSecond}`
+      );
     }
 
-    if (thresholds.maxAvgOperationTime && result.avgOperationTime > thresholds.maxAvgOperationTime) {
-      violations.push(`Average operation time ${result.avgOperationTime.toFixed(2)}ms exceeds threshold ${thresholds.maxAvgOperationTime}ms`);
+    if (
+      thresholds.maxAvgOperationTime &&
+      result.avgOperationTime > thresholds.maxAvgOperationTime
+    ) {
+      violations.push(
+        `Average operation time ${result.avgOperationTime.toFixed(2)}ms exceeds threshold ${thresholds.maxAvgOperationTime}ms`
+      );
     }
 
     return violations;
@@ -260,21 +285,27 @@ export const createPerformanceTestSuite = (name: string) => {
     benchmarks: new Map<string, BenchmarkResult>(),
     thresholds: new Map<string, PerformanceThresholds>(),
 
-    addBenchmark: function(benchmarkName: string, result: BenchmarkResult) {
+    addBenchmark: function (benchmarkName: string, result: BenchmarkResult) {
       this.benchmarks.set(benchmarkName, result);
     },
 
-    setThresholds: function(benchmarkName: string, thresholds: PerformanceThresholds) {
+    setThresholds: function (
+      benchmarkName: string,
+      thresholds: PerformanceThresholds
+    ) {
       this.thresholds.set(benchmarkName, thresholds);
     },
 
-    runValidations: function(): Map<string, string[]> {
+    runValidations: function (): Map<string, string[]> {
       const violations = new Map<string, string[]>();
 
       for (const [name, result] of this.benchmarks) {
         const thresholds = this.thresholds.get(name);
         if (thresholds) {
-          const benchmarkViolations = new BenchmarkRunner().validateThresholds(result, thresholds);
+          const benchmarkViolations = new BenchmarkRunner().validateThresholds(
+            result,
+            thresholds
+          );
           if (benchmarkViolations.length > 0) {
             violations.set(name, benchmarkViolations);
           }
@@ -284,7 +315,7 @@ export const createPerformanceTestSuite = (name: string) => {
       return violations;
     },
 
-    generateReport: function(): string {
+    generateReport: function (): string {
       const report: string[] = [];
       report.push(`# Performance Test Suite: ${name}`);
       report.push(`Generated: ${new Date().toISOString()}\n`);
@@ -292,11 +323,21 @@ export const createPerformanceTestSuite = (name: string) => {
       for (const [benchmarkName, result] of this.benchmarks) {
         report.push(`## ${benchmarkName}`);
         report.push(`- **Total Duration**: ${result.duration.toFixed(2)}ms`);
-        report.push(`- **Operations per Second**: ${result.operationsPerSecond.toFixed(2)} ops/s`);
-        report.push(`- **Average Operation Time**: ${result.avgOperationTime.toFixed(2)}ms`);
-        report.push(`- **Min/Max Time**: ${result.minTime.toFixed(2)}ms / ${result.maxTime.toFixed(2)}ms`);
-        report.push(`- **95th/99th Percentile**: ${result.p95Time.toFixed(2)}ms / ${result.p99Time.toFixed(2)}ms`);
-        report.push(`- **Memory Usage**: ${(result.memoryUsage.usedJSHeapSize / 1024 / 1024).toFixed(2)} MB`);
+        report.push(
+          `- **Operations per Second**: ${result.operationsPerSecond.toFixed(2)} ops/s`
+        );
+        report.push(
+          `- **Average Operation Time**: ${result.avgOperationTime.toFixed(2)}ms`
+        );
+        report.push(
+          `- **Min/Max Time**: ${result.minTime.toFixed(2)}ms / ${result.maxTime.toFixed(2)}ms`
+        );
+        report.push(
+          `- **95th/99th Percentile**: ${result.p95Time.toFixed(2)}ms / ${result.p99Time.toFixed(2)}ms`
+        );
+        report.push(
+          `- **Memory Usage**: ${(result.memoryUsage.usedJSHeapSize / 1024 / 1024).toFixed(2)} MB`
+        );
         report.push(`- **Sample Count**: ${result.samples.length}\n`);
       }
 
@@ -305,14 +346,16 @@ export const createPerformanceTestSuite = (name: string) => {
         report.push(`## Threshold Violations`);
         for (const [benchmarkName, benchmarkViolations] of violations) {
           report.push(`### ${benchmarkName}`);
-          benchmarkViolations.forEach(violation => report.push(`- ❌ ${violation}`));
-          report.push('');
+          benchmarkViolations.forEach(violation =>
+            report.push(`- ❌ ${violation}`)
+          );
+          report.push("");
         }
       } else {
         report.push(`## ✅ All benchmarks passed their thresholds`);
       }
 
-      return report.join('\n');
-    }
+      return report.join("\n");
+    },
   };
 };

@@ -86,8 +86,8 @@ export const CommandPalette = ({
   if (!isOpen) return null;
 
   return (
-    <div className="bg-opacity-50 fixed inset-0 z-50 flex items-start justify-center bg-black pt-20">
-      <div className="mx-4 w-full max-w-2xl rounded-lg bg-white shadow-2xl">
+    <div className="bg-opacity-30 fixed inset-0 z-50 flex items-start justify-center bg-black pt-20 transition-all duration-200">
+      <div className="mx-4 w-full max-w-2xl scale-100 transform rounded-lg border border-gray-200 bg-white shadow-2xl transition-all duration-200">
         {/* Search Input */}
         <div className="border-b border-gray-200 p-4">
           <input
