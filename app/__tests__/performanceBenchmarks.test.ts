@@ -1,4 +1,27 @@
 // Comprehensive performance benchmarks for the visual canvas application
+
+// Mock the entire aiCodeGen module to avoid OpenAI dependency
+jest.mock("../lib/aiCodeGen", () => ({
+  aiCodeGen: {
+    create: jest.fn().mockResolvedValue({
+      components: [
+        {
+          id: "test-component",
+          type: "button",
+          position: { x: 0, y: 0 },
+          size: { width: 100, height: 40 },
+          props: { children: "Test Button" },
+          styles: {}
+        }
+      ],
+      code: "export const TestComponent = () => <button>Test</button>"
+    }),
+    generateReactCode: jest.fn().mockReturnValue("export const TestComponent = () => <div>Test</div>"),
+    generateVueCode: jest.fn().mockReturnValue("<template><div>Test</div></template>"),
+    generateSvelteCode: jest.fn().mockReturnValue("<div>Test</div>")
+  }
+}));
+
 import { aiCodeGen } from "../lib/aiCodeGen";
 import { useCanvasStore } from "../lib/canvasStore";
 import { createComponentNode } from "../lib/componentOperations";
