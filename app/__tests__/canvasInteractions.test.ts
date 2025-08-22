@@ -634,6 +634,7 @@ describe("Canvas Interactions and State Management", () => {
       component.position = { x: 0, y: 0 };
 
       act(() => {
+        useCanvasStore.getState().setSnapToGrid(false); // Disable grid snapping for precise coordinates
         useCanvasStore.getState().addElement(component);
         useCanvasStore.getState().updateElement("sync-test", {
           x: 50,
@@ -658,6 +659,7 @@ describe("Canvas Interactions and State Management", () => {
       const component2 = createComponentNode("text" as ComponentType, "bulk-2");
 
       act(() => {
+        useCanvasStore.getState().setSnapToGrid(false); // Disable grid snapping for precise coordinates
         useCanvasStore.getState().addElement(component1);
         useCanvasStore.getState().addElement(component2);
 

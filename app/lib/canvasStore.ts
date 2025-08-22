@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 import { CanvasState } from "../types/artifact";
+import { triggerAutoSave } from "./autoSave";
 
 interface CanvasElement {
   id: string;
@@ -49,12 +50,14 @@ export const useCanvasStore = create<CanvasStore>()(
       recentColors: ["#000000", "#ffffff", "#ff0000", "#00ff00", "#0000ff"],
       activeBreakpoint: "base",
 
-      addElement: element =>
+      addElement: element => {
         set(state => ({
           elements: [...state.elements, element],
-        })),
+        }));
+        triggerAutoSave();
+      },
 
-      updateElement: (id, updates) =>
+      updateElement: (id, updates) => {
         set(state => {
           const updatedElement = { ...updates };
           
@@ -74,7 +77,9 @@ export const useCanvasStore = create<CanvasStore>()(
               el.id === id ? { ...el, ...updatedElement } : el
             ),
           };
-        }),
+        });
+        triggerAutoSave();
+      },
 
       deleteElement: id =>
         set(state => ({
