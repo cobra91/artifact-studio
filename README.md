@@ -223,9 +223,9 @@ All components use Tailwind CSS classes for consistent, responsive design:
 
 ```javascript
 // Example generated component
-<div className="p-6 bg-white rounded-lg shadow-lg max-w-md mx-auto">
-  <h2 className="text-2xl font-bold text-gray-800 mb-4">Generated Component</h2>
-  <button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+<div className="mx-auto max-w-md rounded-lg bg-white p-6 shadow-lg">
+  <h2 className="mb-4 text-2xl font-bold text-gray-800">Generated Component</h2>
+  <button className="w-full rounded bg-blue-600 py-2 text-white hover:bg-blue-700">
     Click Me
   </button>
 </div>

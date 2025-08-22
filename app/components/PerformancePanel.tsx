@@ -24,7 +24,7 @@ export const PerformancePanel = ({ selectedNode }: PerformancePanelProps) => {
     const suggestions = [];
     if (renderTime > 20) {
       suggestions.push(
-        "Consider breaking down this component into smaller parts.",
+        "Consider breaking down this component into smaller parts."
       );
     }
     if (bundleSize > 5) {
@@ -36,7 +36,7 @@ export const PerformancePanel = ({ selectedNode }: PerformancePanelProps) => {
 
   return (
     <div className="p-4">
-      <h3 className="text-lg font-semibold mb-4">Performance</h3>
+      <h3 className="mb-4 text-lg font-semibold">Performance</h3>
       {selectedNode && performanceMetrics ? (
         <div>
           <div className="mb-4">
@@ -50,7 +50,7 @@ export const PerformancePanel = ({ selectedNode }: PerformancePanelProps) => {
           {performanceMetrics.suggestions.length > 0 && (
             <div>
               <p className="font-semibold">Optimization Suggestions:</p>
-              <ul className="list-disc list-inside">
+              <ul className="list-inside list-disc">
                 {performanceMetrics.suggestions.map((s, i) => (
                   <li key={i} className="text-sm">
                     {s}

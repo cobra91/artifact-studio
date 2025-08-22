@@ -17,7 +17,7 @@ export function LiveCursors() {
         },
       });
     },
-    [updateMyPresence],
+    [updateMyPresence]
   );
 
   const handlePointerLeave = useCallback(() => {
@@ -28,7 +28,7 @@ export function LiveCursors() {
     <div
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
-      className="fixed inset-0 pointer-events-none z-50"
+      className="pointer-events-none fixed inset-0 z-50"
     >
       {others.map(({ connectionId, presence }) => {
         if (!presence.cursor) {
@@ -80,7 +80,7 @@ function Cursor({
         />
       </svg>
       <div
-        className="absolute top-5 left-2 px-2 py-1 rounded-md text-xs text-white font-medium whitespace-nowrap"
+        className="absolute top-5 left-2 rounded-md px-2 py-1 text-xs font-medium whitespace-nowrap text-white"
         style={{ backgroundColor: color }}
       >
         {name}

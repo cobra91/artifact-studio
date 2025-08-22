@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     console.error("Error in GET /api/deploy:", error);
     return NextResponse.json(
       { error: "Failed to fetch deployment information" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
     if (!platform || !config) {
       return NextResponse.json(
         { error: "Platform and configuration are required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     if (!availablePlatforms.includes(platform)) {
       return NextResponse.json(
         { error: `Platform ${platform} is not supported` },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     console.error("Error in POST /api/deploy:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Deployment failed" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -86,13 +86,13 @@ export async function DELETE(request: NextRequest) {
     if (!platform || !deploymentId) {
       return NextResponse.json(
         { error: "Platform and deployment ID are required" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
     const success = await deploymentManager.cancelDeployment(
       platform,
-      deploymentId,
+      deploymentId
     );
 
     return NextResponse.json({
@@ -105,7 +105,7 @@ export async function DELETE(request: NextRequest) {
     console.error("Error in DELETE /api/deploy:", error);
     return NextResponse.json(
       { error: "Failed to cancel deployment" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

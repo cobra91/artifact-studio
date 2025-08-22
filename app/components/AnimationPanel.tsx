@@ -30,11 +30,11 @@ export const AnimationPanel = ({
 
   return (
     <div className="p-4">
-      <h3 className="text-lg font-semibold mb-4">Animations</h3>
+      <h3 className="mb-4 text-lg font-semibold">Animations</h3>
       <select
         value={animation}
         onChange={handleAnimationChange}
-        className="w-full p-2 border rounded"
+        className="w-full rounded border p-2"
         disabled={!selectedNode}
       >
         <option value="">None</option>

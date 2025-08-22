@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ||
-      "https://visual-artifact-studio.vercel.app",
+      "https://visual-artifact-studio.vercel.app"
   ),
   title: {
     default: "Visual Artifact Studio - AI-Powered React Component Builder",

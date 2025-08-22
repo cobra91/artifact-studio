@@ -31,7 +31,7 @@ export const GradientEditor = ({
           id: `stop-${index}-${Date.now()}`,
           color: stop.color,
           position: stop.position,
-        })),
+        }))
       );
 
       if (parsed.type === "linear" && parsed.angle) {
@@ -41,7 +41,7 @@ export const GradientEditor = ({
   }, [gradient]);
 
   const updateGradient = (newStops: ColorStop[], newAngle?: number) => {
-    const stops = newStops.map((stop) => ({
+    const stops = newStops.map(stop => ({
       color: stop.color,
       position: stop.position,
     }));
@@ -49,7 +49,7 @@ export const GradientEditor = ({
     const newGradient = ColorUtils.generateGradientString(
       type,
       stops,
-      newAngle || angle,
+      newAngle || angle
     );
 
     onChange(newGradient);
@@ -63,7 +63,7 @@ export const GradientEditor = ({
     };
 
     const newStops = [...colorStops, newStop].sort(
-      (a, b) => a.position - b.position,
+      (a, b) => a.position - b.position
     );
     updateGradient(newStops);
   };
@@ -71,13 +71,13 @@ export const GradientEditor = ({
   const removeColorStop = (id: string) => {
     if (colorStops.length <= 2) return;
 
-    const newStops = colorStops.filter((stop) => stop.id !== id);
+    const newStops = colorStops.filter(stop => stop.id !== id);
     updateGradient(newStops);
   };
 
   const updateColorStop = (id: string, updates: Partial<ColorStop>) => {
-    const newStops = colorStops.map((stop) =>
-      stop.id === id ? { ...stop, ...updates } : stop,
+    const newStops = colorStops.map(stop =>
+      stop.id === id ? { ...stop, ...updates } : stop
     );
     updateGradient(newStops);
   };
@@ -98,10 +98,10 @@ export const GradientEditor = ({
             0,
             canvas.width / 2,
             canvas.height / 2,
-            Math.min(canvas.width, canvas.height) / 2,
+            Math.min(canvas.width, canvas.height) / 2
           );
 
-    colorStops.forEach((stop) => {
+    colorStops.forEach(stop => {
       gradientObj.addColorStop(stop.position / 100, stop.color);
     });
 
@@ -117,20 +117,20 @@ export const GradientEditor = ({
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-sm font-medium text-gray-700 mb-2">
+        <h3 className="mb-2 text-sm font-medium text-gray-700">
           Gradient Preview
         </h3>
         <canvas
           ref={canvasRef}
           width={300}
           height={50}
-          className="w-full h-12 rounded border border-gray-300"
+          className="h-12 w-full rounded border border-gray-300"
         />
       </div>
 
       {type === "linear" && (
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="mb-1 block text-sm font-medium text-gray-700">
             Angle: {angle}°
           </label>
           <input
@@ -138,7 +138,7 @@ export const GradientEditor = ({
             min="0"
             max="360"
             value={angle}
-            onChange={(e) => {
+            onChange={e => {
               const newAngle = parseInt(e.target.value);
               setAngle(newAngle);
               updateGradient(colorStops, newAngle);
@@ -149,7 +149,7 @@ export const GradientEditor = ({
       )}
 
       <div>
-        <div className="flex items-center justify-between mb-2">
+        <div className="mb-2 flex items-center justify-between">
           <h3 className="text-sm font-medium text-gray-700">Color Stops</h3>
           <button
             onClick={addColorStop}
@@ -160,15 +160,15 @@ export const GradientEditor = ({
         </div>
 
         <div className="space-y-2">
-          {colorStops.map((stop) => (
+          {colorStops.map(stop => (
             <div key={stop.id} className="flex items-center space-x-2">
               <input
                 type="color"
                 value={stop.color}
-                onChange={(e) =>
+                onChange={e =>
                   updateColorStop(stop.id, { color: e.target.value })
                 }
-                className="w-8 h-8 rounded border border-gray-300"
+                className="h-8 w-8 rounded border border-gray-300"
               />
 
               <input
@@ -176,7 +176,7 @@ export const GradientEditor = ({
                 min="0"
                 max="100"
                 value={stop.position}
-                onChange={(e) =>
+                onChange={e =>
                   updateColorStop(stop.id, {
                     position: parseInt(e.target.value),
                   })
@@ -184,14 +184,14 @@ export const GradientEditor = ({
                 className="flex-1"
               />
 
-              <span className="text-sm text-gray-600 w-12">
+              <span className="w-12 text-sm text-gray-600">
                 {stop.position}%
               </span>
 
               {colorStops.length > 2 && (
                 <button
                   onClick={() => removeColorStop(stop.id)}
-                  className="text-red-600 hover:text-red-800 text-sm"
+                  className="text-sm text-red-600 hover:text-red-800"
                 >
                   ×
                 </button>

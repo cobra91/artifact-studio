@@ -16,16 +16,16 @@ export const AIPromptPanel = ({
 }: AIPromptPanelProps) => {
   const [prompt, setPrompt] = useState("");
   const [framework, setFramework] = useState<"react" | "vue" | "svelte">(
-    "react",
+    "react"
   );
   const [styling, setStyling] = useState<
     "tailwindcss" | "css" | "styled-components"
   >("tailwindcss");
   const [interactivity, setInteractivity] = useState<"low" | "medium" | "high">(
-    "medium",
+    "medium"
   );
   const [theme, setTheme] = useState<"default" | "modern" | "minimalist">(
-    "default",
+    "default"
   );
   const [history, setHistory] = useState<GenerationHistoryEntry[]>([]);
 
@@ -65,9 +65,9 @@ export const AIPromptPanel = ({
   };
 
   return (
-    <div className="h-full flex flex-col p-4">
+    <div className="flex h-full flex-col p-4">
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+        <h3 className="mb-2 text-lg font-semibold text-gray-800">
           AI Component Generator
         </h3>
         <p className="text-sm text-gray-600">Describe what you want to build</p>
@@ -75,27 +75,27 @@ export const AIPromptPanel = ({
 
       {/* Prompt Input */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="mb-2 block text-sm font-medium text-gray-700">
           Describe your component
         </label>
         <textarea
           value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
+          onChange={e => setPrompt(e.target.value)}
           placeholder="e.g., Create a loan calculator with sliders..."
-          className="w-full h-24 p-3 border border-gray-300 rounded-md resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="h-24 w-full resize-none rounded-md border border-gray-300 p-3 focus:border-transparent focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
       {/* Configuration Options */}
-      <div className="space-y-3 mb-4 flex-grow overflow-y-auto">
+      <div className="mb-4 flex-grow space-y-3 overflow-y-auto">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="mb-1 block text-sm font-medium text-gray-700">
             Framework
           </label>
           <select
             value={framework}
-            onChange={(e) => setFramework(e.target.value as any)}
-            className="w-full p-2 border border-gray-300 rounded-md text-sm"
+            onChange={e => setFramework(e.target.value as any)}
+            className="w-full rounded-md border border-gray-300 p-2 text-sm"
           >
             <option value="react">React</option>
             <option value="vue">Vue</option>
@@ -104,13 +104,13 @@ export const AIPromptPanel = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="mb-1 block text-sm font-medium text-gray-700">
             Styling
           </label>
           <select
             value={styling}
-            onChange={(e) => setStyling(e.target.value as any)}
-            className="w-full p-2 border border-gray-300 rounded-md text-sm"
+            onChange={e => setStyling(e.target.value as any)}
+            className="w-full rounded-md border border-gray-300 p-2 text-sm"
           >
             <option value="tailwindcss">Tailwind CSS</option>
             <option value="css">Plain CSS</option>
@@ -119,13 +119,13 @@ export const AIPromptPanel = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="mb-1 block text-sm font-medium text-gray-700">
             Interactivity
           </label>
           <select
             value={interactivity}
-            onChange={(e) => setInteractivity(e.target.value as any)}
-            className="w-full p-2 border border-gray-300 rounded-md text-sm"
+            onChange={e => setInteractivity(e.target.value as any)}
+            className="w-full rounded-md border border-gray-300 p-2 text-sm"
           >
             <option value="low">Low (Static)</option>
             <option value="medium">Medium (Forms, Clicks)</option>
@@ -135,7 +135,7 @@ export const AIPromptPanel = ({
 
         {/* Smart Styling Suggestions */}
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="mb-2 block text-sm font-medium text-gray-700">
             Visual Theme
           </label>
           <div className="flex items-center space-x-4">
@@ -177,11 +177,11 @@ export const AIPromptPanel = ({
       <button
         onClick={handleGenerate}
         disabled={!prompt.trim() || isGenerating}
-        className="w-full py-2 px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-md hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+        className="w-full rounded-md bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-white transition-all hover:from-purple-700 hover:to-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isGenerating ? (
           <div className="flex items-center justify-center gap-2">
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
             Generating...
           </div>
         ) : (
@@ -191,7 +191,7 @@ export const AIPromptPanel = ({
 
       {/* History Section */}
       <div className="mt-4 flex-1">
-        <div className="flex justify-between items-center mb-2">
+        <div className="mb-2 flex items-center justify-between">
           <h4 className="text-sm font-medium text-gray-700">History</h4>
           <button
             onClick={handleClearHistory}
@@ -200,12 +200,12 @@ export const AIPromptPanel = ({
             Clear
           </button>
         </div>
-        <div className="space-y-2 max-h-40 overflow-y-auto">
-          {history.map((entry) => (
+        <div className="max-h-40 space-y-2 overflow-y-auto">
+          {history.map(entry => (
             <button
               key={entry.id}
               onClick={() => applyHistoryEntry(entry)}
-              className="w-full p-2 text-left text-xs bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded text-gray-700 transition-colors"
+              className="w-full rounded border border-gray-200 bg-gray-50 p-2 text-left text-xs text-gray-700 transition-colors hover:bg-gray-100"
             >
               {entry.request.prompt}
             </button>

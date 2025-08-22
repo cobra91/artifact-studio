@@ -3,7 +3,7 @@ import React from "react";
 export const MobileOptimizationPanel: React.FC = () => {
   return (
     <div className="p-4 text-center text-gray-500">
-      <h3 className="text-lg font-semibold mb-3">
+      <h3 className="mb-3 text-lg font-semibold">
         Mobile Optimization Suggestions
       </h3>
       <p>

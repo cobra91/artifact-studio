@@ -81,18 +81,15 @@ export const Eyedropper = ({
       <button
         onClick={startEyedropper}
         disabled={disabled}
-        className={`
-          px-3 py-2 text-sm font-medium rounded-md transition-colors
-          ${
-            disabled
-              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-              : "bg-blue-500 text-white hover:bg-blue-600"
-          }
-        `}
+        className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+          disabled
+            ? "cursor-not-allowed bg-gray-100 text-gray-400"
+            : "bg-blue-500 text-white hover:bg-blue-600"
+        } `}
         title="Pick color from canvas"
       >
         <svg
-          className="w-4 h-4 inline-block mr-1"
+          className="mr-1 inline-block h-4 w-4"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -108,21 +105,21 @@ export const Eyedropper = ({
       </button>
 
       {isActive && (
-        <div className="fixed inset-0 z-50 pointer-events-none">
+        <div className="pointer-events-none fixed inset-0 z-50">
           <canvas
             ref={canvasRef}
-            className="absolute inset-0 w-full h-full opacity-0"
+            className="absolute inset-0 h-full w-full opacity-0"
             onLoad={captureCanvas}
           />
           <div
-            className="fixed w-6 h-6 border-2 border-white rounded-full pointer-events-none"
+            className="pointer-events-none fixed h-6 w-6 rounded-full border-2 border-white"
             style={{
               left: cursorPosition.x - 12,
               top: cursorPosition.y - 12,
               boxShadow: "0 0 0 1px black, inset 0 0 0 1px black",
             }}
           />
-          <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-black text-white px-3 py-1 rounded text-sm">
+          <div className="fixed top-4 left-1/2 -translate-x-1/2 transform rounded bg-black px-3 py-1 text-sm text-white">
             Click to pick color • ESC to cancel
           </div>
         </div>
