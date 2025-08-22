@@ -39,7 +39,11 @@ export const ComponentLibrary = () => {
   ];
 
   const handleDragStart = (e: DragEvent, componentType: ComponentType) => {
-    e.dataTransfer.setData("componentType", componentType);
+    const dragData = {
+      type: "component",
+      componentType: componentType,
+    };
+    e.dataTransfer.setData("text/plain", JSON.stringify(dragData));
   };
 
   return (

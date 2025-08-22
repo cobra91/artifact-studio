@@ -94,7 +94,7 @@ const PreviewPane = ({
         src="/sandbox.html"
         title="Live Preview"
         className="w-full h-full border-0"
-        sandbox="allow-scripts"
+        sandbox="allow-scripts allow-same-origin"
       />
     </div>
   );

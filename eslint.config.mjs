@@ -46,7 +46,7 @@ const eslintConfig = [
     },
   },
   {
-    ignores: ["node_modules/**"],
+    ignores: ["node_modules/**", "public/sandbox-libs/**"],
   },
 ];
 

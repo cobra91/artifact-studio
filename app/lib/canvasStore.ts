@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+import { CanvasState } from "../types/artifact";
+
 interface CanvasElement {
   id: string;
   type: string;
@@ -16,7 +18,7 @@ interface CanvasElement {
   [key: string]: any;
 }
 
-interface CanvasStore {
+interface CanvasStore extends CanvasState {
   elements: CanvasElement[];
   selectedElementId: string | null;
   recentColors: string[];
@@ -26,14 +28,26 @@ interface CanvasStore {
   selectElement: (id: string | null) => void;
   addRecentColor: (color: string) => void;
   clearRecentColors: () => void;
+  setActiveBreakpoint: (breakpoint: "base" | "sm" | "md" | "lg") => void;
+  setSelectedNodes: (nodes: string[] | ((prev: string[]) => string[])) => void;
+  setSnapToGrid: (snap: boolean) => void;
 }
 
 export const useCanvasStore = create<CanvasStore>()(
   persist(
     (set) => ({
+      components: [], // Added
+      selectedNodes: [], // Added
+      clipboard: [], // Added
+      draggedComponent: undefined, // Added
+      hoveredComponent: undefined, // Added
+      gridVisible: true, // Added
+      snapToGrid: true, // Added
+      zoom: 1, // Added
       elements: [],
       selectedElementId: null,
       recentColors: ["#000000", "#ffffff", "#ff0000", "#00ff00", "#0000ff"],
+      activeBreakpoint: "base",
 
       addElement: (element) =>
         set((state) => ({
@@ -73,11 +87,21 @@ export const useCanvasStore = create<CanvasStore>()(
         set(() => ({
           recentColors: [],
         })),
+
+      setActiveBreakpoint: (breakpoint) =>
+        set(() => ({ activeBreakpoint: breakpoint })),
+      setSelectedNodes: (nodes) =>
+        set((state) => ({
+          selectedNodes:
+            typeof nodes === "function" ? nodes(state.selectedNodes) : nodes,
+        })),
+      setSnapToGrid: (snap) => set(() => ({ snapToGrid: snap })),
     }),
     {
       name: "canvas-store",
       partialize: (state) => ({
         recentColors: state.recentColors,
+        activeBreakpoint: state.activeBreakpoint,
       }),
     },
   ),

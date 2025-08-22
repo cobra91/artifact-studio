@@ -4,6 +4,9 @@ import { useState } from "react";
 
 import { useCanvasStore } from "../../lib/canvasStore";
 import { ColorUtils } from "../../lib/colorUtils";
+import { styleProperties } from "../../lib/styleProperties";
+import { validateProperty } from "../../lib/validationUtils";
+import { ComponentNode } from "../../types/artifact"; // Import ComponentNode
 import { ColorPalette } from "../ColorPalette";
 import { ColorPicker } from "../ColorPicker";
 import { Eyedropper } from "../Eyedropper";
@@ -11,17 +14,20 @@ import { GradientEditor } from "../GradientEditor";
 import { RecentColors } from "../RecentColors";
 
 interface AppearanceTabProps {
-  selectedElement: any;
-  onUpdateElement: (elementId: string, updates: any) => void;
+  selectedElement: ComponentNode; // Use ComponentNode type
+  onUpdateElement: (updates: Partial<ComponentNode>) => void; // Change signature
+  activeBreakpoint: "base" | "sm" | "md" | "lg";
 }
 
 export const AppearanceTab = ({
   selectedElement,
   onUpdateElement,
+  activeBreakpoint: _activeBreakpoint,
 }: AppearanceTabProps) => {
   const [activeTab, setActiveTab] = useState<"fill" | "stroke" | "gradient">(
     "fill",
   );
+  const [strokeWidthError, setStrokeWidthError] = useState<string | null>(null);
   const { addRecentColor } = useCanvasStore();
 
   if (!selectedElement) {
@@ -36,27 +42,79 @@ export const AppearanceTab = ({
     const normalizedColor = ColorUtils.normalizeHex(color);
     addRecentColor(normalizedColor);
 
-    onUpdateElement(selectedElement.id, {
-      [type]: normalizedColor,
-    });
+    // Map fill to backgroundColor and stroke to border for better compatibility with HTML elements
+    if (type === "fill") {
+      onUpdateElement({
+        styles: {
+          backgroundColor: normalizedColor,
+        },
+      });
+    } else if (type === "stroke") {
+      // For stroke, we need to set border color and ensure border is visible
+      const currentBorderWidth = selectedElement.styles.borderWidth || "2px";
+      const currentBorderStyle = selectedElement.styles.borderStyle || "solid";
+      onUpdateElement({
+        styles: {
+          borderWidth: currentBorderWidth,
+          borderStyle: currentBorderStyle,
+          borderColor: normalizedColor,
+        },
+      });
+    }
   };
 
   const handleGradientChange = (gradient: string) => {
-    onUpdateElement(selectedElement.id, {
-      fill: gradient,
+    console.log("🎨 Gradient applied:", gradient);
+    onUpdateElement({
+      styles: {
+        backgroundColor: gradient,
+      },
     });
   };
 
   const handleOpacityChange = (opacity: number, type: "fill" | "stroke") => {
-    onUpdateElement(selectedElement.id, {
-      [`${type}Opacity`]: opacity,
+    onUpdateElement({
+      styles: {
+        [`${type}Opacity`]: String(opacity), // Convert to string
+      },
     });
   };
 
-  const currentFill = selectedElement.fill || "#000000";
-  const currentStroke = selectedElement.stroke || "#000000";
-  const currentFillOpacity = selectedElement.fillOpacity || 1;
-  const currentStrokeOpacity = selectedElement.strokeOpacity || 1;
+  const handleStrokeWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = parseFloat(e.target.value);
+    const strokeWidthProperty = styleProperties.find(
+      (prop) => prop.property === "strokeWidth",
+    );
+
+    if (strokeWidthProperty && strokeWidthProperty.validation) {
+      const error = validateProperty(newValue, strokeWidthProperty.validation);
+      setStrokeWidthError(error);
+      if (error) {
+        return; // Don't update if there's an error
+      }
+    }
+
+    onUpdateElement({
+      styles: {
+        strokeWidth: String(newValue), // Convert to string
+      },
+    });
+  };
+
+  const currentFill =
+    selectedElement.styles.backgroundColor ||
+    selectedElement.styles.fill ||
+    "#000000";
+  const currentStroke =
+    selectedElement.styles.borderColor ||
+    selectedElement.styles.stroke ||
+    "#000000";
+  const currentFillOpacity = parseFloat(
+    selectedElement.styles.fillOpacity || "1",
+  );
+  const currentStrokeOpacity = parseFloat(
+    selectedElement.styles.strokeOpacity || "1",
+  );
 
   return (
     <div className="space-y-4">
@@ -169,14 +227,15 @@ export const AppearanceTab = ({
               <input
                 type="number"
                 min="0"
-                value={selectedElement.strokeWidth || 1}
-                onChange={(e) =>
-                  onUpdateElement(selectedElement.id, {
-                    strokeWidth: parseFloat(e.target.value),
-                  })
-                }
-                className="w-full px-3 py-2 border rounded"
+                value={parseFloat(selectedElement.styles.strokeWidth || "1")}
+                onChange={handleStrokeWidthChange}
+                className={`w-full px-3 py-2 border rounded ${
+                  strokeWidthError ? "border-red-500" : ""
+                }`}
               />
+              {strokeWidthError && (
+                <p className="text-red-500 text-xs mt-1">{strokeWidthError}</p>
+              )}
             </div>
           </>
         )}

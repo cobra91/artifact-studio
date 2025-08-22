@@ -198,6 +198,7 @@ export interface StyleProperty {
   responsive: boolean;
   defaultValue?: string;
   options?: string[];
+  validation?: ValidationRule[];
 }
 
 export type StylePropertyType =
@@ -262,6 +263,24 @@ export type ComponentErrorType =
   | "style"
   | "children";
 
+// Property presets for quick application of common values
+export interface PropertyPreset {
+  id: string;
+  name: string;
+  propertyKey: string; // The key of the property this preset applies to
+  value: PropertyValue;
+  description?: string;
+}
+
+// Style templates for quick application of common style sets
+export interface StyleTemplate {
+  id: string;
+  name: string;
+  styles: ComponentStyles;
+  description?: string;
+  category?: StyleCategory;
+}
+
 // Enhanced sandbox result with detailed error information
 export interface EnhancedSandboxResult extends SandboxResult {
   executionTime?: number;
@@ -292,6 +311,7 @@ export interface CanvasState {
   gridVisible: boolean;
   snapToGrid: boolean;
   zoom: number;
+  activeBreakpoint: "base" | "sm" | "md" | "lg";
 }
 
 export interface UIState {
