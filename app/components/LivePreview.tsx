@@ -17,13 +17,13 @@ export const LivePreview = ({ code, framework }: LivePreviewProps) => {
   const [activeTab, setActiveTab] = useState<"preview" | "code">("preview");
 
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="flex h-full flex-col bg-white">
       {/* Header */}
-      <div className="flex items-center justify-between p-3 border-b border-gray-200">
+      <div className="flex items-center justify-between border-b border-gray-200 p-3">
         <div className="flex">
           <button
             onClick={() => setActiveTab("preview")}
-            className={`px-3 py-1 text-sm rounded-l ${
+            className={`rounded-l px-3 py-1 text-sm ${
               activeTab === "preview"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -33,7 +33,7 @@ export const LivePreview = ({ code, framework }: LivePreviewProps) => {
           </button>
           <button
             onClick={() => setActiveTab("code")}
-            className={`px-3 py-1 text-sm rounded-r ${
+            className={`rounded-r px-3 py-1 text-sm ${
               activeTab === "code"
                 ? "bg-blue-600 text-white"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -88,12 +88,12 @@ const PreviewPane = ({
   }, [code, isSandboxReady, framework]);
 
   return (
-    <div className="w-full h-full bg-white">
+    <div className="h-full w-full bg-white">
       <iframe
         ref={iframeRef}
         src="/sandbox.html"
         title="Live Preview"
-        className="w-full h-full border-0"
+        className="h-full w-full border-0"
         sandbox="allow-scripts allow-same-origin"
       />
     </div>
@@ -124,25 +124,25 @@ const CodePane = ({ code }: { code: string }) => {
   };
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex items-center justify-between p-3 bg-gray-800 text-white">
-        <span className="text-sm font-mono">Generated Code</span>
+    <div className="flex h-full flex-col">
+      <div className="flex items-center justify-between bg-gray-800 p-3 text-white">
+        <span className="font-mono text-sm">Generated Code</span>
         <button
           onClick={copyCode}
-          className="px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 rounded"
+          className="rounded bg-gray-700 px-2 py-1 text-xs hover:bg-gray-600"
         >
           {copied ? "✓ Copied" : "📋 Copy"}
         </button>
         <button
           onClick={exportCode}
-          className="ml-2 px-2 py-1 text-xs bg-green-700 hover:bg-green-600 rounded"
+          className="ml-2 rounded bg-green-700 px-2 py-1 text-xs hover:bg-green-600"
         >
           Export
         </button>
       </div>
 
-      <div className="flex-1 overflow-auto bg-gray-900 text-gray-100 p-4">
-        <pre className="text-sm font-mono whitespace-pre-wrap">
+      <div className="flex-1 overflow-auto bg-gray-900 p-4 text-gray-100">
+        <pre className="font-mono text-sm whitespace-pre-wrap">
           <code>{code || "Generate a component to see the code here."}</code>
         </pre>
       </div>

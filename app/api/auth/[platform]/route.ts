@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ platform: string }> },
+  { params }: { params: Promise<{ platform: string }> }
 ) {
   const { platform } = await params;
 
@@ -20,7 +20,7 @@ export async function GET(
   if (!authUrl) {
     return NextResponse.json(
       { error: "Authentication not supported for this platform" },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -34,7 +34,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ platform: string }> },
+  { params }: { params: Promise<{ platform: string }> }
 ) {
   const { platform } = await params;
   const { code, _state } = await request.json();
@@ -42,7 +42,7 @@ export async function POST(
   if (!code) {
     return NextResponse.json(
       { error: "Authorization code is required" },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -71,7 +71,7 @@ export async function POST(
     console.error(`Error authenticating with ${platform}:`, error);
     return NextResponse.json(
       { error: "Authentication failed" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

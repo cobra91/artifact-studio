@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { CSSProperties } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 
 import {
   applyResponsiveOverrides,
@@ -18,27 +18,40 @@ export const ComponentRenderer = ({
   activeBreakpoint,
   isEditMode,
 }: ComponentRendererProps) => {
+  // Fix hydration mismatch by only applying responsive styles after client-side mount
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   // Generate default responsive styles for the component type
   const defaultResponsiveStyles = generateResponsiveStyles(node.type);
 
-  // Combine base styles with responsive overrides, but preserve custom styles
-  const responsiveOverrides = applyResponsiveOverrides(
-    { ...defaultResponsiveStyles.base, ...node.styles },
-    node.responsiveStyles || defaultResponsiveStyles,
-    activeBreakpoint,
-  );
+  // Only apply responsive overrides on client side to avoid hydration mismatch
+  const responsiveOverrides = isClient
+    ? applyResponsiveOverrides(
+        { ...defaultResponsiveStyles.base, ...node.styles },
+        node.responsiveStyles || defaultResponsiveStyles,
+        activeBreakpoint
+      )
+    : defaultResponsiveStyles.base;
 
-  // Filter out responsive styles that would override custom styles
-  const filteredResponsiveOverrides = { ...responsiveOverrides };
-  Object.keys(node.styles).forEach((key) => {
-    if (filteredResponsiveOverrides[key]) {
-      delete filteredResponsiveOverrides[key];
-    }
-  });
+  // Filter out responsive styles that would override custom styles (only on client)
+  const filteredResponsiveOverrides = isClient
+    ? { ...responsiveOverrides }
+    : {};
+  if (isClient) {
+    Object.keys(node.styles).forEach(key => {
+      if (filteredResponsiveOverrides[key]) {
+        delete filteredResponsiveOverrides[key];
+      }
+    });
+  }
 
   const combinedStyles = {
     ...defaultResponsiveStyles.base,
-    ...filteredResponsiveOverrides,
+    ...(isClient ? filteredResponsiveOverrides : {}),
     ...node.styles, // Apply custom styles LAST to override responsive styles
     transform: node.rotation ? `rotate(${node.rotation}deg)` : undefined,
   } as CSSProperties;
@@ -58,7 +71,7 @@ export const ComponentRenderer = ({
         <span
           className={`block p-2 text-gray-800 ${isEditMode ? "pointer-events-none" : ""}`}
           style={combinedStyles}
-          onMouseDown={isEditMode ? (e) => e.stopPropagation() : undefined}
+          onMouseDown={isEditMode ? e => e.stopPropagation() : undefined}
         >
           {node.props.children || "Text Component"}
         </span>
@@ -67,7 +80,7 @@ export const ComponentRenderer = ({
     case "button":
       return (
         <button
-          className={`w-full h-full rounded px-4 py-2 ${isEditMode ? "pointer-events-none" : ""}`}
+          className={`h-full w-full rounded px-4 py-2 ${isEditMode ? "pointer-events-none" : ""}`}
           style={{
             ...combinedStyles,
             color: combinedStyles.color || "white",
@@ -85,7 +98,7 @@ export const ComponentRenderer = ({
     case "input":
       return (
         <input
-          className={`w-full h-full rounded px-3 py-2 ${isEditMode ? "pointer-events-none" : ""}`}
+          className={`h-full w-full rounded px-3 py-2 ${isEditMode ? "pointer-events-none" : ""}`}
           placeholder={node.props.placeholder || "Input field"}
           style={{
             ...combinedStyles,
@@ -97,10 +110,10 @@ export const ComponentRenderer = ({
     case "container":
       return (
         <div
-          className={`w-full h-full bg-white border border-gray-200 rounded p-2 ${isEditMode ? "pointer-events-none" : ""}`}
+          className={`h-full w-full rounded border border-gray-200 bg-white p-2 ${isEditMode ? "pointer-events-none" : ""}`}
           style={combinedStyles}
         >
-          {node.children?.map((child) => (
+          {node.children?.map(child => (
             <ComponentRenderer
               key={child.id}
               node={child}
@@ -114,7 +127,7 @@ export const ComponentRenderer = ({
     case "image":
       return (
         <Image
-          className={`w-full h-full object-cover rounded ${isEditMode ? "pointer-events-none" : ""}`}
+          className={`h-full w-full rounded object-cover ${isEditMode ? "pointer-events-none" : ""}`}
           src={
             node.props.src || "https://via.placeholder.com/300x200?text=Image"
           }
@@ -130,9 +143,9 @@ export const ComponentRenderer = ({
     default:
       return (
         <div
-          className={`w-full h-full bg-gray-200 border border-gray-300 rounded flex items-center justify-center ${isEditMode ? "pointer-events-none" : ""}`}
+          className={`flex h-full w-full items-center justify-center rounded border border-gray-300 bg-gray-200 ${isEditMode ? "pointer-events-none" : ""}`}
         >
-          <span className="text-gray-600 text-sm">{node.type}</span>
+          <span className="text-sm text-gray-600">{node.type}</span>
         </div>
       );
   }

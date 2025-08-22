@@ -100,25 +100,22 @@ export const GradientPresets = ({ onSelect }: GradientPresetsProps) => {
       <h3 className="text-sm font-medium text-gray-700">Gradient Presets</h3>
 
       <div className="grid grid-cols-2 gap-2">
-        {gradientPresets.map((preset) => (
+        {gradientPresets.map(preset => (
           <button
             key={preset.id}
             onClick={() => handlePresetClick(preset)}
-            className={`
-              relative p-2 rounded-lg border-2 transition-all
-              ${
-                selectedPreset === preset.id
-                  ? "border-blue-500 shadow-md"
-                  : "border-gray-200 hover:border-gray-300"
-              }
-            `}
+            className={`relative rounded-lg border-2 p-2 transition-all ${
+              selectedPreset === preset.id
+                ? "border-blue-500 shadow-md"
+                : "border-gray-200 hover:border-gray-300"
+            } `}
             title={preset.name}
           >
             <div
-              className="w-full h-12 rounded"
+              className="h-12 w-full rounded"
               style={{ background: preset.gradient }}
             />
-            <span className="text-xs text-gray-600 mt-1 block">
+            <span className="mt-1 block text-xs text-gray-600">
               {preset.name}
             </span>
           </button>

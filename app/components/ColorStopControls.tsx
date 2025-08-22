@@ -11,7 +11,7 @@ interface ColorStopControlsProps {
       id: string;
       color: string;
       position: number;
-    }>,
+    }>
   ) => void;
   onAddStop: () => void;
   onRemoveStop: (id: string) => void;
@@ -27,10 +27,10 @@ export const ColorStopControls = ({
 
   const updateStop = (
     id: string,
-    updates: Partial<{ color: string; position: number }>,
+    updates: Partial<{ color: string; position: number }>
   ) => {
-    const newStops = stops.map((stop) =>
-      stop.id === id ? { ...stop, ...updates } : stop,
+    const newStops = stops.map(stop =>
+      stop.id === id ? { ...stop, ...updates } : stop
     );
     onChange(newStops);
   };
@@ -56,10 +56,10 @@ export const ColorStopControls = ({
       </div>
 
       <div className="space-y-2">
-        {stops.map((stop) => (
+        {stops.map(stop => (
           <div
             key={stop.id}
-            className={`p-3 border rounded-lg transition-colors ${
+            className={`rounded-lg border p-3 transition-colors ${
               selectedStopId === stop.id
                 ? "border-blue-500 bg-blue-50"
                 : "border-gray-200"
@@ -70,12 +70,12 @@ export const ColorStopControls = ({
               <input
                 type="color"
                 value={stop.color}
-                onChange={(e) => handleColorChange(stop.id, e.target.value)}
-                className="w-8 h-8 rounded border border-gray-300 cursor-pointer"
+                onChange={e => handleColorChange(stop.id, e.target.value)}
+                className="h-8 w-8 cursor-pointer rounded border border-gray-300"
               />
 
               <div className="flex-1">
-                <label className="block text-xs text-gray-600 mb-1">
+                <label className="mb-1 block text-xs text-gray-600">
                   Position: {stop.position}%
                 </label>
                 <input
@@ -83,20 +83,20 @@ export const ColorStopControls = ({
                   min="0"
                   max="100"
                   value={stop.position}
-                  onChange={(e) =>
+                  onChange={e =>
                     handlePositionChange(stop.id, parseInt(e.target.value))
                   }
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200"
                 />
               </div>
 
               {stops.length > 2 && (
                 <button
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation();
                     onRemoveStop(stop.id);
                   }}
-                  className="text-red-600 hover:text-red-800 text-lg font-bold"
+                  className="text-lg font-bold text-red-600 hover:text-red-800"
                   title="Remove stop"
                 >
                   ×
@@ -108,7 +108,7 @@ export const ColorStopControls = ({
       </div>
 
       {stops.length === 0 && (
-        <p className="text-sm text-gray-500 text-center py-4">
+        <p className="py-4 text-center text-sm text-gray-500">
           No color stops defined. Add one to get started.
         </p>
       )}

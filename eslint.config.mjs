@@ -18,7 +18,7 @@ const eslintConfig = [
     "next/typescript",
     "plugin:import/recommended",
     "plugin:import/typescript",
-    "prettier",
+    "prettier"
   ),
   {
     plugins: {
@@ -46,7 +46,27 @@ const eslintConfig = [
     },
   },
   {
-    ignores: ["node_modules/**", "public/sandbox-libs/**"],
+    ignores: [
+      "node_modules/**",
+      "public/sandbox-libs/**",
+      ".next/**",
+      "out/**",
+      "build/**",
+      "dist/**",
+      "coverage/**",
+      ".history/**",
+      ".kiro/**",
+      "docs/**",
+      "*.min.js",
+      "*.min.css",
+      "*.map",
+      "*.tgz",
+      ".env*",
+      ".cache/**",
+      ".parcel-cache/**",
+      "tmp/**",
+      "temp/**",
+    ],
   },
 ];
 

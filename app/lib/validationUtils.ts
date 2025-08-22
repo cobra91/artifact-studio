@@ -6,7 +6,7 @@ import {
 
 export const validateProperty = (
   value: PropertyValue,
-  rules: ValidationRule[],
+  rules: ValidationRule[]
 ): string | null => {
   for (const rule of rules) {
     switch (rule.type) {

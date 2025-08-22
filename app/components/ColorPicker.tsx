@@ -105,14 +105,14 @@ export const ColorPicker = ({
             <input
               type="color"
               value={hexValue}
-              onChange={(e) => handleHexChange(e.target.value)}
-              className="w-12 h-12 rounded border cursor-pointer"
+              onChange={e => handleHexChange(e.target.value)}
+              className="h-12 w-12 cursor-pointer rounded border"
             />
             <input
               type="text"
               value={hexValue}
-              onChange={(e) => handleHexChange(e.target.value)}
-              className="flex-1 px-3 py-2 border rounded font-mono text-sm"
+              onChange={e => handleHexChange(e.target.value)}
+              className="flex-1 rounded border px-3 py-2 font-mono text-sm"
               placeholder="#000000"
             />
           </div>
@@ -129,7 +129,7 @@ export const ColorPicker = ({
                 min="0"
                 max="255"
                 value={rgbValues.r}
-                onChange={(e) => handleRgbChange("r", parseInt(e.target.value))}
+                onChange={e => handleRgbChange("r", parseInt(e.target.value))}
                 className="flex-1"
               />
               <input
@@ -137,8 +137,8 @@ export const ColorPicker = ({
                 min="0"
                 max="255"
                 value={rgbValues.r}
-                onChange={(e) => handleRgbChange("r", parseInt(e.target.value))}
-                className="w-16 px-2 py-1 border rounded text-sm"
+                onChange={e => handleRgbChange("r", parseInt(e.target.value))}
+                className="w-16 rounded border px-2 py-1 text-sm"
               />
             </div>
           </div>
@@ -151,7 +151,7 @@ export const ColorPicker = ({
                 min="0"
                 max="255"
                 value={rgbValues.g}
-                onChange={(e) => handleRgbChange("g", parseInt(e.target.value))}
+                onChange={e => handleRgbChange("g", parseInt(e.target.value))}
                 className="flex-1"
               />
               <input
@@ -159,8 +159,8 @@ export const ColorPicker = ({
                 min="0"
                 max="255"
                 value={rgbValues.g}
-                onChange={(e) => handleRgbChange("g", parseInt(e.target.value))}
-                className="w-16 px-2 py-1 border rounded text-sm"
+                onChange={e => handleRgbChange("g", parseInt(e.target.value))}
+                className="w-16 rounded border px-2 py-1 text-sm"
               />
             </div>
           </div>
@@ -173,7 +173,7 @@ export const ColorPicker = ({
                 min="0"
                 max="255"
                 value={rgbValues.b}
-                onChange={(e) => handleRgbChange("b", parseInt(e.target.value))}
+                onChange={e => handleRgbChange("b", parseInt(e.target.value))}
                 className="flex-1"
               />
               <input
@@ -181,8 +181,8 @@ export const ColorPicker = ({
                 min="0"
                 max="255"
                 value={rgbValues.b}
-                onChange={(e) => handleRgbChange("b", parseInt(e.target.value))}
-                className="w-16 px-2 py-1 border rounded text-sm"
+                onChange={e => handleRgbChange("b", parseInt(e.target.value))}
+                className="w-16 rounded border px-2 py-1 text-sm"
               />
             </div>
           </div>
@@ -199,7 +199,7 @@ export const ColorPicker = ({
                 min="0"
                 max="360"
                 value={hslValues.h}
-                onChange={(e) => handleHslChange("h", parseInt(e.target.value))}
+                onChange={e => handleHslChange("h", parseInt(e.target.value))}
                 className="flex-1"
               />
               <input
@@ -207,8 +207,8 @@ export const ColorPicker = ({
                 min="0"
                 max="360"
                 value={hslValues.h}
-                onChange={(e) => handleHslChange("h", parseInt(e.target.value))}
-                className="w-16 px-2 py-1 border rounded text-sm"
+                onChange={e => handleHslChange("h", parseInt(e.target.value))}
+                className="w-16 rounded border px-2 py-1 text-sm"
               />
             </div>
           </div>
@@ -223,7 +223,7 @@ export const ColorPicker = ({
                 min="0"
                 max="100"
                 value={hslValues.s}
-                onChange={(e) => handleHslChange("s", parseInt(e.target.value))}
+                onChange={e => handleHslChange("s", parseInt(e.target.value))}
                 className="flex-1"
               />
               <input
@@ -231,8 +231,8 @@ export const ColorPicker = ({
                 min="0"
                 max="100"
                 value={hslValues.s}
-                onChange={(e) => handleHslChange("s", parseInt(e.target.value))}
-                className="w-16 px-2 py-1 border rounded text-sm"
+                onChange={e => handleHslChange("s", parseInt(e.target.value))}
+                className="w-16 rounded border px-2 py-1 text-sm"
               />
             </div>
           </div>
@@ -247,7 +247,7 @@ export const ColorPicker = ({
                 min="0"
                 max="100"
                 value={hslValues.l}
-                onChange={(e) => handleHslChange("l", parseInt(e.target.value))}
+                onChange={e => handleHslChange("l", parseInt(e.target.value))}
                 className="flex-1"
               />
               <input
@@ -255,8 +255,8 @@ export const ColorPicker = ({
                 min="0"
                 max="100"
                 value={hslValues.l}
-                onChange={(e) => handleHslChange("l", parseInt(e.target.value))}
-                className="w-16 px-2 py-1 border rounded text-sm"
+                onChange={e => handleHslChange("l", parseInt(e.target.value))}
+                className="w-16 rounded border px-2 py-1 text-sm"
               />
             </div>
           </div>
@@ -273,7 +273,7 @@ export const ColorPicker = ({
               max="1"
               step="0.1"
               value={alphaValue}
-              onChange={(e) => handleAlphaChange(parseFloat(e.target.value))}
+              onChange={e => handleAlphaChange(parseFloat(e.target.value))}
               className="flex-1"
             />
             <input
@@ -282,8 +282,8 @@ export const ColorPicker = ({
               max="1"
               step="0.1"
               value={alphaValue}
-              onChange={(e) => handleAlphaChange(parseFloat(e.target.value))}
-              className="w-16 px-2 py-1 border rounded text-sm"
+              onChange={e => handleAlphaChange(parseFloat(e.target.value))}
+              className="w-16 rounded border px-2 py-1 text-sm"
             />
           </div>
         </div>

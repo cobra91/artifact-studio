@@ -19,7 +19,7 @@ export class ColorUtils {
     if (hex.length === 3) {
       hex = hex
         .split("")
-        .map((char) => char + char)
+        .map(char => char + char)
         .join("");
     }
 
@@ -38,7 +38,7 @@ export class ColorUtils {
     if (hex.length === 3) {
       hex = hex
         .split("")
-        .map((char) => char + char)
+        .map(char => char + char)
         .join("");
     }
 
@@ -144,7 +144,7 @@ export class ColorUtils {
 
   static rgbaToHex(rgba: string): { hex: string; alpha: number } {
     const match = rgba.match(
-      /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/,
+      /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/
     );
 
     if (!match) {
@@ -170,10 +170,10 @@ export class ColorUtils {
   static generateGradientString(
     type: "linear" | "radial",
     stops: Array<{ color: string; position: number }>,
-    angle?: number,
+    angle?: number
   ): string {
     const stopsString = stops
-      .map((stop) => `${stop.color} ${stop.position}%`)
+      .map(stop => `${stop.color} ${stop.position}%`)
       .join(", ");
 
     if (type === "linear") {
@@ -197,7 +197,7 @@ export class ColorUtils {
       const anglePart = parts[0].trim();
       const angle = anglePart.includes("deg") ? parseInt(anglePart) : 90;
 
-      const stops = parts.slice(1).map((stop) => {
+      const stops = parts.slice(1).map(stop => {
         const [color, position] = stop.trim().split(" ");
         return {
           color: color.trim(),
@@ -210,7 +210,7 @@ export class ColorUtils {
 
     if (radialMatch) {
       const parts = radialMatch[1].split(",");
-      const stops = parts.map((stop) => {
+      const stops = parts.map(stop => {
         const [color, position] = stop.trim().split(" ");
         return {
           color: color.trim(),

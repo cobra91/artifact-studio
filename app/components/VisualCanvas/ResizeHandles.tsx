@@ -6,7 +6,7 @@ interface ResizeHandleProps {
   onResize: (
     nodeId: string,
     direction: string,
-    event: React.MouseEvent,
+    event: React.MouseEvent
   ) => void;
   onRotate: (event: React.MouseEvent) => void;
 }
@@ -23,17 +23,17 @@ export const ResizeHandles = ({
 
   return (
     <>
-      {handles.map((direction) => (
+      {handles.map(direction => (
         <div
           key={direction}
-          className="absolute w-2 h-2 bg-blue-500 rounded-full cursor-pointer hover:bg-blue-600 shadow-md"
+          className="absolute h-2 w-2 cursor-pointer rounded-full bg-blue-500 shadow-md hover:bg-blue-600"
           style={getResizeHandleStyle(direction)}
-          onMouseDown={(e) => onResize(nodeId, direction, e)}
+          onMouseDown={e => onResize(nodeId, direction, e)}
         />
       ))}
       {/* Rotation handle */}
       <div
-        className="absolute w-3 h-3 bg-gray-600 rounded-full cursor-pointer hover:bg-gray-700 shadow-md"
+        className="absolute h-3 w-3 cursor-pointer rounded-full bg-gray-600 shadow-md hover:bg-gray-700"
         style={{
           top: -10,
           left: "50%",

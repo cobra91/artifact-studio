@@ -5,11 +5,18 @@ import { useCallback } from "react";
 import { useOthers, useUpdateMyPresence } from "../liveblocks.config";
 
 export function LiveCursors() {
+  // Check if Liveblocks is configured
+  const isLiveblocksConfigured =
+    process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY &&
+    process.env.NEXT_PUBLIC_LIVEBLOCKS_PUBLIC_KEY !== "pk_xxxxxxxxxxxxxxxxx";
+
+  // Always call hooks first, before any conditional returns
   const updateMyPresence = useUpdateMyPresence();
   const others = useOthers();
 
   const handlePointerMove = useCallback(
     (event: React.PointerEvent) => {
+      if (!isLiveblocksConfigured) return;
       updateMyPresence({
         cursor: {
           x: Math.round(event.clientX),
@@ -17,18 +24,24 @@ export function LiveCursors() {
         },
       });
     },
-    [updateMyPresence],
+    [updateMyPresence, isLiveblocksConfigured]
   );
 
   const handlePointerLeave = useCallback(() => {
+    if (!isLiveblocksConfigured) return;
     updateMyPresence({ cursor: null });
-  }, [updateMyPresence]);
+  }, [updateMyPresence, isLiveblocksConfigured]);
+
+  // If Liveblocks is not configured, return null
+  if (!isLiveblocksConfigured) {
+    return null;
+  }
 
   return (
     <div
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
-      className="fixed inset-0 pointer-events-none z-50"
+      className="pointer-events-none fixed inset-0 z-50"
     >
       {others.map(({ connectionId, presence }) => {
         if (!presence.cursor) {
@@ -80,7 +93,7 @@ function Cursor({
         />
       </svg>
       <div
-        className="absolute top-5 left-2 px-2 py-1 rounded-md text-xs text-white font-medium whitespace-nowrap"
+        className="absolute top-5 left-2 rounded-md px-2 py-1 text-xs font-medium whitespace-nowrap text-white"
         style={{ backgroundColor: color }}
       >
         {name}

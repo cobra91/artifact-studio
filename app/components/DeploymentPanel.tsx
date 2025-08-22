@@ -114,7 +114,7 @@ export function DeploymentPanel() {
 
       const status = await deploymentManager.deployToPlatform(
         selectedPlatform,
-        config,
+        config
       );
       setCurrentDeploymentStatus(status);
       await loadDeploymentHistory();
@@ -128,17 +128,17 @@ export function DeploymentPanel() {
   const getStatusIcon = (status: DeploymentStatus["status"]) => {
     switch (status) {
       case "success":
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
       case "failed":
-        return <XCircle className="w-4 h-4 text-red-500" />;
+        return <XCircle className="h-4 w-4 text-red-500" />;
       case "pending":
       case "building":
       case "deploying":
-        return <Clock className="w-4 h-4 text-yellow-500 animate-spin" />;
+        return <Clock className="h-4 w-4 animate-spin text-yellow-500" />;
       case "cancelled":
-        return <XCircle className="w-4 h-4 text-gray-500" />;
+        return <XCircle className="h-4 w-4 text-gray-500" />;
       default:
-        return <Clock className="w-4 h-4 text-gray-500" />;
+        return <Clock className="h-4 w-4 text-gray-500" />;
     }
   };
 
@@ -164,9 +164,9 @@ export function DeploymentPanel() {
   const availablePlatforms = deploymentManager.getAvailablePlatforms();
 
   return (
-    <div className="h-full p-4 overflow-y-auto space-y-6">
+    <div className="h-full space-y-6 overflow-y-auto p-4">
       <div>
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+        <h3 className="mb-2 text-lg font-semibold text-gray-800">
           Deployments
         </h3>
         <p className="text-sm text-gray-600">
@@ -178,18 +178,18 @@ export function DeploymentPanel() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Rocket className="w-5 h-5" />
+            <Rocket className="h-5 w-5" />
             Choose Platform
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-2">
-            {availablePlatforms.map((platform) => (
+            {availablePlatforms.map(platform => (
               <Button
                 key={platform}
                 variant={selectedPlatform === platform ? "default" : "outline"}
                 onClick={() => handlePlatformSelect(platform)}
-                className="flex flex-col items-center gap-2 h-20"
+                className="flex h-20 flex-col items-center gap-2"
               >
                 <div className="text-lg font-semibold">
                   {platform.toUpperCase()}
@@ -210,7 +210,7 @@ export function DeploymentPanel() {
                 disabled={isAuthenticating}
               >
                 {isAuthenticating ? (
-                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <RefreshCw className="h-4 w-4 animate-spin" />
                 ) : (
                   "Connect Account"
                 )}
@@ -225,7 +225,7 @@ export function DeploymentPanel() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Settings className="w-5 h-5" />
+              <Settings className="h-5 w-5" />
               Configuration
             </CardTitle>
           </CardHeader>
@@ -235,7 +235,7 @@ export function DeploymentPanel() {
               <Input
                 id="project-name"
                 value={projectName}
-                onChange={(e) => setProjectName(e.target.value)}
+                onChange={e => setProjectName(e.target.value)}
                 placeholder="my-awesome-project"
               />
             </div>
@@ -246,7 +246,7 @@ export function DeploymentPanel() {
                 <Input
                   id="repository"
                   value={repository}
-                  onChange={(e) => setRepository(e.target.value)}
+                  onChange={e => setRepository(e.target.value)}
                   placeholder="owner/repo"
                 />
               </div>
@@ -255,7 +255,7 @@ export function DeploymentPanel() {
                 <Input
                   id="branch"
                   value={branch}
-                  onChange={(e) => setBranch(e.target.value)}
+                  onChange={e => setBranch(e.target.value)}
                   placeholder="main"
                 />
               </div>
@@ -266,7 +266,7 @@ export function DeploymentPanel() {
               <Input
                 id="custom-domain"
                 value={customDomain}
-                onChange={(e) => setCustomDomain(e.target.value)}
+                onChange={e => setCustomDomain(e.target.value)}
                 placeholder="example.com"
               />
             </div>
@@ -277,7 +277,7 @@ export function DeploymentPanel() {
                 <Input
                   id="build-cmd"
                   value={buildCommand}
-                  onChange={(e) => setBuildCommand(e.target.value)}
+                  onChange={e => setBuildCommand(e.target.value)}
                   placeholder="npm run build"
                 />
               </div>
@@ -286,7 +286,7 @@ export function DeploymentPanel() {
                 <Input
                   id="install-cmd"
                   value={installCommand}
-                  onChange={(e) => setInstallCommand(e.target.value)}
+                  onChange={e => setInstallCommand(e.target.value)}
                   placeholder="npm install"
                 />
               </div>
@@ -295,7 +295,7 @@ export function DeploymentPanel() {
                 <Input
                   id="output-dir"
                   value={outputDirectory}
-                  onChange={(e) => setOutputDirectory(e.target.value)}
+                  onChange={e => setOutputDirectory(e.target.value)}
                   placeholder=".next"
                 />
               </div>
@@ -314,12 +314,12 @@ export function DeploymentPanel() {
         >
           {isDeploying ? (
             <>
-              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+              <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
               Deploying...
             </>
           ) : (
             <>
-              <Rocket className="w-4 h-4 mr-2" />
+              <Rocket className="mr-2 h-4 w-4" />
               Deploy Now
             </>
           )}
@@ -331,7 +331,7 @@ export function DeploymentPanel() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Clock className="w-5 h-5" />
+              <Clock className="h-5 w-5" />
               Current Deployment
             </CardTitle>
           </CardHeader>
@@ -342,7 +342,7 @@ export function DeploymentPanel() {
                 <span>
                   {getStatusText(currentDeploymentStatus.status)}
                   {currentDeploymentStatus.progress && (
-                    <span className="text-gray-500 ml-2">
+                    <span className="ml-2 text-gray-500">
                       ({currentDeploymentStatus.progress}%)
                     </span>
                   )}
@@ -356,13 +356,13 @@ export function DeploymentPanel() {
                     window.open(currentDeploymentStatus.url, "_blank")
                   }
                 >
-                  <ExternalLink className="w-4 h-4 mr-1" />
+                  <ExternalLink className="mr-1 h-4 w-4" />
                   View Site
                 </Button>
               )}
             </div>
             {currentDeploymentStatus.error && (
-              <div className="mt-2 p-2 bg-red-50 text-red-700 text-sm rounded">
+              <div className="mt-2 rounded bg-red-50 p-2 text-sm text-red-700">
                 {currentDeploymentStatus.error}
               </div>
             )}
@@ -375,16 +375,16 @@ export function DeploymentPanel() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <HistoryIcon className="w-5 h-5" />
+              <HistoryIcon className="h-5 w-5" />
               Deployment History
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {deploymentHistory.map((deployment) => (
+              {deploymentHistory.map(deployment => (
                 <div
                   key={deployment.id}
-                  className="flex items-center justify-between p-2 border rounded"
+                  className="flex items-center justify-between rounded border p-2"
                 >
                   <div className="flex items-center gap-2">
                     {getStatusIcon(deployment.status.status)}
@@ -404,7 +404,7 @@ export function DeploymentPanel() {
                           window.open(deployment.status.url, "_blank")
                         }
                       >
-                        <ExternalLink className="w-3 h-3" />
+                        <ExternalLink className="h-3 w-3" />
                       </Button>
                     )}
                   </div>

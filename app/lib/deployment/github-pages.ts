@@ -31,7 +31,7 @@ export class GitHubPagesDeploymentProvider extends BaseDeploymentProvider {
       !config.settings.environmentVariables?.["GITHUB_TOKEN"]
     ) {
       throw new Error(
-        "GitHub repository and token are required for GitHub Pages deployment",
+        "GitHub repository and token are required for GitHub Pages deployment"
       );
     }
 
@@ -40,12 +40,12 @@ export class GitHubPagesDeploymentProvider extends BaseDeploymentProvider {
     try {
       const status = await this.simulateDeploymentProgress(
         deploymentId,
-        (status) => {
+        status => {
           console.log("Deployment update:", status);
         },
-        (progress) => {
+        progress => {
           console.log("Deployment progress:", progress + "%");
-        },
+        }
       );
 
       // Generate GitHub Pages URL
@@ -62,7 +62,7 @@ export class GitHubPagesDeploymentProvider extends BaseDeploymentProvider {
         "failed",
         deploymentId,
         undefined,
-        error instanceof Error ? error.message : "Deployment failed",
+        error instanceof Error ? error.message : "Deployment failed"
       );
     }
   }
@@ -88,7 +88,7 @@ export class GitHubPagesDeploymentProvider extends BaseDeploymentProvider {
   }
 
   private async mockValidateToken(token: string): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     if (!token || token.length < 10) {
       throw new Error("Invalid GitHub token");

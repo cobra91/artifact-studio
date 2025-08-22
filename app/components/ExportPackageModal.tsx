@@ -73,9 +73,9 @@ export function ExportPackageModal({
 
   const handleInputChange = (
     field: keyof ExportOptions,
-    value: string | boolean,
+    value: string | boolean
   ) => {
-    setExportOptions((prev) => ({
+    setExportOptions(prev => ({
       ...prev,
       [field]: value,
     }));
@@ -83,13 +83,13 @@ export function ExportPackageModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Export Package</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <Label htmlFor="packageName">Package Name</Label>
               <Input
@@ -128,7 +128,7 @@ export function ExportPackageModal({
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <Label htmlFor="author">Author</Label>
               <Input
@@ -162,7 +162,7 @@ export function ExportPackageModal({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div>
               <Label htmlFor="type">Export Type</Label>
               <Select
@@ -207,7 +207,7 @@ export function ExportPackageModal({
               <Select
                 value={exportOptions.styling}
                 onValueChange={(
-                  value: "tailwind" | "css" | "scss" | "styled-components",
+                  value: "tailwind" | "css" | "scss" | "styled-components"
                 ) => handleInputChange("styling", value as any)}
               >
                 <SelectTrigger>
@@ -225,11 +225,11 @@ export function ExportPackageModal({
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-center justify-between p-4 border rounded-lg">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="flex items-center justify-between rounded-lg border p-4">
               <div>
                 <Label htmlFor="includeTests">Include Tests</Label>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Add Jest/Testing Library setup
                 </p>
               </div>
@@ -242,10 +242,10 @@ export function ExportPackageModal({
               />
             </div>
 
-            <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="flex items-center justify-between rounded-lg border p-4">
               <div>
                 <Label htmlFor="includeStorybook">Include Storybook</Label>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Add Storybook configuration
                 </p>
               </div>
@@ -259,15 +259,15 @@ export function ExportPackageModal({
             </div>
           </div>
 
-          <div className="p-4 bg-muted rounded-lg">
-            <h3 className="font-medium mb-2">Components to Export</h3>
-            <p className="text-sm text-muted-foreground">
+          <div className="bg-muted rounded-lg p-4">
+            <h3 className="mb-2 font-medium">Components to Export</h3>
+            <p className="text-muted-foreground text-sm">
               {components.length} component{components.length !== 1 ? "s" : ""}{" "}
               will be included in the package
             </p>
             <div className="mt-2 max-h-32 overflow-y-auto">
               {components.map((component, index) => (
-                <div key={index} className="text-sm py-1">
+                <div key={index} className="py-1 text-sm">
                   • {component.type}{" "}
                   {component.props?.className
                     ? `(${component.props.className})`

@@ -22,9 +22,9 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
 
   if (!selectedNode) {
     return (
-      <div className="h-full p-4 flex items-center justify-center text-gray-500">
+      <div className="flex h-full items-center justify-center p-4 text-gray-500">
         <div className="text-center">
-          <div className="text-4xl mb-2">🎨</div>
+          <div className="mb-2 text-4xl">🎨</div>
           <p>Select a component to edit its properties</p>
         </div>
       </div>
@@ -64,11 +64,11 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
   const renderLayoutTab = () => (
     <div className="space-y-4">
       <div>
-        <label className="block text-xs text-gray-600 mb-1">Display</label>
+        <label className="mb-1 block text-xs text-gray-600">Display</label>
         <select
           value={selectedNode.styles.display || "block"}
-          onChange={(e) => updateStyle("display", e.target.value)}
-          className="w-full p-2 text-sm border border-gray-300 rounded"
+          onChange={e => updateStyle("display", e.target.value)}
+          className="w-full rounded border border-gray-300 p-2 text-sm"
         >
           <option value="block">Block</option>
           <option value="flex">Flex</option>
@@ -77,29 +77,29 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
         </select>
       </div>
       {selectedNode.styles.display === "flex" && (
-        <div className="space-y-4 p-2 border rounded">
+        <div className="space-y-4 rounded border p-2">
           <h5 className="text-xs font-medium text-gray-500">Flexbox</h5>
           <div>
-            <label className="block text-xs text-gray-600 mb-1">
+            <label className="mb-1 block text-xs text-gray-600">
               Direction
             </label>
             <select
               value={selectedNode.styles.flexDirection || "row"}
-              onChange={(e) => updateStyle("flexDirection", e.target.value)}
-              className="w-full p-2 text-sm border border-gray-300 rounded"
+              onChange={e => updateStyle("flexDirection", e.target.value)}
+              className="w-full rounded border border-gray-300 p-2 text-sm"
             >
               <option value="row">Row</option>
               <option value="col">Column</option>
             </select>
           </div>
           <div>
-            <label className="block text-xs text-gray-600 mb-1">
+            <label className="mb-1 block text-xs text-gray-600">
               Justify Content
             </label>
             <select
               value={selectedNode.styles.justifyContent || "flex-start"}
-              onChange={(e) => updateStyle("justifyContent", e.target.value)}
-              className="w-full p-2 text-sm border border-gray-300 rounded"
+              onChange={e => updateStyle("justifyContent", e.target.value)}
+              className="w-full rounded border border-gray-300 p-2 text-sm"
             >
               <option value="flex-start">Start</option>
               <option value="center">Center</option>
@@ -108,13 +108,13 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             </select>
           </div>
           <div>
-            <label className="block text-xs text-gray-600 mb-1">
+            <label className="mb-1 block text-xs text-gray-600">
               Align Items
             </label>
             <select
               value={selectedNode.styles.alignItems || "stretch"}
-              onChange={(e) => updateStyle("alignItems", e.target.value)}
-              className="w-full p-2 text-sm border border-gray-300 rounded"
+              onChange={e => updateStyle("alignItems", e.target.value)}
+              className="w-full rounded border border-gray-300 p-2 text-sm"
             >
               <option value="stretch">Stretch</option>
               <option value="flex-start">Start</option>
@@ -130,25 +130,25 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
   const renderTypographyTab = () => (
     <div className="space-y-4">
       <div>
-        <label className="block text-xs text-gray-600 mb-1">Font Size</label>
+        <label className="mb-1 block text-xs text-gray-600">Font Size</label>
         <input
           type="text"
           value={selectedNode.styles.fontSize || "16px"}
-          onChange={(e) => {
+          onChange={e => {
             const value = e.target.value;
             if (/^\d+(px|em|rem|%)$/.test(value)) {
               updateStyle("fontSize", value);
             }
           }}
-          className="w-full p-2 text-sm border border-gray-300 rounded"
+          className="w-full rounded border border-gray-300 p-2 text-sm"
         />
       </div>
       <div>
-        <label className="block text-xs text-gray-600 mb-1">Font Weight</label>
+        <label className="mb-1 block text-xs text-gray-600">Font Weight</label>
         <select
           value={selectedNode.styles.fontWeight || "normal"}
-          onChange={(e) => updateStyle("fontWeight", e.target.value)}
-          className="w-full p-2 text-sm border border-gray-300 rounded"
+          onChange={e => updateStyle("fontWeight", e.target.value)}
+          className="w-full rounded border border-gray-300 p-2 text-sm"
         >
           <option value="normal">Normal</option>
           <option value="bold">Bold</option>
@@ -156,11 +156,11 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
         </select>
       </div>
       <div>
-        <label className="block text-xs text-gray-600 mb-1">Text Align</label>
+        <label className="mb-1 block text-xs text-gray-600">Text Align</label>
         <select
           value={selectedNode.styles.textAlign || "left"}
-          onChange={(e) => updateStyle("textAlign", e.target.value)}
-          className="w-full p-2 text-sm border border-gray-300 rounded"
+          onChange={e => updateStyle("textAlign", e.target.value)}
+          className="w-full rounded border border-gray-300 p-2 text-sm"
         >
           <option value="left">Left</option>
           <option value="center">Center</option>
@@ -168,12 +168,12 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
         </select>
       </div>
       <div>
-        <label className="block text-xs text-gray-600 mb-1">Color</label>
+        <label className="mb-1 block text-xs text-gray-600">Color</label>
         <input
           type="color"
           value={selectedNode.styles.color || "#000000"}
-          onChange={(e) => updateStyle("color", e.target.value)}
-          className="w-full h-8 border border-gray-300 rounded"
+          onChange={e => updateStyle("color", e.target.value)}
+          className="h-8 w-full rounded border border-gray-300"
         />
       </div>
     </div>
@@ -183,7 +183,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
     <div className="space-y-4">
       {/* Breakpoint Selector */}
       <div className="flex justify-around">
-        {(["base", "sm", "md", "lg"] as const).map((breakpoint) => {
+        {(["base", "sm", "md", "lg"] as const).map(breakpoint => {
           const hasCustomStyles =
             selectedNode.responsiveStyles?.[breakpoint] &&
             Object.keys(selectedNode.responsiveStyles[breakpoint]).length > 0;
@@ -192,7 +192,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             <button
               key={breakpoint}
               onClick={() => setActiveBreakpoint(breakpoint)}
-              className={`px-3 py-1 text-sm rounded relative ${
+              className={`relative rounded px-3 py-1 text-sm ${
                 activeBreakpoint === breakpoint
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200 hover:bg-gray-300"
@@ -200,7 +200,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             >
               {breakpoint.toUpperCase()}
               {hasCustomStyles && (
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-orange-500 rounded-full"></div>
+                <div className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-orange-500"></div>
               )}
             </button>
           );
@@ -208,8 +208,8 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
       </div>
 
       {/* Responsive Preview */}
-      <div className="p-3 border rounded bg-gray-50">
-        <h5 className="text-xs font-medium text-gray-500 mb-2">
+      <div className="rounded border bg-gray-50 p-3">
+        <h5 className="mb-2 text-xs font-medium text-gray-500">
           Preview: {activeBreakpoint.toUpperCase()}
         </h5>
         <div
@@ -227,7 +227,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             margin: "0 auto",
           }}
         >
-          <div className="text-xs text-gray-500 mb-1">
+          <div className="mb-1 text-xs text-gray-500">
             {activeBreakpoint === "base"
               ? "Mobile (< 640px)"
               : activeBreakpoint === "sm"
@@ -240,44 +240,44 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
       </div>
 
       {/* Responsive Styles Editor */}
-      <div className="p-3 border rounded">
-        <h5 className="text-xs font-medium text-gray-500 mb-3">
+      <div className="rounded border p-3">
+        <h5 className="mb-3 text-xs font-medium text-gray-500">
           {activeBreakpoint.toUpperCase()} Styles
         </h5>
         <div className="space-y-3">
           {/* Layout Properties */}
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Width</label>
+            <label className="mb-1 block text-xs text-gray-600">Width</label>
             <input
               type="text"
               placeholder="e.g., 100%, 200px, auto"
               value={
                 selectedNode.responsiveStyles?.[activeBreakpoint]?.width || ""
               }
-              onChange={(e) => updateResponsiveStyle("width", e.target.value)}
-              className="w-full p-2 text-sm border border-gray-300 rounded"
+              onChange={e => updateResponsiveStyle("width", e.target.value)}
+              className="w-full rounded border border-gray-300 p-2 text-sm"
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Height</label>
+            <label className="mb-1 block text-xs text-gray-600">Height</label>
             <input
               type="text"
               placeholder="e.g., 100px, auto"
               value={
                 selectedNode.responsiveStyles?.[activeBreakpoint]?.height || ""
               }
-              onChange={(e) => updateResponsiveStyle("height", e.target.value)}
-              className="w-full p-2 text-sm border border-gray-300 rounded"
+              onChange={e => updateResponsiveStyle("height", e.target.value)}
+              className="w-full rounded border border-gray-300 p-2 text-sm"
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Display</label>
+            <label className="mb-1 block text-xs text-gray-600">Display</label>
             <select
               value={
                 selectedNode.responsiveStyles?.[activeBreakpoint]?.display || ""
               }
-              onChange={(e) => updateResponsiveStyle("display", e.target.value)}
-              className="w-full p-2 text-sm border border-gray-300 rounded"
+              onChange={e => updateResponsiveStyle("display", e.target.value)}
+              className="w-full rounded border border-gray-300 p-2 text-sm"
             >
               <option value="">Inherit</option>
               <option value="block">Block</option>
@@ -290,7 +290,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
 
           {/* Typography Properties */}
           <div>
-            <label className="block text-xs text-gray-600 mb-1">
+            <label className="mb-1 block text-xs text-gray-600">
               Font Size
             </label>
             <input
@@ -300,14 +300,12 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
                 selectedNode.responsiveStyles?.[activeBreakpoint]?.fontSize ||
                 ""
               }
-              onChange={(e) =>
-                updateResponsiveStyle("fontSize", e.target.value)
-              }
-              className="w-full p-2 text-sm border border-gray-300 rounded"
+              onChange={e => updateResponsiveStyle("fontSize", e.target.value)}
+              className="w-full rounded border border-gray-300 p-2 text-sm"
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-600 mb-1">
+            <label className="mb-1 block text-xs text-gray-600">
               Text Align
             </label>
             <select
@@ -315,10 +313,8 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
                 selectedNode.responsiveStyles?.[activeBreakpoint]?.textAlign ||
                 ""
               }
-              onChange={(e) =>
-                updateResponsiveStyle("textAlign", e.target.value)
-              }
-              className="w-full p-2 text-sm border border-gray-300 rounded"
+              onChange={e => updateResponsiveStyle("textAlign", e.target.value)}
+              className="w-full rounded border border-gray-300 p-2 text-sm"
             >
               <option value="">Inherit</option>
               <option value="left">Left</option>
@@ -330,33 +326,33 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
 
           {/* Spacing Properties */}
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Padding</label>
+            <label className="mb-1 block text-xs text-gray-600">Padding</label>
             <input
               type="text"
               placeholder="e.g., 10px, 1rem"
               value={
                 selectedNode.responsiveStyles?.[activeBreakpoint]?.padding || ""
               }
-              onChange={(e) => updateResponsiveStyle("padding", e.target.value)}
-              className="w-full p-2 text-sm border border-gray-300 rounded"
+              onChange={e => updateResponsiveStyle("padding", e.target.value)}
+              className="w-full rounded border border-gray-300 p-2 text-sm"
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-600 mb-1">Margin</label>
+            <label className="mb-1 block text-xs text-gray-600">Margin</label>
             <input
               type="text"
               placeholder="e.g., 10px, 1rem"
               value={
                 selectedNode.responsiveStyles?.[activeBreakpoint]?.margin || ""
               }
-              onChange={(e) => updateResponsiveStyle("margin", e.target.value)}
-              className="w-full p-2 text-sm border border-gray-300 rounded"
+              onChange={e => updateResponsiveStyle("margin", e.target.value)}
+              className="w-full rounded border border-gray-300 p-2 text-sm"
             />
           </div>
 
           {/* Quick Actions */}
-          <div className="pt-2 border-t">
-            <div className="flex gap-2 flex-wrap">
+          <div className="border-t pt-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => {
                   // Copy base styles to current breakpoint
@@ -365,7 +361,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
                     if (value) updateResponsiveStyle(key, value);
                   });
                 }}
-                className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                className="rounded bg-blue-100 px-2 py-1 text-xs text-blue-700 hover:bg-blue-200"
               >
                 Copy Base
               </button>
@@ -373,17 +369,17 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
                 onClick={() => {
                   // Apply default responsive styles for this component type
                   const defaultStyles = generateResponsiveStyles(
-                    selectedNode.type,
+                    selectedNode.type
                   );
                   const currentBreakpointStyles =
                     defaultStyles[activeBreakpoint];
                   Object.entries(currentBreakpointStyles).forEach(
                     ([key, value]) => {
                       if (value) updateResponsiveStyle(key, value);
-                    },
+                    }
                   );
                 }}
-                className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200"
+                className="rounded bg-green-100 px-2 py-1 text-xs text-green-700 hover:bg-green-200"
               >
                 Apply Default
               </button>
@@ -397,7 +393,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
                     },
                   });
                 }}
-                className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200"
+                className="rounded bg-red-100 px-2 py-1 text-xs text-red-700 hover:bg-red-200"
               >
                 Clear
               </button>
@@ -409,38 +405,38 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
   );
 
   return (
-    <div className="h-full p-4 overflow-y-auto">
+    <div className="h-full overflow-y-auto p-4">
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">Properties</h3>
-        <div className="text-sm text-gray-600 bg-gray-50 px-2 py-1 rounded">
+        <h3 className="mb-2 text-lg font-semibold text-gray-800">Properties</h3>
+        <div className="rounded bg-gray-50 px-2 py-1 text-sm text-gray-600">
           {selectedNode.type} • {selectedNode.id}
         </div>
       </div>
 
       <div className="mb-6">
-        <h4 className="text-sm font-medium text-gray-700 mb-3">Content</h4>
+        <h4 className="mb-3 text-sm font-medium text-gray-700">Content</h4>
         {selectedNode.type === "text" && (
           <input
             type="text"
             value={selectedNode.props.children || ""}
-            onChange={(e) => updateProp("children", e.target.value)}
-            className="w-full p-2 text-sm border border-gray-300 rounded"
+            onChange={e => updateProp("children", e.target.value)}
+            className="w-full rounded border border-gray-300 p-2 text-sm"
           />
         )}
         {selectedNode.type === "button" && (
           <input
             type="text"
             value={selectedNode.props.children || ""}
-            onChange={(e) => updateProp("children", e.target.value)}
-            className="w-full p-2 text-sm border border-gray-300 rounded"
+            onChange={e => updateProp("children", e.target.value)}
+            className="w-full rounded border border-gray-300 p-2 text-sm"
           />
         )}
         {selectedNode.type === "input" && (
           <input
             type="text"
             value={selectedNode.props.placeholder || ""}
-            onChange={(e) => updateProp("placeholder", e.target.value)}
-            className="w-full p-2 text-sm border border-gray-300 rounded"
+            onChange={e => updateProp("placeholder", e.target.value)}
+            className="w-full rounded border border-gray-300 p-2 text-sm"
           />
         )}
       </div>

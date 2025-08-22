@@ -29,20 +29,20 @@ export interface PackageStructure {
 abstract class BaseGenerator {
   protected abstract generateComponent(
     component: ComponentNode,
-    options: ExportOptions,
+    options: ExportOptions
   ): string;
   protected abstract generatePackageJson(options: ExportOptions): string;
   protected abstract generateConfigFiles(
-    options: ExportOptions,
+    options: ExportOptions
   ): Record<string, string>;
   protected abstract generateExampleFiles(
-    options: ExportOptions,
+    options: ExportOptions
   ): Record<string, string>;
 
   // Méthode commune pour générer le package
   async generatePackage(
     components: ComponentNode[],
-    options: ExportOptions,
+    options: ExportOptions
   ): Promise<Blob> {
     const zip = new JSZip();
 
@@ -62,7 +62,7 @@ abstract class BaseGenerator {
           const testCode = this.generateComponentTest(component, options);
           rootFolder.file(
             `src/components/__tests__/${componentName}.test.tsx`,
-            testCode,
+            testCode
           );
         }
 
@@ -71,7 +71,7 @@ abstract class BaseGenerator {
           const storyCode = this.generateComponentStory(component, options);
           rootFolder.file(
             `src/components/${componentName}.stories.tsx`,
-            storyCode,
+            storyCode
           );
         }
       }
@@ -112,7 +112,7 @@ abstract class BaseGenerator {
   // Méthode pour télécharger le package
   async downloadPackage(
     components: ComponentNode[],
-    options: ExportOptions,
+    options: ExportOptions
   ): Promise<void> {
     const blob = await this.generatePackage(components, options);
     saveAs(blob, `${options.packageName}.zip`);
@@ -125,14 +125,14 @@ abstract class BaseGenerator {
 
   protected generateIndexFile(components: ComponentNode[]): string {
     const imports = components
-      .map((component) => {
+      .map(component => {
         const componentName = this.formatComponentName(component.type);
         return `import ${componentName} from './components/${componentName}';`;
       })
       .join("\n");
 
     const exports = components
-      .map((component) => {
+      .map(component => {
         const componentName = this.formatComponentName(component.type);
         return `  ${componentName},`;
       })
@@ -147,7 +147,7 @@ ${exports}
 
   protected generateComponentTest(
     component: ComponentNode,
-    _options: ExportOptions,
+    _options: ExportOptions
   ): string {
     const componentName = this.formatComponentName(component.type);
     return `import React from 'react';
@@ -165,7 +165,7 @@ describe('${componentName}', () => {
 
   protected generateComponentStory(
     component: ComponentNode,
-    _options: ExportOptions,
+    _options: ExportOptions
   ): string {
     const componentName = this.formatComponentName(component.type);
     return `import React from 'react';
@@ -264,7 +264,7 @@ SOFTWARE.`;
 class ReactGenerator extends BaseGenerator {
   protected generateComponent(
     component: ComponentNode,
-    options: ExportOptions,
+    options: ExportOptions
   ): string {
     const componentName = this.formatComponentName(component.type);
     const className = component.props?.className || "";
@@ -362,7 +362,7 @@ export default ${componentName};
   }
 
   protected generateConfigFiles(
-    options: ExportOptions,
+    options: ExportOptions
   ): Record<string, string> {
     const files: Record<string, string> = {};
 
@@ -391,7 +391,7 @@ export default ${componentName};
         exclude: ["node_modules", "dist"],
       },
       null,
-      2,
+      2
     );
 
     // rollup.config.js
@@ -497,7 +497,7 @@ declare module 'styled-components' {
   }
 
   protected generateExampleFiles(
-    _options: ExportOptions,
+    _options: ExportOptions
   ): Record<string, string> {
     return {
       "basic.tsx": `import React from 'react';
@@ -536,7 +536,7 @@ export default ExampleWithProps;
 class VueGenerator extends BaseGenerator {
   protected generateComponent(
     component: ComponentNode,
-    _options: ExportOptions,
+    _options: ExportOptions
   ): string {
     const _componentName = this.formatComponentName(component.type);
 
@@ -598,7 +598,7 @@ class VueGenerator extends BaseGenerator {
   }
 
   protected generateConfigFiles(
-    options: ExportOptions,
+    options: ExportOptions
   ): Record<string, string> {
     const files: Record<string, string> = {};
 
@@ -626,7 +626,7 @@ class VueGenerator extends BaseGenerator {
         exclude: ["node_modules", "dist"],
       },
       null,
-      2,
+      2
     );
 
     // vite.config.ts
@@ -663,7 +663,7 @@ dist/
   }
 
   protected generateExampleFiles(
-    _options: ExportOptions,
+    _options: ExportOptions
   ): Record<string, string> {
     return {
       "basic.vue": `<template>
@@ -696,7 +696,7 @@ dist/
 class SvelteGenerator extends BaseGenerator {
   protected generateComponent(
     component: ComponentNode,
-    _options: ExportOptions,
+    _options: ExportOptions
   ): string {
     return `<script lang="ts">
   // Add your component logic here
@@ -755,7 +755,7 @@ class SvelteGenerator extends BaseGenerator {
   }
 
   protected generateConfigFiles(
-    options: ExportOptions,
+    options: ExportOptions
   ): Record<string, string> {
     const files: Record<string, string> = {};
 
@@ -780,7 +780,7 @@ class SvelteGenerator extends BaseGenerator {
         exclude: ["node_modules", "dist"],
       },
       null,
-      2,
+      2
     );
 
     // rollup.config.js
@@ -848,7 +848,7 @@ dist/
   }
 
   protected generateExampleFiles(
-    _options: ExportOptions,
+    _options: ExportOptions
   ): Record<string, string> {
     return {
       "basic.svelte": `<script>
@@ -877,7 +877,7 @@ dist/
 class NextjsGenerator extends BaseGenerator {
   protected generateComponent(
     component: ComponentNode,
-    _options: ExportOptions,
+    _options: ExportOptions
   ): string {
     const componentName = this.formatComponentName(component.type);
     const className = component.props?.className || "";
@@ -934,7 +934,7 @@ export default ${componentName};
   }
 
   protected generateConfigFiles(
-    options: ExportOptions,
+    options: ExportOptions
   ): Record<string, string> {
     const files: Record<string, string> = {};
 
@@ -964,7 +964,7 @@ export default ${componentName};
         exclude: ["node_modules"],
       },
       null,
-      2,
+      2
     );
 
     // next.config.js
@@ -1004,7 +1004,7 @@ yarn-error.log*
         extends: "next/core-web-vitals",
       },
       null,
-      2,
+      2
     );
 
     // Créer la structure de pages
@@ -1046,7 +1046,7 @@ body {
   }
 
   protected generateExampleFiles(
-    _options: ExportOptions,
+    _options: ExportOptions
   ): Record<string, string> {
     return {
       "about.tsx": `import React from 'react';
@@ -1076,14 +1076,14 @@ export default function Contact() {
 
   protected generateIndexFile(components: ComponentNode[]): string {
     const imports = components
-      .map((component) => {
+      .map(component => {
         const componentName = this.formatComponentName(component.type);
         return `import ${componentName} from './components/${componentName}';`;
       })
       .join("\n");
 
     const exports = components
-      .map((component) => {
+      .map(component => {
         const componentName = this.formatComponentName(component.type);
         return `  ${componentName},`;
       })
@@ -1118,7 +1118,7 @@ export class PackageGeneratorFactory {
 // Fonction utilitaire pour générer et télécharger un package
 export async function generateAndDownloadPackage(
   components: ComponentNode[],
-  options: ExportOptions,
+  options: ExportOptions
 ): Promise<void> {
   const generator = PackageGeneratorFactory.createGenerator(options.framework);
   await generator.downloadPackage(components, options);

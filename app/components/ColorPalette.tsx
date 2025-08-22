@@ -52,7 +52,7 @@ export const ColorPalette = ({
           <button
             key={`${color}-${index}`}
             onClick={() => onColorSelect(color)}
-            className="w-8 h-8 rounded border border-gray-300 hover:border-gray-400 transition-colors"
+            className="h-8 w-8 rounded border border-gray-300 transition-colors hover:border-gray-400"
             style={{ backgroundColor: color }}
             title={color}
             aria-label={`Select color ${color}`}

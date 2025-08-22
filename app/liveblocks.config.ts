@@ -70,5 +70,5 @@ export const {
   useAddReaction,
   useRemoveReaction,
 } = createRoomContext<Presence, Storage, UserMeta, RoomEvent, ThreadMetadata>(
-  client,
+  client
 );

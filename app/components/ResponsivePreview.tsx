@@ -46,15 +46,15 @@ export const ResponsivePreview = ({
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="p-4 border-b bg-gray-50">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+      <div className="border-b bg-gray-50 p-4">
+        <h3 className="mb-2 text-lg font-semibold text-gray-800">
           Responsive Preview
         </h3>
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <span>Current breakpoint:</span>
-          <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded font-medium">
+          <span className="rounded bg-blue-100 px-2 py-1 font-medium text-blue-700">
             {activeBreakpoint.toUpperCase()}
           </span>
           <span>• {getPreviewLabel()}</span>
@@ -62,10 +62,10 @@ export const ResponsivePreview = ({
       </div>
 
       {/* Preview Container */}
-      <div className="flex-1 p-4 bg-gray-100 overflow-auto">
+      <div className="flex-1 overflow-auto bg-gray-100 p-4">
         <div className="flex justify-center">
           <div
-            className="bg-white shadow-lg border border-gray-200 transition-all duration-300"
+            className="border border-gray-200 bg-white shadow-lg transition-all duration-300"
             style={{
               width: getPreviewWidth(),
               maxWidth: "100%",
@@ -74,16 +74,16 @@ export const ResponsivePreview = ({
             }}
           >
             {/* Device Frame */}
-            <div className="absolute inset-0 border-8 border-gray-800 rounded-lg pointer-events-none">
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-2 bg-gray-800 rounded-b-lg"></div>
+            <div className="pointer-events-none absolute inset-0 rounded-lg border-8 border-gray-800">
+              <div className="absolute top-0 left-1/2 h-2 w-16 -translate-x-1/2 transform rounded-b-lg bg-gray-800"></div>
             </div>
 
             {/* Content Area */}
-            <div className="p-4 h-full overflow-auto">
+            <div className="h-full overflow-auto p-4">
               {components.length === 0 ? (
-                <div className="h-full flex items-center justify-center text-gray-500">
+                <div className="flex h-full items-center justify-center text-gray-500">
                   <div className="text-center">
-                    <div className="text-4xl mb-2">📱</div>
+                    <div className="mb-2 text-4xl">📱</div>
                     <p>No components to preview</p>
                     <p className="text-sm">
                       Add components to the canvas to see them here
@@ -92,12 +92,12 @@ export const ResponsivePreview = ({
                 </div>
               ) : (
                 <div className="relative">
-                  {components.map((component) => (
+                  {components.map(component => (
                     <div
                       key={component.id}
                       className={`absolute ${
                         selectedNodeIds.includes(component.id)
-                          ? "ring-2 ring-blue-500 ring-opacity-50"
+                          ? "ring-opacity-50 ring-2 ring-blue-500"
                           : ""
                       }`}
                       style={{
@@ -123,8 +123,8 @@ export const ResponsivePreview = ({
       </div>
 
       {/* Footer Info */}
-      <div className="p-3 border-t bg-gray-50 text-xs text-gray-600">
-        <div className="flex justify-between items-center">
+      <div className="border-t bg-gray-50 p-3 text-xs text-gray-600">
+        <div className="flex items-center justify-between">
           <span>Preview: {getPreviewLabel()}</span>
           <span>Width: {getPreviewWidth()}</span>
         </div>

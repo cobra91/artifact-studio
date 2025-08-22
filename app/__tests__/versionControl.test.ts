@@ -22,7 +22,7 @@ describe("VersionControl", () => {
     ];
     versionControl.saveVersion("test", components as any);
     const restored = versionControl.restoreVersion(
-      versionControl.getVersions()[0].id,
+      versionControl.getVersions()[0].id
     );
     expect(restored).toEqual(components);
   });

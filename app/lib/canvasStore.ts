@@ -35,7 +35,7 @@ interface CanvasStore extends CanvasState {
 
 export const useCanvasStore = create<CanvasStore>()(
   persist(
-    (set) => ({
+    set => ({
       components: [], // Added
       selectedNodes: [], // Added
       clipboard: [], // Added
@@ -49,35 +49,35 @@ export const useCanvasStore = create<CanvasStore>()(
       recentColors: ["#000000", "#ffffff", "#ff0000", "#00ff00", "#0000ff"],
       activeBreakpoint: "base",
 
-      addElement: (element) =>
-        set((state) => ({
+      addElement: element =>
+        set(state => ({
           elements: [...state.elements, element],
         })),
 
       updateElement: (id, updates) =>
-        set((state) => ({
-          elements: state.elements.map((el) =>
-            el.id === id ? { ...el, ...updates } : el,
+        set(state => ({
+          elements: state.elements.map(el =>
+            el.id === id ? { ...el, ...updates } : el
           ),
         })),
 
-      deleteElement: (id) =>
-        set((state) => ({
-          elements: state.elements.filter((el) => el.id !== id),
+      deleteElement: id =>
+        set(state => ({
+          elements: state.elements.filter(el => el.id !== id),
           selectedElementId:
             state.selectedElementId === id ? null : state.selectedElementId,
         })),
 
-      selectElement: (id) =>
+      selectElement: id =>
         set(() => ({
           selectedElementId: id,
         })),
 
-      addRecentColor: (color) =>
-        set((state) => {
+      addRecentColor: color =>
+        set(state => {
           const normalizedColor = color.toLowerCase();
           const filteredColors = state.recentColors.filter(
-            (c) => c.toLowerCase() !== normalizedColor,
+            c => c.toLowerCase() !== normalizedColor
           );
           const newColors = [color, ...filteredColors].slice(0, 20);
           return { recentColors: newColors };
@@ -88,21 +88,21 @@ export const useCanvasStore = create<CanvasStore>()(
           recentColors: [],
         })),
 
-      setActiveBreakpoint: (breakpoint) =>
+      setActiveBreakpoint: breakpoint =>
         set(() => ({ activeBreakpoint: breakpoint })),
-      setSelectedNodes: (nodes) =>
-        set((state) => ({
+      setSelectedNodes: nodes =>
+        set(state => ({
           selectedNodes:
             typeof nodes === "function" ? nodes(state.selectedNodes) : nodes,
         })),
-      setSnapToGrid: (snap) => set(() => ({ snapToGrid: snap })),
+      setSnapToGrid: snap => set(() => ({ snapToGrid: snap })),
     }),
     {
       name: "canvas-store",
-      partialize: (state) => ({
+      partialize: state => ({
         recentColors: state.recentColors,
         activeBreakpoint: state.activeBreakpoint,
       }),
-    },
-  ),
+    }
+  )
 );

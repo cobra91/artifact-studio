@@ -47,19 +47,19 @@ export const ComponentLibrary = () => {
   };
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="p-4 border-b border-gray-200">
+    <div className="flex h-full flex-col">
+      <div className="border-b border-gray-200 p-4">
         <h2 className="text-lg font-semibold text-gray-800">Components</h2>
         <p className="text-sm text-gray-600">Drag to add to canvas</p>
       </div>
 
-      <div className="flex-1 p-4 space-y-2">
-        {componentTemplates.map((template) => (
+      <div className="flex-1 space-y-2 p-4">
+        {componentTemplates.map(template => (
           <div
             key={template.type}
             draggable="true"
-            onDragStart={(e) => handleDragStart(e, template.type)}
-            className="w-full p-3 text-left bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-colors cursor-grab"
+            onDragStart={e => handleDragStart(e, template.type)}
+            className="w-full cursor-grab rounded-lg border border-gray-200 bg-white p-3 text-left transition-colors hover:border-gray-300 hover:bg-gray-50"
           >
             <div className="flex items-center gap-3">
               <span className="text-xl">{template.icon}</span>
@@ -69,19 +69,19 @@ export const ComponentLibrary = () => {
         ))}
       </div>
 
-      <div className="p-4 border-t border-gray-200">
-        <h3 className="text-md font-medium text-gray-800 mb-2">Templates</h3>
+      <div className="border-t border-gray-200 p-4">
+        <h3 className="text-md mb-2 font-medium text-gray-800">Templates</h3>
         <div className="space-y-2">
-          <button className="w-full p-2 text-left text-sm bg-purple-50 border border-purple-200 rounded hover:bg-purple-100">
+          <button className="w-full rounded border border-purple-200 bg-purple-50 p-2 text-left text-sm hover:bg-purple-100">
             🧮 Calculator
           </button>
-          <button className="w-full p-2 text-left text-sm bg-green-50 border border-green-200 rounded hover:bg-green-100">
+          <button className="w-full rounded border border-green-200 bg-green-50 p-2 text-left text-sm hover:bg-green-100">
             📊 Dashboard
           </button>
-          <button className="w-full p-2 text-left text-sm bg-blue-50 border border-blue-200 rounded hover:bg-blue-100">
+          <button className="w-full rounded border border-blue-200 bg-blue-50 p-2 text-left text-sm hover:bg-blue-100">
             📝 Form
           </button>
-          <button className="w-full p-2 text-left text-sm bg-orange-50 border border-orange-200 rounded hover:bg-orange-100">
+          <button className="w-full rounded border border-orange-200 bg-orange-50 p-2 text-left text-sm hover:bg-orange-100">
             🎯 Quiz
           </button>
         </div>
