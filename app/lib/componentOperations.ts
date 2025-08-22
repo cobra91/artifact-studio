@@ -307,3 +307,181 @@ export const getComponentByPath = (
 
   return current;
 };
+
+// Component duplication and cloning operations
+export const duplicateComponent = (
+  component: ComponentNode,
+  offsetPosition: { x: number; y: number } = { x: 20, y: 20 }
+): ComponentNode => {
+  const duplicated = cloneComponentNode(component);
+  duplicated.id = generateComponentId();
+  duplicated.position = {
+    x: component.position.x + offsetPosition.x,
+    y: component.position.y + offsetPosition.y,
+  };
+  
+  // Update metadata for duplication
+  const now = new Date();
+  duplicated.metadata = mergeMetadata(duplicated.metadata, {
+    created: now,
+    modified: now,
+    description: `Copy of ${component.metadata?.description || component.type}`,
+  });
+  
+  // Recursively update child IDs
+  const updateChildIds = (node: ComponentNode): void => {
+    node.id = generateComponentId();
+    if (node.children) {
+      node.children.forEach(updateChildIds);
+    }
+  };
+  
+  if (duplicated.children) {
+    duplicated.children.forEach(updateChildIds);
+  }
+  
+  return duplicated;
+};
+
+// Group and ungroup operations
+export const createGroup = (
+  components: ComponentNode[],
+  groupId?: string
+): ComponentNode => {
+  if (components.length === 0) {
+    throw new Error("Cannot create group with no components");
+  }
+  
+  // Calculate bounding box for the group
+  const minX = Math.min(...components.map(c => c.position.x));
+  const minY = Math.min(...components.map(c => c.position.y));
+  const maxX = Math.max(...components.map(c => c.position.x + c.size.width));
+  const maxY = Math.max(...components.map(c => c.position.y + c.size.height));
+  
+  // Adjust component positions relative to group origin
+  const adjustedComponents = components.map(component => ({
+    ...component,
+    position: {
+      x: component.position.x - minX,
+      y: component.position.y - minY,
+    },
+  }));
+  
+  const group = createComponentNode(
+    "container",
+    groupId,
+    { className: "component-group" },
+    {},
+    { x: minX, y: minY },
+    { width: maxX - minX, height: maxY - minY },
+    {
+      ...createDefaultMetadata(),
+      description: `Group of ${components.length} components`,
+      tags: ["group"],
+    }
+  );
+  
+  group.children = adjustedComponents;
+  return group;
+};
+
+export const ungroupComponents = (
+  group: ComponentNode,
+  parentPosition: { x: number; y: number } = { x: 0, y: 0 }
+): ComponentNode[] => {
+  if (!group.children || group.children.length === 0) {
+    return [];
+  }
+  
+  // Restore absolute positions of child components
+  return group.children.map(child => ({
+    ...child,
+    position: {
+      x: child.position.x + group.position.x + parentPosition.x,
+      y: child.position.y + group.position.y + parentPosition.y,
+    },
+  }));
+};
+
+// Transformation operations
+export const applySkewTransformation = (
+  component: ComponentNode,
+  skew: { x: number; y: number }
+): ComponentNode => {
+  return {
+    ...component,
+    skew,
+    metadata: mergeMetadata(component.metadata, { modified: new Date() }),
+  };
+};
+
+export const applyRotationTransformation = (
+  component: ComponentNode,
+  rotation: number
+): ComponentNode => {
+  return {
+    ...component,
+    rotation: rotation % 360, // Normalize rotation to 0-359 degrees
+    metadata: mergeMetadata(component.metadata, { modified: new Date() }),
+  };
+};
+
+// Grid snapping utilities
+export const snapToGrid = (
+  position: { x: number; y: number },
+  gridSize: number = 20
+): { x: number; y: number } => {
+  return {
+    x: Math.round(position.x / gridSize) * gridSize,
+    y: Math.round(position.y / gridSize) * gridSize,
+  };
+};
+
+export const snapSizeToGrid = (
+  size: { width: number; height: number },
+  gridSize: number = 20
+): { width: number; height: number } => {
+  return {
+    width: Math.max(gridSize, Math.round(size.width / gridSize) * gridSize),
+    height: Math.max(gridSize, Math.round(size.height / gridSize) * gridSize),
+  };
+};
+
+// Component selection utilities
+export const isComponentInSelection = (
+  component: ComponentNode,
+  selectionRect: { x: number; y: number; width: number; height: number }
+): boolean => {
+  const compRight = component.position.x + component.size.width;
+  const compBottom = component.position.y + component.size.height;
+  const selRight = selectionRect.x + selectionRect.width;
+  const selBottom = selectionRect.y + selectionRect.height;
+  
+  return (
+    component.position.x < selRight &&
+    compRight > selectionRect.x &&
+    component.position.y < selBottom &&
+    compBottom > selectionRect.y
+  );
+};
+
+// Component import/export utilities
+export const exportComponentToJSON = (component: ComponentNode): string => {
+  return JSON.stringify(component, null, 2);
+};
+
+export const importComponentFromJSON = (jsonString: string): ComponentNode => {
+  try {
+    const parsed = JSON.parse(jsonString);
+    
+    // Validate that it's a valid ComponentNode
+    const errors = validateComponentNode(parsed);
+    if (errors.length > 0) {
+      throw new Error(`Invalid component data: ${errors.map(e => e.message).join(', ')}`);
+    }
+    
+    return parsed;
+  } catch (error) {
+    throw new Error(`Failed to import component: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+};

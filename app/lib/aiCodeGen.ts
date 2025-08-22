@@ -135,12 +135,10 @@ export class AICodeGenerator {
   private buildComponentTree(aiResponse: any): ComponentNode[] {
     const { layout, componentDetails } = aiResponse;
 
-    if (!layout || !componentDetails) {
-      console.error(
-        "Invalid AI Response: missing layout or componentDetails",
-        aiResponse
-      );
-      return [];
+    // Handle cases where the AI response structure is different or incomplete
+    if (!componentDetails) {
+      console.warn("No componentDetails found, creating fallback structure");
+      return this.createFallbackComponent();
     }
 
     const componentMap = new Map<string, ComponentNode>();
@@ -155,41 +153,68 @@ export class AICodeGenerator {
           children: detail.content,
         },
         position: { x: 0, y: 0 },
-        size: { width: 0, height: 0 },
-        styles: layout[id]?.styles || {},
-        children: [], // Initialize children as an empty array
+        size: { width: Math.max(100, detail.width || 200), height: Math.max(50, detail.height || 100) },
+        styles: (layout && layout[id] ? layout[id].styles : {}) || {},
+        children: [],
       };
       componentMap.set(id, node);
     });
 
-    // Build the tree structure using the layout information
-    const rootNodes: ComponentNode[] = [];
-    const childIds = new Set<string>();
+    // If layout exists, build hierarchy; otherwise create flat structure
+    if (layout) {
+      const childIds = new Set<string>();
 
-    Object.entries(layout).forEach(([parentId, layoutInfo]: [string, any]) => {
-      const parentNode = componentMap.get(parentId);
-      if (parentNode && layoutInfo.children) {
-        layoutInfo.children.forEach((childId: string) => {
-          const childNode = componentMap.get(childId);
-          if (childNode) {
-            if (!parentNode.children) {
-              parentNode.children = [];
+      Object.entries(layout).forEach(([parentId, layoutInfo]: [string, any]) => {
+        const parentNode = componentMap.get(parentId);
+        if (parentNode && layoutInfo.children && Array.isArray(layoutInfo.children)) {
+          layoutInfo.children.forEach((childId: string) => {
+            const childNode = componentMap.get(childId);
+            if (childNode) {
+              parentNode.children.push(childNode);
+              childIds.add(childId);
             }
-            parentNode.children.push(childNode);
-            childIds.add(childId);
-          }
-        });
-      }
-    });
+          });
+        }
+      });
 
-    // Find the root node(s) - those that are not children of any other node
-    componentMap.forEach(node => {
-      if (!childIds.has(node.id)) {
-        rootNodes.push(node);
-      }
-    });
+      // Find root nodes - those that are not children of any other node
+      const rootNodes: ComponentNode[] = [];
+      componentMap.forEach(node => {
+        if (!childIds.has(node.id)) {
+          rootNodes.push(node);
+        }
+      });
 
-    return rootNodes;
+      // If we have root nodes, return them; otherwise create a container
+      if (rootNodes.length > 0) {
+        return rootNodes;
+      }
+    }
+
+    // Fallback: create a root container with all components as children
+    const rootContainer: ComponentNode = {
+      id: "root",
+      type: "container",
+      props: {},
+      position: { x: 0, y: 0 },
+      size: { width: 400, height: 300 },
+      styles: {},
+      children: Array.from(componentMap.values()),
+    };
+
+    return [rootContainer];
+  }
+
+  private createFallbackComponent(): ComponentNode[] {
+    return [{
+      id: "root",
+      type: "container",
+      props: {},
+      position: { x: 0, y: 0 },
+      size: { width: 200, height: 100 },
+      styles: {},
+      children: [],
+    }];
   }
 
   public generateReactCode(

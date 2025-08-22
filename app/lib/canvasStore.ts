@@ -55,11 +55,26 @@ export const useCanvasStore = create<CanvasStore>()(
         })),
 
       updateElement: (id, updates) =>
-        set(state => ({
-          elements: state.elements.map(el =>
-            el.id === id ? { ...el, ...updates } : el
-          ),
-        })),
+        set(state => {
+          const updatedElement = { ...updates };
+          
+          // Apply grid snapping if enabled and position is being updated
+          if (state.snapToGrid && (updates.x !== undefined || updates.y !== undefined)) {
+            const gridSize = 20;
+            if (updates.x !== undefined) {
+              updatedElement.x = Math.round(updates.x / gridSize) * gridSize;
+            }
+            if (updates.y !== undefined) {
+              updatedElement.y = Math.round(updates.y / gridSize) * gridSize;
+            }
+          }
+          
+          return {
+            elements: state.elements.map(el =>
+              el.id === id ? { ...el, ...updatedElement } : el
+            ),
+          };
+        }),
 
       deleteElement: id =>
         set(state => ({

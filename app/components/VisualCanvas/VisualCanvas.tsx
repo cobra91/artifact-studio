@@ -516,7 +516,7 @@ export const VisualCanvas = ({
             >
               <ComponentRenderer
                 node={node}
-                activeBreakpoint={_useCanvasStore.getState().activeBreakpoint}
+                activeBreakpoint={activeBreakpoint}
                 isEditMode={isEditMode}
               />
 
