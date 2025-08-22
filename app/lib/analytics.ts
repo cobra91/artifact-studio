@@ -13,20 +13,25 @@ interface UserAction {
 
 class Analytics {
   private events: AnalyticsEvent[] = [];
-  private sessionId: string;
-  private startTime: number;
+  private readonly sessionId: string;
+  private readonly startTime: number;
 
   constructor() {
     this.sessionId = this.generateSessionId();
     this.startTime = Date.now();
-    this.loadStoredEvents();
+    // Only load stored events on the client side
+    if (typeof window !== 'undefined') {
+      this.loadStoredEvents();
+    }
   }
 
   private generateSessionId(): string {
-    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `session_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
   }
 
   private loadStoredEvents(): void {
+    if (typeof window === 'undefined') return;
+    
     try {
       const stored = localStorage.getItem("analytics_events");
       if (stored) {
@@ -38,6 +43,8 @@ class Analytics {
   }
 
   private saveEvents(): void {
+    if (typeof window === 'undefined') return;
+    
     try {
       // Keep only recent events (last 1000)
       const recentEvents = this.events.slice(-1000);
@@ -184,7 +191,9 @@ class Analytics {
 
   clearData(): void {
     this.events = [];
-    localStorage.removeItem("analytics_events");
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem("analytics_events");
+    }
   }
 }
 

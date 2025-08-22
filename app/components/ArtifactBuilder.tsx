@@ -29,7 +29,7 @@ import { LiveCursors } from "./LiveCursors";
 import { LivePreview } from "./LivePreview";
 import {
   PerformanceMonitor,
-  usePerformanceMonitoring,
+  usePerformanceMonitor,
 } from "./PerformanceMonitor";
 import { PerformancePanel } from "./PerformancePanel";
 import { ResponsivePanel } from "./ResponsivePanel";
@@ -208,7 +208,7 @@ export const ArtifactBuilder = () => {
     useState<boolean>(false);
 
   // Performance monitoring
-  const { handleMetricsUpdate } = usePerformanceMonitoring();
+  const { memoryUsage: _memoryUsage } = usePerformanceMonitor();
 
   // Check if onboarding should be shown
   useEffect(() => {
@@ -321,15 +321,15 @@ export const ArtifactBuilder = () => {
     }
   }, [updateCanvas]);
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     localStorage.setItem("canvas", JSON.stringify(canvas));
     localStorage.setItem("appState", JSON.stringify(appState));
     localStorage.setItem("apiData", JSON.stringify(apiData));
     trackFeature("save-project", { componentCount: canvas.length });
     alert("Canvas, state, and API data saved!");
-  };
+  }, [canvas, appState, apiData]);
 
-  const handleDeploy = async () => {
+  const handleDeploy = useCallback(async () => {
     const { aiCodeGen } = await import("../lib/aiCodeGen");
     const code = aiCodeGen.generateReactCode(
       canvas,
@@ -344,7 +344,7 @@ export const ArtifactBuilder = () => {
     a.download = "GeneratedArtifact.tsx";
     a.click();
     URL.revokeObjectURL(url);
-  };
+  }, [canvas, appState, apiData]);
 
   const generateFromPrompt = async (
     request: AIGenerationRequest
@@ -499,27 +499,32 @@ export const ArtifactBuilder = () => {
     updateCanvas(components);
   };
 
-  const handleUndo = () => {
+  const selectedNode = useMemo(() => {
+    if (selectedNodeIds.length !== 1) return null;
+    return canvas.find(node => node.id === selectedNodeIds[0]) || null;
+  }, [canvas, selectedNodeIds]);
+
+  const handleUndo = useCallback(() => {
     if (historyIndex > 0) {
       setHistoryIndex(historyIndex - 1);
       setCanvas(history[historyIndex - 1]);
     }
-  };
+  }, [historyIndex, history, setCanvas]);
 
-  const handleRedo = () => {
+  const handleRedo = useCallback(() => {
     if (historyIndex < history.length - 1) {
       setHistoryIndex(historyIndex + 1);
       setCanvas(history[historyIndex + 1]);
     }
-  };
+  }, [historyIndex, history, setCanvas]);
 
-  const handleCopy = () => {
+  const handleCopy = useCallback(() => {
     if (selectedNode) {
       navigator.clipboard.writeText(JSON.stringify(selectedNode));
     }
-  };
+  }, [selectedNode]);
 
-  const handlePaste = async () => {
+  const handlePaste = useCallback(async () => {
     const text = await navigator.clipboard.readText();
     try {
       // Check if the text looks like a valid JSON object
@@ -535,12 +540,7 @@ export const ArtifactBuilder = () => {
     } catch (e) {
       console.error("Failed to parse clipboard content", e);
     }
-  };
-
-  const selectedNode = useMemo(() => {
-    if (selectedNodeIds.length !== 1) return null;
-    return canvas.find(node => node.id === selectedNodeIds[0]) || null;
-  }, [canvas, selectedNodeIds]);
+  }, [canvas, updateCanvas]);
 
   // Command palette commands
   const commands = useMemo(
@@ -942,7 +942,7 @@ export const ArtifactBuilder = () => {
           <ApiConnectionPanel {...panelProps} onFetchData={handleFetchData} />
         );
       case "Perf":
-        return <PerformancePanel selectedNode={selectedNode} />;
+        return <PerformancePanel />;
       case "Versions":
         return <VersionPanel onRestoreVersion={handleRestoreVersion} />;
       case "A/B":
@@ -991,10 +991,7 @@ export const ArtifactBuilder = () => {
       />
 
       {/* Performance Monitor */}
-      <PerformanceMonitor
-        componentCount={canvas.length}
-        onMetricsUpdate={handleMetricsUpdate}
-      />
+      <PerformanceMonitor />
 
       {/* Left Sidebar */}
       <div className="component-library w-64 flex-shrink-0 border-r border-gray-200 bg-white">
