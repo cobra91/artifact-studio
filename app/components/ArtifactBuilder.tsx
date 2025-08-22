@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useCanvasStore } from "../lib/canvasStore";
 import {
@@ -23,7 +23,7 @@ import { ResponsivePanel } from "./ResponsivePanel";
 import { StateManagerPanel } from "./StateManagerPanel";
 import { StylePanel } from "./StylePanel";
 import { VersionPanel } from "./VersionPanel";
-import { VisualCanvas } from "./VisualCanvas";
+import { VisualCanvas } from "./VisualCanvas/VisualCanvas";
 
 type RightPanelTab =
   | "AI"
@@ -83,7 +83,70 @@ const getComponentDefaults = (type: ComponentType) => {
 };
 
 export const ArtifactBuilder = () => {
-  const [canvas, setCanvas] = useState<ComponentNode[]>([]);
+  const [canvas, setCanvas] = useState<ComponentNode[]>([
+    // Demo components with responsive styles
+    {
+      id: "demo-text",
+      type: "text",
+      props: { children: "Responsive Text" },
+      position: { x: 50, y: 50 },
+      size: { width: 200, height: 60 },
+      styles: {
+        fontSize: "16px",
+        fontWeight: "bold",
+        color: "#333",
+        textAlign: "center",
+      },
+      responsiveStyles: {
+        base: { fontSize: "14px", width: "100%" },
+        sm: { fontSize: "16px", width: "auto" },
+        md: { fontSize: "18px", color: "#2563eb" },
+        lg: { fontSize: "20px", fontWeight: "900" },
+      },
+    },
+    {
+      id: "demo-button",
+      type: "button",
+      props: { children: "Click Me" },
+      position: { x: 50, y: 150 },
+      size: { width: 150, height: 50 },
+      styles: {
+        backgroundColor: "#3b82f6",
+        color: "white",
+        padding: "10px 20px",
+        borderRadius: "8px",
+        borderWidth: "0px",
+        borderStyle: "none",
+      },
+      responsiveStyles: {
+        base: { width: "100%", fontSize: "14px", padding: "8px 16px" },
+        sm: { width: "auto", fontSize: "16px", padding: "10px 20px" },
+        md: { fontSize: "18px", padding: "12px 24px", backgroundColor: "#1d4ed8" },
+        lg: { fontSize: "20px", padding: "14px 28px", backgroundColor: "#1e40af" },
+      },
+    },
+    {
+      id: "demo-input",
+      type: "input",
+      props: { placeholder: "Enter text..." },
+      position: { x: 50, y: 250 },
+      size: { width: 180, height: 40 },
+      styles: {
+        borderWidth: "2px",
+        borderStyle: "solid",
+        borderColor: "#d1d5db",
+        borderRadius: "6px",
+        padding: "8px 12px",
+        fontSize: "14px",
+      },
+      responsiveStyles: {
+        base: { width: "100%", fontSize: "14px", padding: "8px 12px" },
+        sm: { width: "auto", fontSize: "16px", padding: "10px 14px" },
+        md: { fontSize: "18px", padding: "12px 16px", borderColor: "#3b82f6" },
+        lg: { fontSize: "20px", padding: "14px 18px", borderColor: "#1d4ed8" },
+      },
+    },
+  ]);
   const [history, setHistory] = useState<ComponentNode[][]>([[]]);
   const [historyIndex, setHistoryIndex] = useState(0);
   const [framework, setFramework] = useState<"react" | "vue" | "svelte">(
@@ -114,8 +177,12 @@ export const ArtifactBuilder = () => {
   );
 
   const [selectedNodeIds, setSelectedNodeIds] = useState<string[]>([]);
-  const [snapToGrid, setSnapToGrid] = useState<boolean>(true);
+  const { snapToGrid, setSnapToGrid } = useCanvasStore();
   const [aspectRatioLocked, setAspectRatioLocked] = useState<boolean>(false);
+  const [isEditMode, setIsEditMode] = useState<boolean>(true);
+
+  // Use only local state for selection to avoid conflicts
+  // const { selectedNodes, setSelectedNodes } = useCanvasStore();
 
   const toggleNodeSelection = useCallback((nodeId: string) => {
     setSelectedNodeIds((prevSelectedIds) => {
@@ -127,25 +194,26 @@ export const ArtifactBuilder = () => {
   }, []);
 
   const setSingleNodeSelection = useCallback((nodeId: string) => {
-    setSelectedNodeIds((prevSelectedIds) => {
-      if (prevSelectedIds.length === 1 && prevSelectedIds[0] === nodeId) {
-        return [];
-      }
-      return [nodeId];
-    });
+    console.log('🔍 setSingleNodeSelection called with:', nodeId);
+    setSelectedNodeIds([nodeId]);
   }, []);
 
   const handleSelectNode = useCallback(
     (nodeId: string | null, ctrlPressed: boolean) => {
+      console.log('🔍 handleSelectNode called:', { nodeId, ctrlPressed, currentSelection: selectedNodeIds });
+      
       if (nodeId === null) {
+        console.log('🔍 Deselecting all');
         setSelectedNodeIds([]);
       } else if (ctrlPressed) {
+        console.log('🔍 Toggle selection for:', nodeId);
         toggleNodeSelection(nodeId);
       } else {
+        console.log('🔍 Single selection for:', nodeId);
         setSingleNodeSelection(nodeId);
       }
     },
-    [toggleNodeSelection, setSingleNodeSelection],
+    [toggleNodeSelection, setSingleNodeSelection, selectedNodeIds],
   );
 
   const addNodesToSelection = useCallback((nodeIds: string[]) => {
@@ -284,15 +352,15 @@ export const ArtifactBuilder = () => {
   const groupSelectedNodes = useCallback(() => {
     if (selectedNodeIds.length < 2) return;
 
-    const selectedNodes = canvas.filter((c) => selectedNodeIds.includes(c.id));
+    const selectedNodesArray = canvas.filter((c) => selectedNodeIds.includes(c.id));
 
-    const minX = Math.min(...selectedNodes.map((n) => n.position.x));
-    const minY = Math.min(...selectedNodes.map((n) => n.position.y));
+    const minX = Math.min(...selectedNodesArray.map((n) => n.position.x));
+    const minY = Math.min(...selectedNodesArray.map((n) => n.position.y));
     const maxX = Math.max(
-      ...selectedNodes.map((n) => n.position.x + n.size.width),
+      ...selectedNodesArray.map((n) => n.position.x + n.size.width),
     );
     const maxY = Math.max(
-      ...selectedNodes.map((n) => n.position.y + n.size.height),
+      ...selectedNodesArray.map((n) => n.position.y + n.size.height),
     );
 
     const newContainer: ComponentNode = {
@@ -302,7 +370,7 @@ export const ArtifactBuilder = () => {
       size: { width: maxX - minX, height: maxY - minY },
       props: {},
       styles: {},
-      children: selectedNodes.map((node) => ({
+      children: selectedNodesArray.map((node) => ({
         ...node,
         position: {
           x: node.position.x - minX,
@@ -424,8 +492,10 @@ export const ArtifactBuilder = () => {
     }
   };
 
-  const selectedNode =
-    canvas.find((node) => selectedNodeIds.includes(node.id)) || null;
+  const selectedNode = useMemo(() => {
+    if (selectedNodeIds.length !== 1) return null;
+    return canvas.find((node) => node.id === selectedNodeIds[0]) || null;
+  }, [canvas, selectedNodeIds]);
 
   const renderPanel = () => {
     const panelProps = {
@@ -572,6 +642,12 @@ export const ArtifactBuilder = () => {
             >
               Export Package
             </button>
+            <button
+              className={`px-4 py-2 text-sm rounded-md ${isEditMode ? "bg-green-600 text-white" : "bg-orange-600 text-white"}`}
+              onClick={() => setIsEditMode(!isEditMode)}
+            >
+              {isEditMode ? "Preview" : "Edit"}
+            </button>
           </div>
         </div>
 
@@ -616,6 +692,8 @@ export const ArtifactBuilder = () => {
               snapToGrid={snapToGrid}
               aspectRatioLocked={aspectRatioLocked}
               onUpdateComponent={updateComponent}
+              activeBreakpoint={useCanvasStore.getState().activeBreakpoint}
+              isEditMode={isEditMode}
             />
           </div>
 

@@ -20,6 +20,8 @@ interface VisualCanvasProps {
   ) => void;
   snapToGrid: boolean;
   aspectRatioLocked: boolean;
+  activeBreakpoint: "base" | "sm" | "md" | "lg";
+  isEditMode: boolean;
 }
 
 export const VisualCanvas = ({
@@ -32,6 +34,8 @@ export const VisualCanvas = ({
   onAddComponent,
   snapToGrid,
   aspectRatioLocked,
+  activeBreakpoint,
+  isEditMode,
 }: VisualCanvasProps) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isSelecting, setIsSelecting] = useState(false);
@@ -66,34 +70,25 @@ export const VisualCanvas = ({
   };
 
   const handleMouseDownOnComponent = (e: MouseEvent, node: ComponentNode) => {
+    console.log('🔍 Component mousedown:', { nodeId: node.id, target: e.target, currentTarget: e.currentTarget });
+    e.preventDefault();
     e.stopPropagation();
 
-    const ctrlPressed = e.ctrlKey || e.metaKey;
-
-    // This logic is duplicated from the parent to ensure drag behavior is correct,
-    // as the parent's state update is asynchronous.
-    let nextSelectedNodeIds: string[];
-    if (ctrlPressed) {
-      onToggleNodeInSelection(node.id);
-      if (selectedNodeIds.includes(node.id)) {
-        nextSelectedNodeIds = selectedNodeIds.filter((id) => id !== node.id);
-      } else {
-        nextSelectedNodeIds = [...selectedNodeIds, node.id];
-      }
-    } else {
-      onSelectNode(node.id, false);
-      if (selectedNodeIds.length === 1 && selectedNodeIds[0] === node.id) {
-        nextSelectedNodeIds = [];
-      } else {
-        nextSelectedNodeIds = [node.id];
-      }
-    }
+    // Simple selection logic - just select the clicked component
+    onSelectNode(node.id, e.ctrlKey || e.metaKey);
 
     setIsDragging(true);
 
     const newInitialPositions = new Map<string, { x: number; y: number }>();
+    // Always use the current selection, not trying to predict the next one
+    const currentSelection = e.ctrlKey || e.metaKey 
+      ? (selectedNodeIds.includes(node.id) 
+          ? selectedNodeIds.filter(id => id !== node.id)
+          : [...selectedNodeIds, node.id])
+      : [node.id];
+    
     components
-      .filter((c) => nextSelectedNodeIds.includes(c.id))
+      .filter((c) => currentSelection.includes(c.id))
       .forEach((c) => {
         newInitialPositions.set(c.id, c.position);
       });
@@ -102,6 +97,7 @@ export const VisualCanvas = ({
   };
 
   const handleMouseDownOnCanvas = (e: MouseEvent) => {
+    console.log('🔍 Canvas mousedown:', { target: e.target, currentTarget: e.currentTarget, shouldDeselect: e.target === e.currentTarget });
     if (e.target !== e.currentTarget) return;
     setIsSelecting(true);
     const canvasRect = canvasRef.current!.getBoundingClientRect();
@@ -113,6 +109,7 @@ export const VisualCanvas = ({
       height: 0,
     });
     if (!e.ctrlKey && !e.metaKey) {
+      console.log('🔍 Deselecting from canvas click');
       onSelectNodes([], false);
     }
   };
@@ -341,6 +338,20 @@ export const VisualCanvas = ({
       onDrop={handleDrop}
       onDragOver={handleDragOver}
     >
+      {/* Breakpoint indicator */}
+      <div className="absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded-md text-sm font-medium shadow-lg z-20">
+        {activeBreakpoint.toUpperCase()}
+      </div>
+      
+      {/* Selection indicator */}
+      <div className="absolute top-2 left-2 bg-green-500 text-white px-3 py-1 rounded-md text-sm font-medium shadow-lg z-20">
+        Selected: {selectedNodeIds.length} {selectedNodeIds.length > 0 && `(${selectedNodeIds.join(', ')})`}
+      </div>
+      
+      {/* Mode indicator */}
+      <div className={`absolute top-2 left-48 px-3 py-1 rounded-md text-sm font-medium shadow-lg z-20 ${isEditMode ? 'bg-blue-500 text-white' : 'bg-orange-500 text-white'}`}>
+        {isEditMode ? 'EDIT MODE' : 'PREVIEW MODE'}
+      </div>
       {/* Canvas grid background */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -371,8 +382,11 @@ export const VisualCanvas = ({
       {components.map((node) => (
         <div
           key={node.id}
-          onMouseDown={(e) => handleMouseDownOnComponent(e, node)}
-          className={`absolute cursor-move ${selectedNodeIds.includes(node.id) ? "ring-2 ring-blue-500 rounded" : ""}`}
+          onMouseDown={(e) => {
+            console.log('🔍 DIV mousedown triggered for:', node.id, 'target:', e.target, 'currentTarget:', e.currentTarget);
+            handleMouseDownOnComponent(e, node);
+          }}
+          className={`absolute cursor-move transition-all duration-200 ${selectedNodeIds.includes(node.id) ? "ring-2 ring-blue-500 rounded" : ""}`}
           style={{
             left: node.position.x,
             top: node.position.y,
@@ -381,7 +395,7 @@ export const VisualCanvas = ({
             zIndex: selectedNodeIds.includes(node.id) ? 10 : 1,
           }}
         >
-          <ComponentRenderer node={node} activeBreakpoint={_useCanvasStore.getState().activeBreakpoint} />
+          <ComponentRenderer node={node} activeBreakpoint={_useCanvasStore.getState().activeBreakpoint} isEditMode={isEditMode} />
 
           {/* Resize handles */}
           {getResizeHandles(node).map((direction) => (

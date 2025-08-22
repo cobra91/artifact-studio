@@ -29,6 +29,8 @@ interface CanvasStore extends CanvasState {
   addRecentColor: (color: string) => void;
   clearRecentColors: () => void;
   setActiveBreakpoint: (breakpoint: "base" | "sm" | "md" | "lg") => void;
+  setSelectedNodes: (nodes: string[] | ((prev: string[]) => string[])) => void;
+  setSnapToGrid: (snap: boolean) => void;
 }
 
 export const useCanvasStore = create<CanvasStore>()(
@@ -87,6 +89,10 @@ export const useCanvasStore = create<CanvasStore>()(
         })),
 
       setActiveBreakpoint: (breakpoint) => set(() => ({ activeBreakpoint: breakpoint })),
+      setSelectedNodes: (nodes) => set((state) => ({
+        selectedNodes: typeof nodes === "function" ? nodes(state.selectedNodes) : nodes,
+      })),
+      setSnapToGrid: (snap) => set(() => ({ snapToGrid: snap })),
     }),
     {
       name: "canvas-store",

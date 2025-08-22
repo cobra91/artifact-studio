@@ -42,17 +42,32 @@ export const AppearanceTab = ({
     const normalizedColor = ColorUtils.normalizeHex(color);
     addRecentColor(normalizedColor);
 
-    onUpdateElement({
-      styles: {
-        [type]: normalizedColor,
-      },
-    });
+    // Map fill to backgroundColor and stroke to border for better compatibility with HTML elements
+    if (type === "fill") {
+      onUpdateElement({
+        styles: {
+          backgroundColor: normalizedColor,
+        },
+      });
+    } else if (type === "stroke") {
+      // For stroke, we need to set border color and ensure border is visible
+      const currentBorderWidth = selectedElement.styles.borderWidth || "2px";
+      const currentBorderStyle = selectedElement.styles.borderStyle || "solid";
+      onUpdateElement({
+        styles: {
+          borderWidth: currentBorderWidth,
+          borderStyle: currentBorderStyle,
+          borderColor: normalizedColor,
+        },
+      });
+    }
   };
 
   const handleGradientChange = (gradient: string) => {
+    console.log('🎨 Gradient applied:', gradient);
     onUpdateElement({
       styles: {
-        fill: gradient,
+        backgroundColor: gradient,
       },
     });
   };
@@ -86,8 +101,8 @@ export const AppearanceTab = ({
     });
   };
 
-  const currentFill = selectedElement.styles.fill || "#000000";
-  const currentStroke = selectedElement.styles.stroke || "#000000";
+  const currentFill = selectedElement.styles.backgroundColor || selectedElement.styles.fill || "#000000";
+  const currentStroke = selectedElement.styles.borderColor || selectedElement.styles.stroke || "#000000";
   const currentFillOpacity = parseFloat(selectedElement.styles.fillOpacity || "1");
   const currentStrokeOpacity = parseFloat(selectedElement.styles.strokeOpacity || "1");
 
