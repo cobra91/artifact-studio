@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useCanvasStore } from "../lib/canvasStore";
 import {
   AIGenerationRequest,
   ComponentNode,
@@ -18,6 +19,7 @@ import { ExportPackageModal } from "./ExportPackageModal";
 import { LiveCursors } from "./LiveCursors";
 import { LivePreview } from "./LivePreview";
 import { PerformancePanel } from "./PerformancePanel";
+import { ResponsivePanel } from "./ResponsivePanel";
 import { StateManagerPanel } from "./StateManagerPanel";
 import { StylePanel } from "./StylePanel";
 import { VersionPanel } from "./VersionPanel";
@@ -340,12 +342,24 @@ export const ArtifactBuilder = () => {
 
   const updateComponent = useCallback(
     (id: string, updates: Partial<ComponentNode>) => {
-      let updatedNode: ComponentNode | null = null;
+      const { activeBreakpoint } = useCanvasStore.getState(); // Get current breakpoint
       updateCanvas((prev) =>
         prev.map((comp) => {
           if (comp.id === id) {
-            updatedNode = { ...comp, ...updates };
-            return updatedNode;
+            if (activeBreakpoint === "base") {
+              return { ...comp, ...updates };
+            } else {
+              return {
+                ...comp,
+                responsiveStyles: {
+                  ...comp.responsiveStyles,
+                  [activeBreakpoint]: {
+                    ...comp.responsiveStyles?.[activeBreakpoint],
+                    ...updates.styles, // Assuming updates.styles contains the responsive styles
+                  },
+                },
+              };
+            }
           }
           return comp;
         }),
@@ -482,6 +496,7 @@ export const ArtifactBuilder = () => {
             Visual Artifact Studio
           </h1>
           <div className="flex items-center gap-2">
+            <ResponsivePanel />
             <button
               onClick={handleUndo}
               disabled={historyIndex === 0}

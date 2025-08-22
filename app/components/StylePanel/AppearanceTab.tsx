@@ -6,6 +6,7 @@ import { useCanvasStore } from "../../lib/canvasStore";
 import { ColorUtils } from "../../lib/colorUtils";
 import { styleProperties } from "../../lib/styleProperties";
 import { validateProperty } from "../../lib/validationUtils";
+import { ComponentNode } from "../../types/artifact"; // Import ComponentNode
 import { ColorPalette } from "../ColorPalette";
 import { ColorPicker } from "../ColorPicker";
 import { Eyedropper } from "../Eyedropper";
@@ -13,13 +14,15 @@ import { GradientEditor } from "../GradientEditor";
 import { RecentColors } from "../RecentColors";
 
 interface AppearanceTabProps {
-  selectedElement: any;
-  onUpdateElement: (elementId: string, updates: any) => void;
+  selectedElement: ComponentNode; // Use ComponentNode type
+  onUpdateElement: (updates: Partial<ComponentNode>) => void; // Change signature
+  activeBreakpoint: "base" | "sm" | "md" | "lg";
 }
 
 export const AppearanceTab = ({
   selectedElement,
   onUpdateElement,
+  activeBreakpoint: _activeBreakpoint,
 }: AppearanceTabProps) => {
   const [activeTab, setActiveTab] = useState<"fill" | "stroke" | "gradient">(
     "fill",
@@ -39,20 +42,26 @@ export const AppearanceTab = ({
     const normalizedColor = ColorUtils.normalizeHex(color);
     addRecentColor(normalizedColor);
 
-    onUpdateElement(selectedElement.id, {
-      [type]: normalizedColor,
+    onUpdateElement({
+      styles: {
+        [type]: normalizedColor,
+      },
     });
   };
 
   const handleGradientChange = (gradient: string) => {
-    onUpdateElement(selectedElement.id, {
-      fill: gradient,
+    onUpdateElement({
+      styles: {
+        fill: gradient,
+      },
     });
   };
 
   const handleOpacityChange = (opacity: number, type: "fill" | "stroke") => {
-    onUpdateElement(selectedElement.id, {
-      [`${type}Opacity`]: opacity,
+    onUpdateElement({
+      styles: {
+        [`${type}Opacity`]: String(opacity), // Convert to string
+      },
     });
   };
 
@@ -70,15 +79,17 @@ export const AppearanceTab = ({
       }
     }
 
-    onUpdateElement(selectedElement.id, {
-      strokeWidth: newValue,
+    onUpdateElement({
+      styles: {
+        strokeWidth: String(newValue), // Convert to string
+      },
     });
   };
 
-  const currentFill = selectedElement.fill || "#000000";
-  const currentStroke = selectedElement.stroke || "#000000";
-  const currentFillOpacity = selectedElement.fillOpacity || 1;
-  const currentStrokeOpacity = selectedElement.strokeOpacity || 1;
+  const currentFill = selectedElement.styles.fill || "#000000";
+  const currentStroke = selectedElement.styles.stroke || "#000000";
+  const currentFillOpacity = parseFloat(selectedElement.styles.fillOpacity || "1");
+  const currentStrokeOpacity = parseFloat(selectedElement.styles.strokeOpacity || "1");
 
   return (
     <div className="space-y-4">
@@ -191,7 +202,7 @@ export const AppearanceTab = ({
               <input
                 type="number"
                 min="0"
-                value={selectedElement.strokeWidth || 1}
+                value={parseFloat(selectedElement.styles.strokeWidth || "1")}
                 onChange={handleStrokeWidthChange}
                 className={`w-full px-3 py-2 border rounded ${
                   strokeWidthError ? "border-red-500" : ""

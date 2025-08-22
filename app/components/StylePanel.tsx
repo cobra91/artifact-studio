@@ -3,6 +3,8 @@
 import { useState } from "react";
 
 import { ComponentNode } from "../types/artifact";
+import { MobileOptimizationPanel } from "./MobileOptimizationPanel";
+import { AppearanceTab } from "./StylePanel/AppearanceTab";
 
 interface StylePanelProps {
   selectedNode: ComponentNode | null;
@@ -11,7 +13,7 @@ interface StylePanelProps {
 
 export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
   const [activeTab, setActiveTab] = useState<
-    "layout" | "typography" | "appearance" | "responsive"
+    "layout" | "typography" | "appearance" | "responsive" | "optimization"
   >("layout");
   const [activeBreakpoint, setActiveBreakpoint] = useState<
     "base" | "sm" | "md" | "lg"
@@ -176,65 +178,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
     </div>
   );
 
-  const renderAppearanceTab = () => (
-    <div className="space-y-4">
-      <div>
-        <label className="block text-xs text-gray-600 mb-1">
-          Background Color
-        </label>
-        <input
-          type="color"
-          value={selectedNode.styles.backgroundColor || "#ffffff"}
-          onChange={(e) => updateStyle("backgroundColor", e.target.value)}
-          className="w-full h-8 border border-gray-300 rounded"
-        />
-      </div>
-      <div>
-        <label className="block text-xs text-gray-600 mb-1">
-          Border Radius
-        </label>
-        <input
-          type="range"
-          min="0"
-          max="50"
-          value={parseInt(selectedNode.styles.borderRadius || "0")}
-          onChange={(e) => updateStyle("borderRadius", `${e.target.value}px`)}
-          className="w-full"
-        />
-      </div>
-      <div>
-        <label className="block text-xs text-gray-600 mb-1">Box Shadow</label>
-        <input
-          type="text"
-          value={selectedNode.styles.boxShadow || ""}
-          onChange={(e) => {
-            const value = e.target.value;
-            if (
-              /(inset\s+)?(0|([1-9]\d*))px\s+(0|([1-9]\d*))px\s+(0|([1-9]\d*))px\s+(0|([1-9]\d*))px\s+rgba\(\d+,\s*\d+,\s*\d+,\s*\d*\.?\d+\)/.test(
-                value,
-              )
-            ) {
-              updateStyle("boxShadow", value);
-            }
-          }}
-          className="w-full p-2 text-sm border border-gray-300 rounded"
-          placeholder="e.g., 0 4px 6px rgba(0,0,0,0.1)"
-        />
-      </div>
-      <div>
-        <label className="block text-xs text-gray-600 mb-1">Opacity</label>
-        <input
-          type="range"
-          min="0"
-          max="1"
-          step="0.1"
-          value={selectedNode.styles.opacity || 1}
-          onChange={(e) => updateStyle("opacity", e.target.value)}
-          className="w-full"
-        />
-      </div>
-    </div>
-  );
+  
 
   const renderResponsiveTab = () => (
     <div className="space-y-4">
@@ -365,12 +309,25 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
           >
             Responsive
           </button>
+          <button
+            onClick={() => setActiveTab("optimization")}
+            className={`px-4 py-2 text-sm ${activeTab === "optimization" ? "border-b-2 border-blue-500" : ""}`}
+          >
+            Optimization
+          </button>
         </div>
         <div className="py-4">
           {activeTab === "layout" && renderLayoutTab()}
           {activeTab === "typography" && renderTypographyTab()}
-          {activeTab === "appearance" && renderAppearanceTab()}
+          {activeTab === "appearance" && (
+            <AppearanceTab
+              selectedElement={selectedNode}
+              onUpdateElement={onUpdateNode}
+              activeBreakpoint={activeBreakpoint}
+            />
+          )}
           {activeTab === "responsive" && renderResponsiveTab()}
+          {activeTab === "optimization" && <MobileOptimizationPanel />}
         </div>
       </div>
     </div>

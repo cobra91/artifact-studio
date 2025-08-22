@@ -2,6 +2,7 @@
 
 import { CSSProperties, DragEvent, MouseEvent, useRef, useState } from "react";
 
+import { useCanvasStore as _useCanvasStore } from "../../lib/canvasStore";
 import { ComponentNode, ComponentType } from "../../types/artifact";
 import { ComponentRenderer } from "./ComponentRenderer";
 
@@ -353,7 +354,7 @@ export const VisualCanvas = ({
             zIndex: selectedNodeIds.includes(node.id) ? 10 : 1,
           }}
         >
-          <ComponentRenderer node={node} />
+          <ComponentRenderer node={node} activeBreakpoint={_useCanvasStore.getState().activeBreakpoint} />
 
           {/* Resize handles */}
           {getResizeHandles(node).map((direction) => (

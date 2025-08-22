@@ -311,6 +311,7 @@ export interface CanvasState {
   gridVisible: boolean;
   snapToGrid: boolean;
   zoom: number;
+  activeBreakpoint: "base" | "sm" | "md" | "lg";
 }
 
 export interface UIState {
