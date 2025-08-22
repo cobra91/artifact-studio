@@ -60,7 +60,7 @@ Here is an example of the required JSON structure for a "user profile card" prom
   "componentDetails": {
     "avatar": { "type": "image", "props": { "src": "/avatar-placeholder.png", "alt": "User Avatar", "className": "w-24 h-24 rounded-full mx-auto" } },
     "name": { "type": "text", "content": "User Name", "props": { "className": "text-2xl font-bold text-center mt-4" } },
-    "bio": { "type": "text", "content": "This is a short bio about the user.", "props": { "className": "text-gray-600 text-center mt-2" } },
+    "bio": { "type": "text", "content": "This is a short bio about the user.", "props": { "className": " text-center mt-2" } },
     "edit-profile-button": { "type": "button", "content": "Edit Profile", "props": { "className": "bg-blue-500 text-white px-4 py-2 rounded" } },
     "logout-button": { "type": "button", "content": "Logout", "props": { "className": "bg-red-500 text-white px-4 py-2 rounded" } }
   }

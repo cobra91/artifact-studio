@@ -97,7 +97,7 @@ export const GradientPresets = ({ onSelect }: GradientPresetsProps) => {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-sm font-medium text-gray-700">Gradient Presets</h3>
+      <h3 className="text-sm font-medium">Gradient Presets</h3>
 
       <div className="grid grid-cols-2 gap-2">
         {gradientPresets.map(preset => (
@@ -115,9 +115,7 @@ export const GradientPresets = ({ onSelect }: GradientPresetsProps) => {
               className="h-12 w-full rounded"
               style={{ background: preset.gradient }}
             />
-            <span className="mt-1 block text-xs text-gray-600">
-              {preset.name}
-            </span>
+            <span className="mt-1 block text-xs">{preset.name}</span>
           </button>
         ))}
       </div>

@@ -169,9 +169,7 @@ export function DeploymentPanel() {
         <h3 className="mb-2 text-lg font-semibold text-gray-800">
           Deployments
         </h3>
-        <p className="text-sm text-gray-600">
-          Deploy your artifacts to production platforms
-        </p>
+        <p className="text-sm">Deploy your artifacts to production platforms</p>
       </div>
 
       {/* Platform Selection */}
@@ -200,9 +198,7 @@ export function DeploymentPanel() {
 
           {selectedPlatform && (
             <div className="mt-4 flex items-center justify-between">
-              <span className="text-sm text-gray-600">
-                Connected to {selectedPlatform}
-              </span>
+              <span className="text-sm">Connected to {selectedPlatform}</span>
               <Button
                 variant="outline"
                 size="sm"

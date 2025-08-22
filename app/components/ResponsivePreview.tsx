@@ -52,7 +52,7 @@ export const ResponsivePreview = ({
         <h3 className="mb-2 text-lg font-semibold text-gray-800">
           Responsive Preview
         </h3>
-        <div className="flex items-center gap-2 text-sm text-gray-600">
+        <div className="flex items-center gap-2 text-sm">
           <span>Current breakpoint:</span>
           <span className="rounded bg-blue-100 px-2 py-1 font-medium text-blue-700">
             {activeBreakpoint.toUpperCase()}
@@ -123,7 +123,7 @@ export const ResponsivePreview = ({
       </div>
 
       {/* Footer Info */}
-      <div className="border-t bg-gray-50 p-3 text-xs text-gray-600">
+      <div className="border-t bg-gray-50 p-3 text-xs">
         <div className="flex items-center justify-between">
           <span>Preview: {getPreviewLabel()}</span>
           <span>Width: {getPreviewWidth()}</span>

@@ -6,6 +6,7 @@ import { useCanvasStore as _useCanvasStore } from "../../lib/canvasStore";
 import { ComponentNode, ComponentType } from "../../types/artifact";
 import { PerformanceMonitor } from "../PerformanceMonitor/PerformanceMonitor";
 import { usePerformanceMonitor } from "../PerformanceMonitor/usePerformanceMonitor";
+import { Tooltip } from "../ui/tooltip";
 import { ComponentRenderer } from "./ComponentRenderer";
 
 interface VisualCanvasProps {
@@ -22,6 +23,7 @@ interface VisualCanvasProps {
   aspectRatioLocked: boolean;
   activeBreakpoint: "base" | "sm" | "md" | "lg";
   isEditMode: boolean;
+  onZoomChange?: (zoom: number) => void;
 }
 
 export const VisualCanvas = ({
@@ -35,6 +37,7 @@ export const VisualCanvas = ({
   aspectRatioLocked,
   activeBreakpoint,
   isEditMode,
+  onZoomChange,
 }: VisualCanvasProps) => {
   const { isOpen } = usePerformanceMonitor();
   const [isDragging, setIsDragging] = useState(false);
@@ -55,6 +58,8 @@ export const VisualCanvas = ({
   });
   const [resizing, setResizing] = useState<string | null>(null);
   const [rotating, setRotating] = useState<boolean>(false);
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const handleMouseDownOnResizeHandle = (e: MouseEvent, direction: string) => {
@@ -67,6 +72,35 @@ export const VisualCanvas = ({
     e.stopPropagation();
     setRotating(true);
     setDragStart({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleZoom = (delta: number) => {
+    setZoom(prev => {
+      const newZoom = Math.max(0.1, Math.min(3, prev + delta));
+      onZoomChange?.(newZoom);
+      return newZoom;
+    });
+  };
+
+  const handleZoomIn = () => handleZoom(0.1);
+  const handleZoomOut = () => handleZoom(-0.1);
+  const handleZoom50 = () => {
+    setZoom(0.5);
+    setPan({ x: 0, y: 0 });
+    onZoomChange?.(0.5);
+  };
+  const handleZoomReset = () => {
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+    onZoomChange?.(1);
+  };
+
+  const handleWheel = (e: React.WheelEvent) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -0.1 : 0.1;
+      handleZoom(delta);
+    }
   };
 
   const handleMouseDownOnComponent = (e: MouseEvent, node: ComponentNode) => {
@@ -297,10 +331,6 @@ export const VisualCanvas = ({
     handleMouseUp();
   };
 
-  const handleWheel = (e: { deltaY: number; preventDefault: () => void }) => {
-    e.preventDefault();
-  };
-
   const handleDrop = (e: DragEvent) => {
     e.preventDefault();
     const rect = canvasRef.current?.getBoundingClientRect();
@@ -362,7 +392,7 @@ export const VisualCanvas = ({
     <div className="relative h-full w-full">
       <div
         ref={canvasRef}
-        className="relative h-full w-full cursor-crosshair border border-gray-200 bg-gray-50"
+        className="border-border/20 bg-card/50 relative h-full w-full cursor-crosshair border backdrop-blur-sm"
         onMouseDown={handleMouseDownOnCanvas}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -372,15 +402,58 @@ export const VisualCanvas = ({
         onDragOver={handleDragOver}
       >
         {/* Breakpoint indicator */}
-        <div className="absolute top-2 right-2 z-20 rounded-md bg-blue-500 px-3 py-1 text-sm font-medium text-white shadow-lg">
+        <div className="glass text-foreground absolute top-2 right-2 z-20 rounded-md px-3 py-1 text-sm font-medium shadow-lg">
           {activeBreakpoint.toUpperCase()}
         </div>
         {/* Selection indicator */}
-        <div className="absolute top-2 left-2 z-20 rounded-md bg-green-500 px-3 py-1 text-sm font-medium text-white shadow-lg">
+        <div className="glass text-foreground absolute top-2 left-2 z-20 rounded-md px-3 py-1 text-sm font-medium shadow-lg">
           Selected: {selectedNodeIds.length}{" "}
           {selectedNodeIds.length > 0 && `(${selectedNodeIds.join(", ")})`}
         </div>
 
+        {/* Zoom controls - adaptatifs selon la taille d'écran */}
+        <div className="glass absolute right-4 bottom-4 z-20 flex items-center gap-1 rounded-md px-2 py-2 shadow-lg md:gap-2 md:px-3">
+          <Tooltip content="Zoom Out (Ctrl + Scroll)" position="top">
+            <button
+              onClick={handleZoomOut}
+              className="glass text-foreground hover:bg-accent rounded px-2 py-1 text-sm transition-all duration-200 hover-lift"
+            >
+              -
+            </button>
+          </Tooltip>
+          
+          <span className="text-foreground min-w-[2.5rem] text-center text-xs font-medium md:min-w-[3rem] md:text-sm">
+            {Math.round(zoom * 100)}%
+          </span>
+          
+          <Tooltip content="Zoom In (Ctrl + Scroll)" position="top">
+            <button
+              onClick={handleZoomIn}
+              className="glass text-foreground hover:bg-accent rounded px-2 py-1 text-sm transition-all duration-200 hover-lift"
+            >
+              +
+            </button>
+          </Tooltip>
+          
+          <Tooltip content="Zoom to 50%" position="top">
+            <button
+              onClick={handleZoom50}
+              className="glass text-foreground hover:bg-accent rounded px-2 py-1 text-xs transition-all duration-200 hover-lift md:text-sm"
+            >
+              50%
+            </button>
+          </Tooltip>
+          
+          <Tooltip content="Reset zoom to 100%" position="top">
+            <button
+              onClick={handleZoomReset}
+              className="glass text-foreground hover:bg-accent rounded px-2 py-1 text-xs transition-all duration-200 hover-lift md:text-sm"
+            >
+              <span className="hidden md:inline">Reset</span>
+              <span className="md:hidden">↻</span>
+            </button>
+          </Tooltip>
+        </div>
 
         {/* Performance Monitor - conditionally rendered */}
         {isOpen && <PerformanceMonitor />}
@@ -389,7 +462,7 @@ export const VisualCanvas = ({
           className="pointer-events-none absolute inset-0"
           style={{
             backgroundImage: snapToGrid
-              ? "repeating-linear-gradient(0deg, #f3f4f6 0px, #f3f4f6 1px, transparent 1px, transparent 20px), repeating-linear-gradient(90deg, #f3f4f6 0px, #f3f4f6 1px, transparent 1px, transparent 20px)"
+              ? "repeating-linear-gradient(0deg, rgba(74, 222, 128, 0.1) 0px, rgba(74, 222, 128, 0.1) 1px, transparent 1px, transparent 20px), repeating-linear-gradient(90deg, rgba(74, 222, 128, 0.1) 0px, rgba(74, 222, 128, 0.1) 1px, transparent 1px, transparent 20px)"
               : "none",
           }}
         />
@@ -398,77 +471,86 @@ export const VisualCanvas = ({
         {guides.x.map((guideX, index) => (
           <div
             key={`x-guide-${index}`}
-            className="pointer-events-none absolute top-0 bottom-0 border-l-2 border-blue-400 opacity-50"
+            className="border-primary pointer-events-none absolute top-0 bottom-0 border-l-2 opacity-50"
             style={{ left: guideX }}
           />
         ))}
         {guides.y.map((guideY, index) => (
           <div
             key={`y-guide-${index}`}
-            className="pointer-events-none absolute right-0 left-0 border-t-2 border-blue-400 opacity-50"
+            className="border-primary pointer-events-none absolute right-0 left-0 border-t-2 opacity-50"
             style={{ top: guideY }}
           />
         ))}
 
         {/* Components */}
-        {components.map(node => (
-          <div
-            key={node.id}
-            onMouseDown={e => {
-              console.log(
-                "🔍 DIV mousedown triggered for:",
-                node.id,
-                "target:",
-                e.target,
-                "currentTarget:",
-                e.currentTarget
-              );
-              handleMouseDownOnComponent(e, node);
-            }}
-            className={`absolute cursor-move transition-all duration-200 ${selectedNodeIds.includes(node.id) ? "rounded ring-2 ring-blue-500" : ""}`}
-            style={{
-              left: node.position.x,
-              top: node.position.y,
-              width: node.size.width,
-              height: node.size.height,
-              zIndex: selectedNodeIds.includes(node.id) ? 10 : 1,
-            }}
-          >
-            <ComponentRenderer
-              node={node}
-              activeBreakpoint={_useCanvasStore.getState().activeBreakpoint}
-              isEditMode={isEditMode}
-            />
-
-            {/* Resize handles */}
-            {getResizeHandles(node).map(direction => (
-              <div
-                key={`resize-${direction}`}
-                className="absolute h-2 w-2 cursor-pointer rounded-full bg-blue-500"
-                style={getResizeHandleStyle(direction, node.size)}
-                onMouseDown={e => handleMouseDownOnResizeHandle(e, direction)}
+        <div
+          className="absolute inset-0 origin-top-left"
+          style={{
+            transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+            transformOrigin: "top left",
+          }}
+        >
+          {components.map(node => (
+            <div
+              key={node.id}
+              onMouseDown={e => {
+                console.log(
+                  "🔍 DIV mousedown triggered for:",
+                  node.id,
+                  "target:",
+                  e.target,
+                  "currentTarget:",
+                  e.currentTarget
+                );
+                handleMouseDownOnComponent(e, node);
+              }}
+              className={`absolute cursor-move transition-all duration-200 ${selectedNodeIds.includes(node.id) ? "ring-primary rounded shadow-lg ring-2" : ""}`}
+              style={{
+                left: node.position.x,
+                top: node.position.y,
+                width: node.size.width,
+                height: node.size.height,
+                zIndex: selectedNodeIds.includes(node.id) ? 10 : 1,
+              }}
+            >
+              <ComponentRenderer
+                node={node}
+                activeBreakpoint={_useCanvasStore.getState().activeBreakpoint}
+                isEditMode={isEditMode}
               />
-            ))}
 
-            {/* Rotate handle */}
-            {selectedNodeIds.length === 1 && selectedNodeIds[0] === node.id && (
-              <div
-                className="absolute h-3 w-3 cursor-pointer rounded-full bg-gray-600"
-                style={{
-                  top: -10,
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                }}
-                onMouseDown={handleMouseDownOnRotateHandle}
-              />
-            )}
-          </div>
-        ))}
+              {/* Resize handles */}
+              {getResizeHandles(node).map(direction => (
+                <div
+                  key={`resize-${direction}`}
+                  className="bg-primary absolute h-2 w-2 cursor-pointer rounded-full shadow-sm"
+                  style={getResizeHandleStyle(direction, node.size)}
+                  onMouseDown={e => handleMouseDownOnResizeHandle(e, direction)}
+                />
+              ))}
+
+              {/* Rotate handle */}
+              {selectedNodeIds.length === 1 &&
+                selectedNodeIds[0] === node.id && (
+                  <div
+                    className="bg-secondary absolute h-3 w-3 cursor-pointer rounded-full shadow-sm"
+                    style={{
+                      top: -10,
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                    }}
+                    onMouseDown={handleMouseDownOnRotateHandle}
+                  />
+                )}
+            </div>
+          ))}
+        </div>
 
         {/* Selection rectangle */}
         {isSelecting && selectionRect && (
           <div
-            className="bg-opacity-30 pointer-events-none absolute border-2 border-dashed border-blue-500 bg-blue-100"
+            className="border-primary bg-primary/10 pointer-events-none absolute border-2 border-dashed"
             style={{
               left: selectionRect.x,
               top: selectionRect.y,

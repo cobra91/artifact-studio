@@ -46,7 +46,7 @@ export const ColorStopControls = ({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-medium text-gray-700">Color Stops</h4>
+        <h4 className="text-sm font-medium">Color Stops</h4>
         <button
           onClick={onAddStop}
           className="text-sm text-blue-600 hover:text-blue-800"
@@ -75,7 +75,7 @@ export const ColorStopControls = ({
               />
 
               <div className="flex-1">
-                <label className="mb-1 block text-xs text-gray-600">
+                <label className="mb-1 block text-xs">
                   Position: {stop.position}%
                 </label>
                 <input

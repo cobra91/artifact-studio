@@ -51,10 +51,10 @@ export const RecentColors = ({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-gray-700">Recent Colors</h3>
+        <h3 className="text-sm font-medium ">Recent Colors</h3>
         <button
           onClick={clearRecentColors}
-          className="text-xs text-gray-500 hover:text-gray-700"
+          className="text-xs text-gray-500 hover:"
           aria-label="Clear recent colors"
         >
           Clear

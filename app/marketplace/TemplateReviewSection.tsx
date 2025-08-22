@@ -137,7 +137,7 @@ export const TemplateReviewSection = ({
                     ))}
                   </div>
                 </div>
-                <p className="text-sm text-gray-700">{review.comment}</p>
+                <p className="text-sm">{review.comment}</p>
                 <p className="mt-1 text-xs text-gray-500">
                   {new Date(review.timestamp).toLocaleDateString()}
                 </p>

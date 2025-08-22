@@ -125,7 +125,7 @@ export const AppearanceTab = ({
             className={`border-b-2 px-1 py-2 text-sm font-medium ${
               activeTab === "fill"
                 ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
+                : "border-transparent text-gray-500"
             }`}
           >
             Fill
@@ -135,7 +135,7 @@ export const AppearanceTab = ({
             className={`border-b-2 px-1 py-2 text-sm font-medium ${
               activeTab === "stroke"
                 ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
+                : "border-transparent text-gray-500"
             }`}
           >
             Stroke
@@ -145,7 +145,7 @@ export const AppearanceTab = ({
             className={`border-b-2 px-1 py-2 text-sm font-medium ${
               activeTab === "gradient"
                 ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
+                : "border-transparent text-gray-500"
             }`}
           >
             Gradient
@@ -157,7 +157,7 @@ export const AppearanceTab = ({
         {activeTab === "fill" && (
           <>
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
+              <label className="mb-2 block text-sm font-medium">
                 Fill Color
               </label>
               <ColorPicker
@@ -170,7 +170,7 @@ export const AppearanceTab = ({
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
+              <label className="mb-2 block text-sm font-medium">
                 Opacity
               </label>
               <input
@@ -191,7 +191,7 @@ export const AppearanceTab = ({
         {activeTab === "stroke" && (
           <>
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
+              <label className="mb-2 block text-sm font-medium">
                 Stroke Color
               </label>
               <ColorPicker
@@ -204,7 +204,7 @@ export const AppearanceTab = ({
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
+              <label className="mb-2 block text-sm font-medium">
                 Opacity
               </label>
               <input
@@ -221,7 +221,7 @@ export const AppearanceTab = ({
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-gray-700">
+              <label className="mb-2 block text-sm font-medium">
                 Stroke Width
               </label>
               <input
@@ -254,7 +254,7 @@ export const AppearanceTab = ({
         )}
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
+          <label className="mb-2 block text-sm font-medium">
             Color Palette
           </label>
           <ColorPalette
@@ -265,7 +265,7 @@ export const AppearanceTab = ({
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
+          <label className="mb-2 block text-sm font-medium">
             Recent Colors
           </label>
           <RecentColors
@@ -276,7 +276,7 @@ export const AppearanceTab = ({
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
+          <label className="mb-2 block text-sm font-medium">
             Eyedropper
           </label>
           <Eyedropper

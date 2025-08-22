@@ -69,10 +69,7 @@ export const AnalyticsPanel = ({ isOpen, onClose }: AnalyticsPanelProps) => {
             <h2 className="text-2xl font-bold text-gray-900">
               Analytics Dashboard
             </h2>
-            <button
-              onClick={onClose}
-              className="text-gray-500 hover:text-gray-700"
-            >
+            <button onClick={onClose} className="hover: text-gray-500">
               ✕
             </button>
           </div>
@@ -91,7 +88,7 @@ export const AnalyticsPanel = ({ isOpen, onClose }: AnalyticsPanelProps) => {
                 className={`rounded-md px-4 py-2 text-sm font-medium ${
                   activeTab === tab.id
                     ? "bg-blue-600 text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    : "bg-gray-100 hover:bg-gray-200"
                 }`}
               >
                 {tab.label}
@@ -157,9 +154,7 @@ export const AnalyticsPanel = ({ isOpen, onClose }: AnalyticsPanelProps) => {
                         </span>
                         <span className="font-medium">{component.type}</span>
                       </div>
-                      <span className="text-sm text-gray-600">
-                        {component.count} actions
-                      </span>
+                      <span className="text-sm">{component.count} actions</span>
                     </div>
                   ))}
                 </div>
@@ -184,9 +179,7 @@ export const AnalyticsPanel = ({ isOpen, onClose }: AnalyticsPanelProps) => {
                         className="flex items-center justify-between rounded-lg bg-gray-50 p-3"
                       >
                         <span className="font-medium">{feature}</span>
-                        <span className="text-sm text-gray-600">
-                          {count as number} uses
-                        </span>
+                        <span className="text-sm">{count as number} uses</span>
                       </div>
                     ))}
                 </div>
@@ -200,7 +193,7 @@ export const AnalyticsPanel = ({ isOpen, onClose }: AnalyticsPanelProps) => {
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Performance Metrics</h3>
               <div className="rounded-lg bg-gray-50 p-4">
-                <p className="mb-2 text-sm text-gray-600">
+                <p className="mb-2 text-sm">
                   Performance monitoring is active. Real-time metrics are
                   displayed in the performance monitor.
                 </p>

@@ -2,6 +2,32 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+// Hook pour détecter la taille d'écran
+const useScreenSize = () => {
+  const [screenSize, setScreenSize] = useState<"mobile" | "tablet" | "desktop">(
+    "desktop"
+  );
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      const width = window.innerWidth;
+      if (width < 768) {
+        setScreenSize("mobile");
+      } else if (width < 1024) {
+        setScreenSize("tablet");
+      } else {
+        setScreenSize("desktop");
+      }
+    };
+
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
+  return screenSize;
+};
+
 import {
   analytics,
   trackComponentCreate,
@@ -31,6 +57,9 @@ import { PerformancePanel } from "./PerformancePanel";
 import { ResponsivePanel } from "./ResponsivePanel";
 import { StateManagerPanel } from "./StateManagerPanel";
 import { StylePanel } from "./StylePanel";
+import { ButtonWithFeedback } from "./ui/feedback";
+import { useQuickNotifications } from "./ui/notifications";
+import { Tooltip } from "./ui/tooltip";
 import { VersionPanel } from "./VersionPanel";
 import { VisualCanvas } from "./VisualCanvas/VisualCanvas";
 
@@ -83,6 +112,8 @@ const getComponentDefaults = (type: ComponentType) => {
 
 export const ArtifactBuilder = () => {
   // All hooks must be called before any conditional returns
+  const screenSize = useScreenSize();
+  const notifications = useQuickNotifications();
   const [canvas, setCanvas] = useState<ComponentNode[]>([
     // Demo components with responsive styles
     {
@@ -189,12 +220,39 @@ export const ArtifactBuilder = () => {
   const [isAnalyticsPanelOpen, setIsAnalyticsPanelOpen] =
     useState<boolean>(false);
 
+  // Panel visibility states - adaptés selon la taille d'écran
+  const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(
+    () => screenSize === "desktop"
+  );
+  const [isRightPanelOpen, setIsRightPanelOpen] = useState(
+    () => screenSize === "desktop"
+  );
+  const [isPreviewPanelOpen, setIsPreviewPanelOpen] = useState(
+    () => screenSize === "desktop"
+  );
+
+  // Adapter automatiquement les panneaux selon la taille d'écran
+  useEffect(() => {
+    if (screenSize === "mobile") {
+      setIsLeftPanelOpen(false);
+      setIsRightPanelOpen(false);
+      setIsPreviewPanelOpen(false);
+    } else if (screenSize === "tablet") {
+      setIsLeftPanelOpen(false);
+      setIsRightPanelOpen(true);
+      setIsPreviewPanelOpen(false);
+    } else {
+      // Desktop - tous les panneaux ouverts par défaut
+      setIsLeftPanelOpen(true);
+      setIsRightPanelOpen(true);
+      setIsPreviewPanelOpen(true);
+    }
+  }, [screenSize]);
+
   // Toggle edit mode function
   const toggleEditMode = useCallback(() => {
     setIsEditMode(prev => !prev);
   }, []);
-
-
 
   const toggleNodeSelection = useCallback((nodeId: string) => {
     setSelectedNodeIds(prevSelectedIds => {
@@ -748,6 +806,31 @@ export const ArtifactBuilder = () => {
         category: "Analytics",
         action: () => setIsAnalyticsPanelOpen(true),
       },
+      // Panel controls
+      {
+        id: "toggle-left-panel",
+        name: "Toggle Left Panel",
+        description: "Show/hide component library and navigation",
+        shortcut: "Ctrl+Shift+L",
+        category: "View",
+        action: () => setIsLeftPanelOpen(!isLeftPanelOpen),
+      },
+      {
+        id: "toggle-right-panel",
+        name: "Toggle Right Panel",
+        description: "Show/hide properties panel",
+        shortcut: "Ctrl+Shift+R",
+        category: "View",
+        action: () => setIsRightPanelOpen(!isRightPanelOpen),
+      },
+      {
+        id: "toggle-preview-panel",
+        name: "Toggle Preview Panel",
+        description: "Show/hide live preview",
+        shortcut: "Ctrl+Shift+P",
+        category: "View",
+        action: () => setIsPreviewPanelOpen(!isPreviewPanelOpen),
+      },
       {
         id: "export-analytics",
         name: "Export Analytics Data",
@@ -863,6 +946,27 @@ export const ArtifactBuilder = () => {
             setIsCommandPaletteOpen(true);
             console.log("⌘ Opened command palette");
             break;
+          case "l":
+            if (e.shiftKey) {
+              e.preventDefault();
+              setIsLeftPanelOpen(!isLeftPanelOpen);
+              console.log("🔧 Toggled left panel");
+            }
+            break;
+          case "r":
+            if (e.shiftKey) {
+              e.preventDefault();
+              setIsRightPanelOpen(!isRightPanelOpen);
+              console.log("🔧 Toggled right panel");
+            }
+            break;
+          case "p":
+            if (e.shiftKey) {
+              e.preventDefault();
+              setIsPreviewPanelOpen(!isPreviewPanelOpen);
+              console.log("🔧 Toggled preview panel");
+            }
+            break;
         }
       } else {
         // Handle shortcuts without modifiers
@@ -946,222 +1050,461 @@ export const ArtifactBuilder = () => {
     }
   };
 
-  const TabButton = ({ tabName }: { tabName: RightPanelTab }) => (
-    <button
-      onClick={() => setActiveTab(tabName)}
-      className={`px-3 py-2 text-sm font-medium ${
-        activeTab === tabName
-          ? "border-b-2 border-blue-600 text-blue-600"
-          : "text-gray-500 hover:text-gray-700"
-      }`}
-    >
-      {tabName}
-    </button>
-  );
+  const TabButton = ({ tabName }: { tabName: RightPanelTab }) => {
+    const getIcon = (tab: string) => {
+      switch (tab) {
+        case "AI":
+          return "🤖";
+        case "Style":
+          return "🎨";
+        case "Animate":
+          return "✨";
+        case "State":
+          return "⚡";
+        case "API":
+          return "🔌";
+        case "Perf":
+          return "📊";
+        case "Versions":
+          return "📝";
+        case "A/B":
+          return "🧪";
+        case "Deploy":
+          return "🚀";
+        default:
+          return "📄";
+      }
+    };
+
+    return (
+      <button
+        onClick={() => setActiveTab(tabName)}
+        className={`w-full px-4 py-3 text-left text-sm font-medium transition-all duration-200 ${
+          activeTab === tabName
+            ? "bg-primary/10 text-primary border-primary border-r-2"
+            : "hover:bg-accent/50 text-gray-300 hover:text-gray-100"
+        }`}
+      >
+        <span className="mr-2">{getIcon(tabName)}</span>
+        {tabName}
+      </button>
+    );
+  };
 
   return (
-      <div className="relative flex h-screen bg-gray-50 font-sans">
-        <LiveCursors />
+    <div className="relative flex h-screen font-sans">
+      <LiveCursors />
 
-        {/* Command Palette */}
-        <CommandPalette
-          isOpen={isCommandPaletteOpen}
-          onClose={() => setIsCommandPaletteOpen(false)}
-          commands={commands}
-        />
+      {/* Command Palette */}
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        commands={commands}
+      />
 
-        {/* Analytics Panel */}
-        <AnalyticsPanel
-          isOpen={isAnalyticsPanelOpen}
-          onClose={() => setIsAnalyticsPanelOpen(false)}
-        />
+      {/* Analytics Panel */}
+      <AnalyticsPanel
+        isOpen={isAnalyticsPanelOpen}
+        onClose={() => setIsAnalyticsPanelOpen(false)}
+      />
 
-        {/* Left Sidebar */}
-        <div className="component-library w-64 flex-shrink-0 border-r border-gray-200 bg-white">
-          <ComponentLibrary />
-        </div>
-
-        {/* Main Area */}
-        <div className="flex flex-1 flex-col">
-          {/* Toolbar */}
-          <div className="flex h-16 flex-shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4">
-            <h1 className="text-xl font-semibold text-gray-800">
-              Visual Artifact Studio
+      {/* Main Area */}
+      <div className="flex flex-1 flex-col">
+        {/* Toolbar */}
+        <div className="glass border-border/20 flex h-16 flex-shrink-0 items-center justify-between border-b px-2 md:px-4">
+          <div className="flex items-center gap-2">
+            {/* Menu burger pour mobile */}
+            {screenSize === "mobile" && (
+              <button
+                onClick={() => setIsLeftPanelOpen(!isLeftPanelOpen)}
+                className="glass text-foreground hover:bg-accent rounded-md px-2 py-2 text-sm transition-all duration-200"
+                title="Toggle Menu"
+              >
+                ☰
+              </button>
+            )}
+            <h1
+              className={`gradient-text font-semibold ${screenSize === "mobile" ? "text-lg" : "text-xl"}`}
+            >
+              {screenSize === "mobile"
+                ? "Artifact Studio"
+                : "Visual Artifact Studio"}
             </h1>
-            <div className="flex items-center gap-2">
-              <ResponsivePanel />
-              <button
-                onClick={handleUndo}
-                disabled={historyIndex === 0}
-                className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 disabled:opacity-50"
-              >
-                Undo
-              </button>
-              <button
-                onClick={handleRedo}
-                disabled={historyIndex === history.length - 1}
-                className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 disabled:opacity-50"
-              >
-                Redo
-              </button>
-              <button
-                onClick={handleCopy}
-                disabled={!selectedNode}
-                className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 disabled:opacity-50"
-                title="Copy selected component (Ctrl+C)"
-              >
-                Copy
-              </button>
-              <button
-                onClick={handlePaste}
-                className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300"
-                title="Paste component (Ctrl+V)"
-              >
-                Paste
-              </button>
-              <button
-                className={`rounded-md px-4 py-2 text-sm ${snapToGrid ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"}`}
-                onClick={() => setSnapToGrid(!snapToGrid)}
-              >
-                Snap to Grid
-              </button>
-              <button
-                className={`rounded-md px-4 py-2 text-sm ${aspectRatioLocked ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"}`}
-                onClick={() => setAspectRatioLocked(!aspectRatioLocked)}
-              >
-                Lock Aspect Ratio
-              </button>
-              <button
-                className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 disabled:opacity-50"
-                onClick={groupSelectedNodes}
-                disabled={selectedNodeIds.length < 2}
-              >
-                Group
-              </button>
-              <button
-                className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 disabled:opacity-50"
-                onClick={ungroupSelectedNodes}
-                disabled={
-                  selectedNodeIds.length !== 1 ||
-                  canvas.find(c => c.id === selectedNodeIds[0])?.type !==
-                    "container"
-                }
-              >
-                Ungroup
-              </button>
-              <button
-                className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 disabled:opacity-50"
-                onClick={handleSave}
-              >
-                Save
-              </button>
-              <button
-                className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 disabled:opacity-50"
-                onClick={handleDeploy}
-              >
-                Deploy
-              </button>
-              <button
-                className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
-                onClick={() => setIsExportModalOpen(true)}
-              >
-                Export Package
-              </button>
-              <button
-                className={`rounded-md px-4 py-2 text-sm ${isEditMode ? "bg-green-600 text-white" : "bg-orange-600 text-white"}`}
-                onClick={toggleEditMode}
-              >
-                {isEditMode ? "Preview" : "Edit"}
-              </button>
+          </div>
+          <div
+            className={`flex items-center ${screenSize === "mobile" ? "gap-1" : "gap-2"}`}
+          >
+            {screenSize !== "mobile" && <ResponsivePanel />}
+
+                          {/* Boutons principaux - toujours visibles */}
+              <Tooltip content="Undo last action (Ctrl+Z)" position="bottom">
+                <button
+                  onClick={() => {
+                    handleUndo();
+                    notifications.info("Action annulée");
+                  }}
+                  disabled={historyIndex === 0}
+                  className={`glass text-foreground hover:bg-accent rounded-md text-sm transition-all duration-200 disabled:opacity-50 hover-lift ${screenSize === "mobile" ? "px-2 py-1" : "px-4 py-2"}`}
+                >
+                  {screenSize === "mobile" ? "↶" : "Undo"}
+                </button>
+              </Tooltip>
+              
+              <Tooltip content="Redo last action (Ctrl+Y)" position="bottom">
+                <button
+                  onClick={() => {
+                    handleRedo();
+                    notifications.info("Action rétablie");
+                  }}
+                  disabled={historyIndex === history.length - 1}
+                  className={`glass text-foreground hover:bg-accent rounded-md text-sm transition-all duration-200 disabled:opacity-50 hover-lift ${screenSize === "mobile" ? "px-2 py-1" : "px-4 py-2"}`}
+                >
+                  {screenSize === "mobile" ? "↷" : "Redo"}
+                </button>
+              </Tooltip>
+
+                          {/* Boutons masqués sur mobile */}
+              {screenSize !== "mobile" && (
+                <>
+                  <Tooltip content="Copy selected component (Ctrl+C)" position="bottom">
+                    <ButtonWithFeedback
+                      onClick={() => {
+                        handleCopy();
+                        notifications.success("Composant copié !");
+                      }}
+                      disabled={!selectedNode}
+                      className="glass text-foreground hover:bg-accent rounded-md px-4 py-2 text-sm transition-all duration-200 disabled:opacity-50 hover-lift"
+                    >
+                      Copy
+                    </ButtonWithFeedback>
+                  </Tooltip>
+                  
+                  <Tooltip content="Paste component (Ctrl+V)" position="bottom">
+                    <ButtonWithFeedback
+                      onClick={() => {
+                        handlePaste();
+                        notifications.success("Composant collé !");
+                      }}
+                      className="glass text-foreground hover:bg-accent rounded-md px-4 py-2 text-sm transition-all duration-200 hover-lift"
+                    >
+                      Paste
+                    </ButtonWithFeedback>
+                  </Tooltip>
+                </>
+              )}
+                          {/* Boutons de configuration - masqués sur mobile */}
+              {screenSize !== "mobile" && (
+                <>
+                  <Tooltip content={`${snapToGrid ? 'Disable' : 'Enable'} snap to grid`} position="bottom">
+                    <button
+                      className={`glass rounded-md px-4 py-2 text-sm transition-all duration-200 hover-lift ${snapToGrid ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-accent"}`}
+                      onClick={() => {
+                        setSnapToGrid(!snapToGrid);
+                        notifications.info(snapToGrid ? "Snap to grid désactivé" : "Snap to grid activé");
+                      }}
+                    >
+                      {screenSize === "tablet" ? "⊞" : "Snap to Grid"}
+                    </button>
+                  </Tooltip>
+                  
+                  <Tooltip content={`${aspectRatioLocked ? 'Unlock' : 'Lock'} aspect ratio`} position="bottom">
+                    <button
+                      className={`glass rounded-md px-4 py-2 text-sm transition-all duration-200 hover-lift ${aspectRatioLocked ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-accent"}`}
+                      onClick={() => {
+                        setAspectRatioLocked(!aspectRatioLocked);
+                        notifications.info(aspectRatioLocked ? "Aspect ratio déverrouillé" : "Aspect ratio verrouillé");
+                      }}
+                    >
+                      {screenSize === "tablet" ? "🔒" : "Lock Aspect Ratio"}
+                    </button>
+                  </Tooltip>
+                </>
+              )}
+
+            {/* Boutons d'actions - simplifiés selon l'écran */}
+            {screenSize === "desktop" && (
+              <>
+                <button
+                  className="glass text-foreground hover:bg-accent rounded-md px-4 py-2 text-sm transition-all duration-200 disabled:opacity-50"
+                  onClick={groupSelectedNodes}
+                  disabled={selectedNodeIds.length < 2}
+                >
+                  Group
+                </button>
+                <button
+                  className="glass text-foreground hover:bg-accent rounded-md px-4 py-2 text-sm transition-all duration-200 disabled:opacity-50"
+                  onClick={ungroupSelectedNodes}
+                  disabled={
+                    selectedNodeIds.length !== 1 ||
+                    canvas.find(c => c.id === selectedNodeIds[0])?.type !==
+                      "container"
+                  }
+                >
+                  Ungroup
+                </button>
+                <button
+                  className="glass text-foreground hover:bg-accent rounded-md px-4 py-2 text-sm transition-all duration-200 disabled:opacity-50"
+                  onClick={handleSave}
+                >
+                  Save
+                </button>
+                <button
+                  className="glass text-foreground hover:bg-accent rounded-md px-4 py-2 text-sm transition-all duration-200 disabled:opacity-50"
+                  onClick={handleDeploy}
+                >
+                  Deploy
+                </button>
+              </>
+            )}
+
+                          {/* Actions principales - toujours visibles mais adaptées */}
+              <Tooltip content="Export project package" position="bottom">
+                <button
+                  className={`glass bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-md text-sm transition-all duration-200 hover-lift ${screenSize === "mobile" ? "px-2 py-1" : "px-4 py-2"}`}
+                  onClick={() => {
+                    setIsExportModalOpen(true);
+                    notifications.info("Ouverture de l'export...");
+                  }}
+                >
+                  {screenSize === "mobile" ? "📦" : "Export Package"}
+                </button>
+              </Tooltip>
+              
+              <Tooltip content={`Switch to ${isEditMode ? 'preview' : 'edit'} mode`} position="bottom">
+                <button
+                  className={`glass rounded-md text-sm transition-all duration-200 hover-lift ${isEditMode ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"} ${screenSize === "mobile" ? "px-2 py-1" : "px-4 py-2"}`}
+                  onClick={() => {
+                    toggleEditMode();
+                    notifications.info(`Mode ${isEditMode ? 'preview' : 'édition'} activé`);
+                  }}
+                >
+                  {screenSize === "mobile"
+                    ? isEditMode
+                      ? "👀"
+                      : "✏️"
+                    : isEditMode
+                      ? "Preview"
+                      : "Edit"}
+                </button>
+              </Tooltip>
+
+            {/* Indicateur de mode - masqué sur mobile */}
+            {screenSize !== "mobile" && (
               <div
-                className={`rounded-md px-3 py-2 text-sm font-medium ${isEditMode ? "bg-blue-500 text-white" : "bg-orange-500 text-white"}`}
+                className={`glass rounded-md px-3 py-2 text-sm font-medium ${isEditMode ? "bg-primary/20 text-primary border-primary/30 border" : "bg-secondary/20 text-secondary border-secondary/30 border"}`}
               >
                 {isEditMode ? "EDIT MODE" : "PREVIEW MODE"}
               </div>
+            )}
+
+            {/* Boutons d'outils - adaptatifs */}
+            {screenSize === "desktop" && (
               <button
-                className="rounded-md bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700"
+                className="glass bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-md px-4 py-2 text-sm transition-all duration-200"
                 onClick={() => {
-                  // We'll need to access the performance monitor toggle from the canvas
-                  if (typeof window !== 'undefined' && (window as any).togglePerformanceMonitor) {
+                  if (
+                    typeof window !== "undefined" &&
+                    (window as any).togglePerformanceMonitor
+                  ) {
                     (window as any).togglePerformanceMonitor();
                   }
                 }}
               >
                 Show Monitor
               </button>
-              <button
-                className="command-button rounded-md bg-purple-600 px-4 py-2 text-sm text-white hover:bg-purple-700"
-                onClick={() => setIsCommandPaletteOpen(true)}
-                title="Open Command Palette (Ctrl+K)"
-              >
-                ⌘ Commands
-              </button>
-            </div>
-          </div>
+            )}
 
-          {/* Main Content */}
-          <div className="flex flex-1">
-            {/* Left Navigation */}
-            <div className="w-48 flex-shrink-0 border-r border-gray-200 bg-white">
-              {(
-                [
-                  "AI",
-                  "Style",
-                  "Animate",
-                  "State",
-                  "API",
-                  "Perf",
-                  "Versions",
-                  "A/B",
-                  "Deploy",
-                ] as RightPanelTab[]
-              ).map(tab => (
-                <div key={tab}>
-                  <TabButton tabName={tab} />
-                </div>
-              ))}
-            </div>
-
-            {/* Right Panel */}
-            <div className="style-panel w-80 flex-shrink-0 overflow-y-auto border-r border-gray-200 bg-white">
-              {renderPanel()}
-            </div>
-
-            {/* Canvas Area */}
-            <div className="visual-canvas h-full flex-1 overflow-auto">
-              <VisualCanvas
-                components={canvas}
-                selectedNodeIds={selectedNodeIds}
-                onSelectNode={handleSelectNode}
-                onSelectNodes={handleSelectNodes}
-                onAddComponent={addComponent}
-                snapToGrid={snapToGrid}
-                aspectRatioLocked={aspectRatioLocked}
-                onUpdateComponent={updateComponent}
-                activeBreakpoint={activeBreakpoint}
-                isEditMode={isEditMode}
-              />
-            </div>
-
-            {/* Preview */}
-            <div className="live-preview w-96 flex-shrink-0 overflow-y-auto border-l border-gray-200 bg-gray-100">
-              <LivePreview code={livePreview} framework={framework} />
-            </div>
+            <button
+              className={`glass bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-md text-sm transition-all duration-200 ${screenSize === "mobile" ? "px-2 py-1" : "px-4 py-2"}`}
+              onClick={() => setIsCommandPaletteOpen(true)}
+              title="Open Command Palette (Ctrl+K)"
+            >
+              {screenSize === "mobile" ? "⌘" : "⌘ Commands"}
+            </button>
           </div>
         </div>
 
-        {/* Export Package Modal */}
-        <ExportPackageModal
-          isOpen={isExportModalOpen}
-          onClose={() => setIsExportModalOpen(false)}
-          components={canvas}
-        />
+        {/* Main Content */}
+        <div className="flex flex-1">
+          {/* Left Panel - Component Library & Navigation */}
+          {isLeftPanelOpen && (
+            <div
+              className={`glass border-border/20 flex flex-shrink-0 flex-col border-r ${
+                screenSize === "mobile"
+                  ? "absolute z-50 h-full w-full"
+                  : screenSize === "tablet"
+                    ? "w-56"
+                    : "w-64"
+              }`}
+            >
+              {/* Bouton de fermeture sur mobile */}
+              {screenSize === "mobile" && (
+                <div className="border-border/20 flex justify-end border-b p-2">
+                  <button
+                    onClick={() => setIsLeftPanelOpen(false)}
+                    className="glass rounded-md px-3 py-2 text-sm text-gray-200 hover:text-gray-100"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
 
-        {/* Help Modal */}
-        <HelpModal
-          isOpen={isHelpModalOpen}
-          onClose={() => setIsHelpModalOpen(false)}
-        />
+              {/* Component Library */}
+              <div className="flex-1">
+                <ComponentLibrary />
+              </div>
+
+              {/* Navigation Tabs */}
+              <div className="border-border/20 border-t">
+                {(
+                  [
+                    "AI",
+                    "Style",
+                    "Animate",
+                    "State",
+                    "API",
+                    "Perf",
+                    "Versions",
+                    "A/B",
+                    "Deploy",
+                  ] as RightPanelTab[]
+                ).map(tab => (
+                  <div key={tab}>
+                    <TabButton tabName={tab} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Canvas Area - Main workspace */}
+          <div className="visual-canvas relative h-full flex-1 overflow-auto">
+            <VisualCanvas
+              components={canvas}
+              selectedNodeIds={selectedNodeIds}
+              onSelectNode={handleSelectNode}
+              onSelectNodes={handleSelectNodes}
+              onAddComponent={addComponent}
+              snapToGrid={snapToGrid}
+              aspectRatioLocked={aspectRatioLocked}
+              onUpdateComponent={updateComponent}
+              activeBreakpoint={activeBreakpoint}
+              isEditMode={isEditMode}
+            />
+
+                         {/* Panel toggle buttons */}
+             <div className="absolute top-4 left-4 z-30 flex flex-col gap-2">
+               <Tooltip content={isLeftPanelOpen ? "Hide Left Panel (Ctrl+Shift+L)" : "Show Left Panel (Ctrl+Shift+L)"} position="right">
+                 <button
+                   onClick={() => {
+                     setIsLeftPanelOpen(!isLeftPanelOpen);
+                     notifications.info(isLeftPanelOpen ? "Panneau gauche masqué" : "Panneau gauche affiché");
+                   }}
+                   className="glass rounded-md px-3 py-2 text-sm text-gray-200 transition-all duration-200 hover:text-gray-100 hover-lift"
+                 >
+                   {isLeftPanelOpen ? "◀" : "▶"}
+                 </button>
+               </Tooltip>
+               
+               <Tooltip content={isRightPanelOpen ? "Hide Right Panel (Ctrl+Shift+R)" : "Show Right Panel (Ctrl+Shift+R)"} position="right">
+                 <button
+                   onClick={() => {
+                     setIsRightPanelOpen(!isRightPanelOpen);
+                     notifications.info(isRightPanelOpen ? "Panneau droit masqué" : "Panneau droit affiché");
+                   }}
+                   className="glass rounded-md px-3 py-2 text-sm text-gray-200 transition-all duration-200 hover:text-gray-100 hover-lift"
+                 >
+                   {isRightPanelOpen ? "▶" : "◀"}
+                 </button>
+               </Tooltip>
+               
+               <Tooltip content={isPreviewPanelOpen ? "Hide Preview (Ctrl+Shift+P)" : "Show Preview (Ctrl+Shift+P)"} position="right">
+                 <button
+                   onClick={() => {
+                     setIsPreviewPanelOpen(!isPreviewPanelOpen);
+                     notifications.info(isPreviewPanelOpen ? "Aperçu masqué" : "Aperçu affiché");
+                   }}
+                   className="glass rounded-md px-3 py-2 text-sm text-gray-200 transition-all duration-200 hover:text-gray-100 hover-lift"
+                 >
+                   {isPreviewPanelOpen ? "◀" : "▶"}
+                 </button>
+               </Tooltip>
+
+              {/* Fullscreen indicator */}
+              {!isLeftPanelOpen && !isRightPanelOpen && !isPreviewPanelOpen && (
+                <div className="glass text-primary rounded-md px-3 py-2 text-sm font-medium">
+                  🖥️ Fullscreen
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Right Panel - Properties & Settings */}
+          {isRightPanelOpen && (
+            <div
+              className={`glass style-panel border-border/20 flex-shrink-0 overflow-y-auto border-l ${
+                screenSize === "mobile"
+                  ? "absolute right-0 z-50 h-full w-full"
+                  : screenSize === "tablet"
+                    ? "w-72"
+                    : "w-80"
+              }`}
+            >
+              {/* Bouton de fermeture sur mobile */}
+              {screenSize === "mobile" && (
+                <div className="border-border/20 flex justify-end border-b p-2">
+                  <button
+                    onClick={() => setIsRightPanelOpen(false)}
+                    className="glass rounded-md px-3 py-2 text-sm text-gray-200 hover:text-gray-100"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+              {renderPanel()}
+            </div>
+          )}
+
+          {/* Preview Panel */}
+          {isPreviewPanelOpen && (
+            <div
+              className={`glass live-preview border-border/20 flex-shrink-0 overflow-y-auto border-l ${
+                screenSize === "mobile"
+                  ? "absolute right-0 z-40 h-full w-full"
+                  : screenSize === "tablet"
+                    ? "w-80"
+                    : "w-96"
+              }`}
+            >
+              {/* Bouton de fermeture sur mobile */}
+              {screenSize === "mobile" && (
+                <div className="border-border/20 flex justify-end border-b p-2">
+                  <button
+                    onClick={() => setIsPreviewPanelOpen(false)}
+                    className="glass rounded-md px-3 py-2 text-sm text-gray-200 hover:text-gray-100"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+              <LivePreview code={livePreview} framework={framework} />
+            </div>
+          )}
+        </div>
       </div>
-    );
+
+      {/* Export Package Modal */}
+      <ExportPackageModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        components={canvas}
+      />
+
+      {/* Help Modal */}
+      <HelpModal
+        isOpen={isHelpModalOpen}
+        onClose={() => setIsHelpModalOpen(false)}
+      />
+    </div>
+  );
 };

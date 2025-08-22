@@ -70,12 +70,12 @@ export const AIPromptPanel = ({
         <h3 className="mb-2 text-lg font-semibold text-gray-800">
           AI Component Generator
         </h3>
-        <p className="text-sm text-gray-600">Describe what you want to build</p>
+        <p className="text-sm">Describe what you want to build</p>
       </div>
 
       {/* Prompt Input */}
       <div className="mb-4">
-        <label className="mb-2 block text-sm font-medium text-gray-700">
+        <label className="mb-2 block text-sm font-medium">
           Describe your component
         </label>
         <textarea
@@ -89,9 +89,7 @@ export const AIPromptPanel = ({
       {/* Configuration Options */}
       <div className="mb-4 flex-grow space-y-3 overflow-y-auto">
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">
-            Framework
-          </label>
+          <label className="mb-1 block text-sm font-medium">Framework</label>
           <select
             value={framework}
             onChange={e => setFramework(e.target.value as any)}
@@ -104,9 +102,7 @@ export const AIPromptPanel = ({
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">
-            Styling
-          </label>
+          <label className="mb-1 block text-sm font-medium">Styling</label>
           <select
             value={styling}
             onChange={e => setStyling(e.target.value as any)}
@@ -119,7 +115,7 @@ export const AIPromptPanel = ({
         </div>
 
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">
+          <label className="mb-1 block text-sm font-medium">
             Interactivity
           </label>
           <select
@@ -135,9 +131,7 @@ export const AIPromptPanel = ({
 
         {/* Smart Styling Suggestions */}
         <div className="mb-4">
-          <label className="mb-2 block text-sm font-medium text-gray-700">
-            Visual Theme
-          </label>
+          <label className="mb-2 block text-sm font-medium">Visual Theme</label>
           <div className="flex items-center space-x-4">
             <label className="flex items-center">
               <input
@@ -147,7 +141,7 @@ export const AIPromptPanel = ({
                 onChange={() => setTheme("default")}
                 className="form-radio h-4 w-4 text-blue-600"
               />
-              <span className="ml-2 text-sm text-gray-700">Default</span>
+              <span className="ml-2 text-sm">Default</span>
             </label>
             <label className="flex items-center">
               <input
@@ -157,7 +151,7 @@ export const AIPromptPanel = ({
                 onChange={() => setTheme("modern")}
                 className="form-radio h-4 w-4 text-purple-600"
               />
-              <span className="ml-2 text-sm text-gray-700">Modern</span>
+              <span className="ml-2 text-sm">Modern</span>
             </label>
             <label className="flex items-center">
               <input
@@ -165,9 +159,9 @@ export const AIPromptPanel = ({
                 value="minimalist"
                 checked={theme === "minimalist"}
                 onChange={() => setTheme("minimalist")}
-                className="form-radio h-4 w-4 text-gray-600"
+                className="form-radio h-4 w-4"
               />
-              <span className="ml-2 text-sm text-gray-700">Minimalist</span>
+              <span className="ml-2 text-sm">Minimalist</span>
             </label>
           </div>
         </div>
@@ -192,10 +186,10 @@ export const AIPromptPanel = ({
       {/* History Section */}
       <div className="mt-4 flex-1">
         <div className="mb-2 flex items-center justify-between">
-          <h4 className="text-sm font-medium text-gray-700">History</h4>
+          <h4 className="text-sm font-medium">History</h4>
           <button
             onClick={handleClearHistory}
-            className="text-xs text-gray-500 hover:text-gray-700"
+            className="hover: text-xs text-gray-500"
           >
             Clear
           </button>
@@ -205,7 +199,7 @@ export const AIPromptPanel = ({
             <button
               key={entry.id}
               onClick={() => applyHistoryEntry(entry)}
-              className="w-full rounded border border-gray-200 bg-gray-50 p-2 text-left text-xs text-gray-700 transition-colors hover:bg-gray-100"
+              className="w-full rounded border border-gray-200 bg-gray-50 p-2 text-left text-xs transition-colors hover:bg-gray-100"
             >
               {entry.request.prompt}
             </button>

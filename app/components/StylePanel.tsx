@@ -22,7 +22,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
 
   if (!selectedNode) {
     return (
-      <div className="flex h-full items-center justify-center p-4 text-gray-500">
+      <div className="flex h-full items-center justify-center p-4">
         <div className="text-center">
           <div className="mb-2 text-4xl">🎨</div>
           <p>Select a component to edit its properties</p>
@@ -64,7 +64,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
   const renderLayoutTab = () => (
     <div className="space-y-4">
       <div>
-        <label className="mb-1 block text-xs text-gray-600">Display</label>
+        <label className="mb-1 block text-xs">Display</label>
         <select
           value={selectedNode.styles.display || "block"}
           onChange={e => updateStyle("display", e.target.value)}
@@ -80,9 +80,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
         <div className="space-y-4 rounded border p-2">
           <h5 className="text-xs font-medium text-gray-500">Flexbox</h5>
           <div>
-            <label className="mb-1 block text-xs text-gray-600">
-              Direction
-            </label>
+            <label className="mb-1 block text-xs">Direction</label>
             <select
               value={selectedNode.styles.flexDirection || "row"}
               onChange={e => updateStyle("flexDirection", e.target.value)}
@@ -93,9 +91,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs text-gray-600">
-              Justify Content
-            </label>
+            <label className="mb-1 block text-xs">Justify Content</label>
             <select
               value={selectedNode.styles.justifyContent || "flex-start"}
               onChange={e => updateStyle("justifyContent", e.target.value)}
@@ -108,9 +104,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs text-gray-600">
-              Align Items
-            </label>
+            <label className="mb-1 block text-xs">Align Items</label>
             <select
               value={selectedNode.styles.alignItems || "stretch"}
               onChange={e => updateStyle("alignItems", e.target.value)}
@@ -130,7 +124,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
   const renderTypographyTab = () => (
     <div className="space-y-4">
       <div>
-        <label className="mb-1 block text-xs text-gray-600">Font Size</label>
+        <label className="mb-1 block text-xs">Font Size</label>
         <input
           type="text"
           value={selectedNode.styles.fontSize || "16px"}
@@ -144,7 +138,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
         />
       </div>
       <div>
-        <label className="mb-1 block text-xs text-gray-600">Font Weight</label>
+        <label className="mb-1 block text-xs">Font Weight</label>
         <select
           value={selectedNode.styles.fontWeight || "normal"}
           onChange={e => updateStyle("fontWeight", e.target.value)}
@@ -156,7 +150,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
         </select>
       </div>
       <div>
-        <label className="mb-1 block text-xs text-gray-600">Text Align</label>
+        <label className="mb-1 block text-xs">Text Align</label>
         <select
           value={selectedNode.styles.textAlign || "left"}
           onChange={e => updateStyle("textAlign", e.target.value)}
@@ -168,7 +162,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
         </select>
       </div>
       <div>
-        <label className="mb-1 block text-xs text-gray-600">Color</label>
+        <label className="mb-1 block text-xs">Color</label>
         <input
           type="color"
           value={selectedNode.styles.color || "#000000"}
@@ -247,7 +241,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
         <div className="space-y-3">
           {/* Layout Properties */}
           <div>
-            <label className="mb-1 block text-xs text-gray-600">Width</label>
+            <label className="mb-1 block text-xs">Width</label>
             <input
               type="text"
               placeholder="e.g., 100%, 200px, auto"
@@ -259,7 +253,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs text-gray-600">Height</label>
+            <label className="mb-1 block text-xs">Height</label>
             <input
               type="text"
               placeholder="e.g., 100px, auto"
@@ -271,7 +265,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs text-gray-600">Display</label>
+            <label className="mb-1 block text-xs">Display</label>
             <select
               value={
                 selectedNode.responsiveStyles?.[activeBreakpoint]?.display || ""
@@ -290,9 +284,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
 
           {/* Typography Properties */}
           <div>
-            <label className="mb-1 block text-xs text-gray-600">
-              Font Size
-            </label>
+            <label className="mb-1 block text-xs">Font Size</label>
             <input
               type="text"
               placeholder="e.g., 16px, 1.2rem"
@@ -305,9 +297,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs text-gray-600">
-              Text Align
-            </label>
+            <label className="mb-1 block text-xs">Text Align</label>
             <select
               value={
                 selectedNode.responsiveStyles?.[activeBreakpoint]?.textAlign ||
@@ -326,7 +316,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
 
           {/* Spacing Properties */}
           <div>
-            <label className="mb-1 block text-xs text-gray-600">Padding</label>
+            <label className="mb-1 block text-xs">Padding</label>
             <input
               type="text"
               placeholder="e.g., 10px, 1rem"
@@ -338,7 +328,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs text-gray-600">Margin</label>
+            <label className="mb-1 block text-xs">Margin</label>
             <input
               type="text"
               placeholder="e.g., 10px, 1rem"
@@ -407,20 +397,20 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
   return (
     <div className="h-full overflow-y-auto p-4">
       <div className="mb-4">
-        <h3 className="mb-2 text-lg font-semibold text-gray-800">Properties</h3>
-        <div className="rounded bg-gray-50 px-2 py-1 text-sm text-gray-600">
+        <h3 className="mb-2 text-lg font-semibold text-gray-100">Properties</h3>
+        <div className="glass rounded px-2 py-1 text-sm text-gray-300">
           {selectedNode.type} • {selectedNode.id}
         </div>
       </div>
 
       <div className="mb-6">
-        <h4 className="mb-3 text-sm font-medium text-gray-700">Content</h4>
+        <h4 className="mb-3 text-sm font-medium text-gray-200">Content</h4>
         {selectedNode.type === "text" && (
           <input
             type="text"
             value={selectedNode.props.children || ""}
             onChange={e => updateProp("children", e.target.value)}
-            className="w-full rounded border border-gray-300 p-2 text-sm"
+            className="glass w-full rounded border border-border p-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none transition-all duration-200"
           />
         )}
         {selectedNode.type === "button" && (
@@ -428,7 +418,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             type="text"
             value={selectedNode.props.children || ""}
             onChange={e => updateProp("children", e.target.value)}
-            className="w-full rounded border border-gray-300 p-2 text-sm"
+            className="glass w-full rounded border border-border p-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none transition-all duration-200"
           />
         )}
         {selectedNode.type === "input" && (
@@ -436,40 +426,40 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             type="text"
             value={selectedNode.props.placeholder || ""}
             onChange={e => updateProp("placeholder", e.target.value)}
-            className="w-full rounded border border-gray-300 p-2 text-sm"
+            className="glass w-full rounded border border-border p-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none transition-all duration-200"
           />
         )}
       </div>
 
       <div className="mb-6">
-        <div className="flex border-b">
+        <div className="flex border-b border-border/20">
           <button
             onClick={() => setActiveTab("layout")}
-            className={`px-4 py-2 text-sm ${activeTab === "layout" ? "border-b-2 border-blue-500" : ""}`}
+            className={`px-4 py-2 text-sm transition-all duration-200 ${activeTab === "layout" ? "border-b-2 border-primary text-primary" : "text-gray-300 hover:text-gray-100"}`}
           >
             Layout
           </button>
           <button
             onClick={() => setActiveTab("typography")}
-            className={`px-4 py-2 text-sm ${activeTab === "typography" ? "border-b-2 border-blue-500" : ""}`}
+            className={`px-4 py-2 text-sm transition-all duration-200 ${activeTab === "typography" ? "border-b-2 border-primary text-primary" : "text-gray-300 hover:text-gray-100"}`}
           >
             Typography
           </button>
           <button
             onClick={() => setActiveTab("appearance")}
-            className={`px-4 py-2 text-sm ${activeTab === "appearance" ? "border-b-2 border-blue-500" : ""}`}
+            className={`px-4 py-2 text-sm transition-all duration-200 ${activeTab === "appearance" ? "border-b-2 border-primary text-primary" : "text-gray-300 hover:text-gray-100"}`}
           >
             Appearance
           </button>
           <button
             onClick={() => setActiveTab("responsive")}
-            className={`px-4 py-2 text-sm ${activeTab === "responsive" ? "border-b-2 border-blue-500" : ""}`}
+            className={`px-4 py-2 text-sm transition-all duration-200 ${activeTab === "responsive" ? "border-b-2 border-primary text-primary" : "text-gray-300 hover:text-gray-100"}`}
           >
             Responsive
           </button>
           <button
             onClick={() => setActiveTab("optimization")}
-            className={`px-4 py-2 text-sm ${activeTab === "optimization" ? "border-b-2 border-blue-500" : ""}`}
+            className={`px-4 py-2 text-sm transition-all duration-200 ${activeTab === "optimization" ? "border-b-2 border-primary text-primary" : "text-gray-300 hover:text-gray-100"}`}
           >
             Optimization
           </button>

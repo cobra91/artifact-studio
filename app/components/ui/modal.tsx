@@ -68,7 +68,7 @@ export const Modal = ({
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                className="rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:"
                 title="Close (Esc)"
               >
                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

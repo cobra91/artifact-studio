@@ -196,7 +196,7 @@ export const HelpSystem = ({
             <h3 className="mb-2 text-lg font-semibold text-gray-900">
               {step.title}
             </h3>
-            <p className="leading-relaxed text-gray-600">{step.content}</p>
+            <p className="leading-relaxed">{step.content}</p>
           </div>
 
           <div className="flex items-center justify-between">
@@ -209,14 +209,14 @@ export const HelpSystem = ({
             <div className="flex space-x-2">
               <button
                 onClick={skipOnboarding}
-                className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800"
+                className="px-3 py-1.5 text-sm text-gray-800"
               >
                 Skip
               </button>
               {currentStep > 0 && (
                 <button
                   onClick={prevStep}
-                  className="rounded bg-gray-200 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-300"
+                  className="rounded bg-gray-200 px-3 py-1.5 text-sm text-gray-800 hover:bg-gray-300"
                 >
                   Back
                 </button>

@@ -117,9 +117,7 @@ export const GradientEditor = ({
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="mb-2 text-sm font-medium text-gray-700">
-          Gradient Preview
-        </h3>
+        <h3 className="mb-2 text-sm font-medium">Gradient Preview</h3>
         <canvas
           ref={canvasRef}
           width={300}
@@ -130,7 +128,7 @@ export const GradientEditor = ({
 
       {type === "linear" && (
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">
+          <label className="mb-1 block text-sm font-medium">
             Angle: {angle}°
           </label>
           <input
@@ -150,7 +148,7 @@ export const GradientEditor = ({
 
       <div>
         <div className="mb-2 flex items-center justify-between">
-          <h3 className="text-sm font-medium text-gray-700">Color Stops</h3>
+          <h3 className="text-sm font-medium">Color Stops</h3>
           <button
             onClick={addColorStop}
             className="text-sm text-blue-600 hover:text-blue-800"
@@ -184,9 +182,7 @@ export const GradientEditor = ({
                 className="flex-1"
               />
 
-              <span className="w-12 text-sm text-gray-600">
-                {stop.position}%
-              </span>
+              <span className="w-12 text-sm">{stop.position}%</span>
 
               {colorStops.length > 2 && (
                 <button

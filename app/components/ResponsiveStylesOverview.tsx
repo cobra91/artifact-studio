@@ -14,7 +14,7 @@ export const ResponsiveStylesOverview = ({
 
   return (
     <div className="rounded border bg-gray-50 p-4">
-      <h4 className="mb-3 text-sm font-medium text-gray-700">
+      <h4 className="mb-3 text-sm font-medium">
         Responsive Styles Overview
       </h4>
 
@@ -34,7 +34,7 @@ export const ResponsiveStylesOverview = ({
               }`}
             >
               <div className="mb-2 flex items-center justify-between">
-                <span className="font-medium text-gray-700">{info.label}</span>
+                <span className="font-medium ">{info.label}</span>
                 <span className="text-gray-500">{info.width}</span>
               </div>
 
@@ -56,7 +56,7 @@ export const ResponsiveStylesOverview = ({
       </div>
 
       <div className="mt-3 border-t border-gray-200 pt-3">
-        <div className="flex items-center gap-2 text-xs text-gray-600">
+        <div className="flex items-center gap-2 text-xs">
           <div className="h-2 w-2 rounded-full bg-blue-500"></div>
           <span>Custom styles applied</span>
           <div className="ml-2 h-2 w-2 rounded-full bg-gray-300"></div>

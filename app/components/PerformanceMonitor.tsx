@@ -131,16 +131,16 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
         {/* Memory Usage */}
         <div className="mb-4">
           <div className="mb-2 flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <span className="text-sm font-medium text-gray-700">
               Memory Usage
             </span>
             {currentMemory && (
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-gray-700">
                 {currentMemory.used}MB / {currentMemory.limit}MB
               </span>
             )}
           </div>
-          <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+          <div className="h-2 w-full rounded-full bg-gray-200">
             <div
               className={`h-2 rounded-full transition-all duration-300 ${
                 getMemoryStatus() === "critical"
@@ -174,7 +174,7 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
                 >
                   <div className="flex justify-between">
                     <span className="truncate font-medium">{metric.name}</span>
-                    <span className="text-gray-600 dark:text-gray-400">
+                    <span className="text-gray-800 dark:text-gray-200">
                       {metric.duration.toFixed(2)}ms
                     </span>
                   </div>
