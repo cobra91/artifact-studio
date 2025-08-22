@@ -27,10 +27,6 @@ import { ExportPackageModal } from "./ExportPackageModal";
 import { HelpSystem } from "./HelpSystem";
 import { LiveCursors } from "./LiveCursors";
 import { LivePreview } from "./LivePreview";
-import {
-  PerformanceMonitor,
-  usePerformanceMonitor,
-} from "./PerformanceMonitor";
 import { PerformancePanel } from "./PerformancePanel";
 import { ResponsivePanel } from "./ResponsivePanel";
 import { StateManagerPanel } from "./StateManagerPanel";
@@ -193,8 +189,10 @@ export const ArtifactBuilder = () => {
   const [isAnalyticsPanelOpen, setIsAnalyticsPanelOpen] =
     useState<boolean>(false);
 
-  // Performance monitoring
-  const { memoryUsage: _memoryUsage } = usePerformanceMonitor();
+  // Toggle edit mode function
+  const toggleEditMode = useCallback(() => {
+    setIsEditMode(prev => !prev);
+  }, []);
 
   // Check if onboarding should be shown
   useEffect(() => {
@@ -207,7 +205,6 @@ export const ArtifactBuilder = () => {
       }
     }
   }, []);
-
 
   const toggleNodeSelection = useCallback((nodeId: string) => {
     setSelectedNodeIds(prevSelectedIds => {
@@ -297,17 +294,31 @@ export const ArtifactBuilder = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const savedCanvas = localStorage.getItem("canvas");
-      if (savedCanvas) {
-        updateCanvas(JSON.parse(savedCanvas));
+      try {
+        const savedCanvas = localStorage.getItem("canvas");
+        if (savedCanvas) {
+          updateCanvas(JSON.parse(savedCanvas));
+        }
+      } catch (error) {
+        console.warn("Failed to parse saved canvas data:", error);
       }
-      const savedState = localStorage.getItem("appState");
-      if (savedState) {
-        setAppState(JSON.parse(savedState));
+
+      try {
+        const savedState = localStorage.getItem("appState");
+        if (savedState) {
+          setAppState(JSON.parse(savedState));
+        }
+      } catch (error) {
+        console.warn("Failed to parse saved app state:", error);
       }
-      const savedApiData = localStorage.getItem("apiData");
-      if (savedApiData) {
-        setApiData(JSON.parse(savedApiData));
+
+      try {
+        const savedApiData = localStorage.getItem("apiData");
+        if (savedApiData) {
+          setApiData(JSON.parse(savedApiData));
+        }
+      } catch (error) {
+        console.warn("Failed to parse saved API data:", error);
       }
     }
   }, [updateCanvas]);
@@ -670,7 +681,7 @@ export const ArtifactBuilder = () => {
         description: "Switch between edit and preview mode",
         shortcut: "",
         category: "View",
-        action: () => setIsEditMode(!isEditMode),
+        action: toggleEditMode,
       },
       // Component operations
       {
@@ -773,7 +784,6 @@ export const ArtifactBuilder = () => {
       canvas,
       snapToGrid,
       aspectRatioLocked,
-      isEditMode,
       handleSave,
       handleUndo,
       handleRedo,
@@ -784,7 +794,7 @@ export const ArtifactBuilder = () => {
       setSelectedNodeIds,
       setSnapToGrid,
       setAspectRatioLocked,
-      setIsEditMode,
+      toggleEditMode,
       setIsExportModalOpen,
       groupSelectedNodes,
       ungroupSelectedNodes,
@@ -960,199 +970,211 @@ export const ArtifactBuilder = () => {
   );
 
   try {
-  return (
-    <div className="relative flex h-screen bg-gray-50 font-sans">
-      <LiveCursors />
+    return (
+      <div className="relative flex h-screen bg-gray-50 font-sans">
+        <LiveCursors />
 
-      {/* Command Palette */}
-      <CommandPalette
-        isOpen={isCommandPaletteOpen}
-        onClose={() => setIsCommandPaletteOpen(false)}
-        commands={commands}
-      />
+        {/* Command Palette */}
+        <CommandPalette
+          isOpen={isCommandPaletteOpen}
+          onClose={() => setIsCommandPaletteOpen(false)}
+          commands={commands}
+        />
 
-      {/* Help System */}
-      <HelpSystem
-        showOnboarding={showOnboarding}
-        onFinishOnboarding={() => setShowOnboarding(false)}
-      />
+        {/* Help System */}
+        <HelpSystem
+          showOnboarding={showOnboarding}
+          onFinishOnboarding={() => setShowOnboarding(false)}
+        />
 
-      {/* Analytics Panel */}
-      <AnalyticsPanel
-        isOpen={isAnalyticsPanelOpen}
-        onClose={() => setIsAnalyticsPanelOpen(false)}
-      />
+        {/* Analytics Panel */}
+        <AnalyticsPanel
+          isOpen={isAnalyticsPanelOpen}
+          onClose={() => setIsAnalyticsPanelOpen(false)}
+        />
 
-      {/* Performance Monitor */}
-      <PerformanceMonitor />
-
-      {/* Left Sidebar */}
-      <div className="component-library w-64 flex-shrink-0 border-r border-gray-200 bg-white">
-        <ComponentLibrary />
-      </div>
-
-      {/* Main Area */}
-      <div className="flex flex-1 flex-col">
-        {/* Toolbar */}
-        <div className="flex h-16 flex-shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4">
-          <h1 className="text-xl font-semibold text-gray-800">
-            Visual Artifact Studio
-          </h1>
-          <div className="flex items-center gap-2">
-            <ResponsivePanel />
-            <button
-              onClick={handleUndo}
-              disabled={historyIndex === 0}
-              className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 disabled:opacity-50"
-            >
-              Undo
-            </button>
-            <button
-              onClick={handleRedo}
-              disabled={historyIndex === history.length - 1}
-              className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 disabled:opacity-50"
-            >
-              Redo
-            </button>
-            <button
-              onClick={handleCopy}
-              disabled={!selectedNode}
-              className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 disabled:opacity-50"
-              title="Copy selected component (Ctrl+C)"
-            >
-              Copy
-            </button>
-            <button
-              onClick={handlePaste}
-              className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300"
-              title="Paste component (Ctrl+V)"
-            >
-              Paste
-            </button>
-            <button
-              className={`rounded-md px-4 py-2 text-sm ${snapToGrid ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"}`}
-              onClick={() => setSnapToGrid(!snapToGrid)}
-            >
-              Snap to Grid
-            </button>
-            <button
-              className={`rounded-md px-4 py-2 text-sm ${aspectRatioLocked ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"}`}
-              onClick={() => setAspectRatioLocked(!aspectRatioLocked)}
-            >
-              Lock Aspect Ratio
-            </button>
-            <button
-              className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 disabled:opacity-50"
-              onClick={groupSelectedNodes}
-              disabled={selectedNodeIds.length < 2}
-            >
-              Group
-            </button>
-            <button
-              className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 disabled:opacity-50"
-              onClick={ungroupSelectedNodes}
-              disabled={
-                selectedNodeIds.length !== 1 ||
-                canvas.find(c => c.id === selectedNodeIds[0])?.type !==
-                  "container"
-              }
-            >
-              Ungroup
-            </button>
-            <button
-              className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 disabled:opacity-50"
-              onClick={handleSave}
-            >
-              Save
-            </button>
-            <button
-              className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 disabled:opacity-50"
-              onClick={handleDeploy}
-            >
-              Deploy
-            </button>
-            <button
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
-              onClick={() => setIsExportModalOpen(true)}
-            >
-              Export Package
-            </button>
-            <button
-              className={`rounded-md px-4 py-2 text-sm ${isEditMode ? "bg-green-600 text-white" : "bg-orange-600 text-white"}`}
-              onClick={() => setIsEditMode(!isEditMode)}
-            >
-              {isEditMode ? "Preview" : "Edit"}
-            </button>
-            <button
-              className="command-button rounded-md bg-purple-600 px-4 py-2 text-sm text-white hover:bg-purple-700"
-              onClick={() => setIsCommandPaletteOpen(true)}
-              title="Open Command Palette (Ctrl+K)"
-            >
-              ⌘ Commands
-            </button>
-          </div>
+        {/* Left Sidebar */}
+        <div className="component-library w-64 flex-shrink-0 border-r border-gray-200 bg-white">
+          <ComponentLibrary />
         </div>
 
-        {/* Main Content */}
-        <div className="flex flex-1">
-          {/* Left Navigation */}
-          <div className="w-48 flex-shrink-0 border-r border-gray-200 bg-white">
-            {(
-              [
-                "AI",
-                "Style",
-                "Animate",
-                "State",
-                "API",
-                "Perf",
-                "Versions",
-                "A/B",
-                "Deploy",
-              ] as RightPanelTab[]
-            ).map(tab => (
-              <div key={tab}>
-                <TabButton tabName={tab} />
+        {/* Main Area */}
+        <div className="flex flex-1 flex-col">
+          {/* Toolbar */}
+          <div className="flex h-16 flex-shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4">
+            <h1 className="text-xl font-semibold text-gray-800">
+              Visual Artifact Studio
+            </h1>
+            <div className="flex items-center gap-2">
+              <ResponsivePanel />
+              <button
+                onClick={handleUndo}
+                disabled={historyIndex === 0}
+                className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 disabled:opacity-50"
+              >
+                Undo
+              </button>
+              <button
+                onClick={handleRedo}
+                disabled={historyIndex === history.length - 1}
+                className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 disabled:opacity-50"
+              >
+                Redo
+              </button>
+              <button
+                onClick={handleCopy}
+                disabled={!selectedNode}
+                className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 disabled:opacity-50"
+                title="Copy selected component (Ctrl+C)"
+              >
+                Copy
+              </button>
+              <button
+                onClick={handlePaste}
+                className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300"
+                title="Paste component (Ctrl+V)"
+              >
+                Paste
+              </button>
+              <button
+                className={`rounded-md px-4 py-2 text-sm ${snapToGrid ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"}`}
+                onClick={() => setSnapToGrid(!snapToGrid)}
+              >
+                Snap to Grid
+              </button>
+              <button
+                className={`rounded-md px-4 py-2 text-sm ${aspectRatioLocked ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"}`}
+                onClick={() => setAspectRatioLocked(!aspectRatioLocked)}
+              >
+                Lock Aspect Ratio
+              </button>
+              <button
+                className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 disabled:opacity-50"
+                onClick={groupSelectedNodes}
+                disabled={selectedNodeIds.length < 2}
+              >
+                Group
+              </button>
+              <button
+                className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 disabled:opacity-50"
+                onClick={ungroupSelectedNodes}
+                disabled={
+                  selectedNodeIds.length !== 1 ||
+                  canvas.find(c => c.id === selectedNodeIds[0])?.type !==
+                    "container"
+                }
+              >
+                Ungroup
+              </button>
+              <button
+                className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 disabled:opacity-50"
+                onClick={handleSave}
+              >
+                Save
+              </button>
+              <button
+                className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-800 hover:bg-gray-300 disabled:opacity-50"
+                onClick={handleDeploy}
+              >
+                Deploy
+              </button>
+              <button
+                className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+                onClick={() => setIsExportModalOpen(true)}
+              >
+                Export Package
+              </button>
+              <button
+                className={`rounded-md px-4 py-2 text-sm ${isEditMode ? "bg-green-600 text-white" : "bg-orange-600 text-white"}`}
+                onClick={toggleEditMode}
+              >
+                {isEditMode ? "Preview" : "Edit"}
+              </button>
+              <div
+                className={`rounded-md px-3 py-2 text-sm font-medium ${isEditMode ? "bg-blue-500 text-white" : "bg-orange-500 text-white"}`}
+              >
+                {isEditMode ? "EDIT MODE" : "PREVIEW MODE"}
               </div>
-            ))}
+              <button
+                className="rounded-md bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700"
+                onClick={() => {
+                  // We'll need to access the performance monitor toggle from the canvas
+                  if (typeof window !== 'undefined' && (window as any).togglePerformanceMonitor) {
+                    (window as any).togglePerformanceMonitor();
+                  }
+                }}
+              >
+                Show Monitor
+              </button>
+              <button
+                className="command-button rounded-md bg-purple-600 px-4 py-2 text-sm text-white hover:bg-purple-700"
+                onClick={() => setIsCommandPaletteOpen(true)}
+                title="Open Command Palette (Ctrl+K)"
+              >
+                ⌘ Commands
+              </button>
+            </div>
           </div>
 
-          {/* Right Panel */}
-          <div className="style-panel w-80 flex-shrink-0 overflow-y-auto border-r border-gray-200 bg-white">
-            {renderPanel()}
-          </div>
+          {/* Main Content */}
+          <div className="flex flex-1">
+            {/* Left Navigation */}
+            <div className="w-48 flex-shrink-0 border-r border-gray-200 bg-white">
+              {(
+                [
+                  "AI",
+                  "Style",
+                  "Animate",
+                  "State",
+                  "API",
+                  "Perf",
+                  "Versions",
+                  "A/B",
+                  "Deploy",
+                ] as RightPanelTab[]
+              ).map(tab => (
+                <div key={tab}>
+                  <TabButton tabName={tab} />
+                </div>
+              ))}
+            </div>
 
-          {/* Canvas Area */}
-          <div className="visual-canvas h-full flex-1 overflow-auto">
-            <VisualCanvas
-              components={canvas}
-              selectedNodeIds={selectedNodeIds}
-              onSelectNode={handleSelectNode}
-              onSelectNodes={handleSelectNodes}
-              onAddNodesToSelection={addNodesToSelection}
-              onAddComponent={addComponent}
-              snapToGrid={snapToGrid}
-              aspectRatioLocked={aspectRatioLocked}
-              onUpdateComponent={updateComponent}
-              activeBreakpoint={activeBreakpoint}
-              isEditMode={isEditMode}
-            />
-          </div>
+            {/* Right Panel */}
+            <div className="style-panel w-80 flex-shrink-0 overflow-y-auto border-r border-gray-200 bg-white">
+              {renderPanel()}
+            </div>
 
-          {/* Preview */}
-          <div className="live-preview w-96 flex-shrink-0 overflow-y-auto border-l border-gray-200 bg-gray-100">
-            <LivePreview code={livePreview} framework={framework} />
+            {/* Canvas Area */}
+            <div className="visual-canvas h-full flex-1 overflow-auto">
+              <VisualCanvas
+                components={canvas}
+                selectedNodeIds={selectedNodeIds}
+                onSelectNode={handleSelectNode}
+                onSelectNodes={handleSelectNodes}
+                onAddComponent={addComponent}
+                snapToGrid={snapToGrid}
+                aspectRatioLocked={aspectRatioLocked}
+                onUpdateComponent={updateComponent}
+                activeBreakpoint={activeBreakpoint}
+                isEditMode={isEditMode}
+              />
+            </div>
+
+            {/* Preview */}
+            <div className="live-preview w-96 flex-shrink-0 overflow-y-auto border-l border-gray-200 bg-gray-100">
+              <LivePreview code={livePreview} framework={framework} />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Export Package Modal */}
-      <ExportPackageModal
-        isOpen={isExportModalOpen}
-        onClose={() => setIsExportModalOpen(false)}
-        components={canvas}
-      />
-    </div>
-  );
+        {/* Export Package Modal */}
+        <ExportPackageModal
+          isOpen={isExportModalOpen}
+          onClose={() => setIsExportModalOpen(false)}
+          components={canvas}
+        />
+      </div>
+    );
   } catch (error) {
     console.error("ArtifactBuilder error:", error);
     return null;

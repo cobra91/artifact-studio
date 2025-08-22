@@ -10,20 +10,8 @@ import {
 import { ArtifactBuilder } from "../components/ArtifactBuilder";
 import { ComponentNode, ComponentType } from "../types/artifact";
 
-// Mock localStorage
-const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  clear: jest.fn(),
-  removeItem: jest.fn(),
-  length: 0,
-  key: jest.fn(),
-};
-
-Object.defineProperty(window, "localStorage", {
-  value: localStorageMock,
-  writable: true,
-});
+// Use the global localStorage mock from setup.ts
+const localStorageMock = window.localStorage as jest.Mocked<Storage>;
 
 // Mock ResizeObserver
 const ResizeObserverMock = jest.fn(() => ({

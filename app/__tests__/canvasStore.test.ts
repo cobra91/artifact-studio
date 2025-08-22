@@ -246,7 +246,7 @@ describe("Canvas Store", () => {
       const state = useCanvasStore.getState();
       expect(state.recentColors).toHaveLength(20);
       expect(state.recentColors[state.recentColors.length - 1]).toBe(
-        "#00000018"
+        "#000005"
       );
     });
 

@@ -20,7 +20,7 @@ export const ComponentRenderer = ({
 }: ComponentRendererProps) => {
   // Fix hydration mismatch by only applying responsive styles after client-side mount
   const [isClient, setIsClient] = useState(false);
-  
+
   useEffect(() => {
     setIsClient(true);
   }, []);
@@ -29,14 +29,18 @@ export const ComponentRenderer = ({
   const defaultResponsiveStyles = generateResponsiveStyles(node.type);
 
   // Only apply responsive overrides on client side to avoid hydration mismatch
-  const responsiveOverrides = isClient ? applyResponsiveOverrides(
-    { ...defaultResponsiveStyles.base, ...node.styles },
-    node.responsiveStyles || defaultResponsiveStyles,
-    activeBreakpoint
-  ) : defaultResponsiveStyles.base;
+  const responsiveOverrides = isClient
+    ? applyResponsiveOverrides(
+        { ...defaultResponsiveStyles.base, ...node.styles },
+        node.responsiveStyles || defaultResponsiveStyles,
+        activeBreakpoint
+      )
+    : defaultResponsiveStyles.base;
 
   // Filter out responsive styles that would override custom styles (only on client)
-  const filteredResponsiveOverrides = isClient ? { ...responsiveOverrides } : {};
+  const filteredResponsiveOverrides = isClient
+    ? { ...responsiveOverrides }
+    : {};
   if (isClient) {
     Object.keys(node.styles).forEach(key => {
       if (filteredResponsiveOverrides[key]) {

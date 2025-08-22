@@ -45,22 +45,26 @@ jest.mock("openai", () => {
                   content: JSON.stringify({
                     components: [{ type: "container", id: "root" }],
                     layout: { root: { styles: {} } },
-                    componentDetails: { root: { type: "container", props: {} } }
-                  })
-                }
-              }
-            ]
-          })
-        }
-      }
-    }))
+                    componentDetails: {
+                      root: { type: "container", props: {} },
+                    },
+                  }),
+                },
+              },
+            ],
+          }),
+        },
+      },
+    })),
   };
 });
 
 // Mock performance.now for performance tests
-global.performance = global.performance || {
-  now: jest.fn(() => Date.now())
-} as any;
+global.performance =
+  global.performance ||
+  ({
+    now: jest.fn(() => Date.now()),
+  } as any);
 
 // Mock Liveblocks hooks
 jest.mock("../liveblocks.config", () => ({
@@ -71,7 +75,7 @@ jest.mock("../liveblocks.config", () => ({
 }));
 
 // Mock fetch for tests
-global.fetch = jest.fn(() => 
+global.fetch = jest.fn(() =>
   Promise.resolve({
     ok: true,
     json: () => Promise.resolve({}),

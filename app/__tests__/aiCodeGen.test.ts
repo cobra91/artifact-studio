@@ -1,15 +1,18 @@
 import { AIGenerationRequest, ComponentNode } from "../types/artifact";
 
 // Mock OpenAI before importing the module that uses it
+const mockCreate = jest.fn();
+const mockOpenAI = {
+  chat: {
+    completions: {
+      create: mockCreate,
+    },
+  },
+};
+
 jest.mock("openai", () => ({
   __esModule: true,
-  default: jest.fn().mockImplementation(() => ({
-    chat: {
-      completions: {
-        create: jest.fn(),
-      },
-    },
-  })),
+  default: jest.fn().mockImplementation(() => mockOpenAI),
 }));
 
 import { AICodeGenerator } from "../lib/aiCodeGen";
@@ -119,8 +122,8 @@ describe("AICodeGenerator", () => {
         message: "Initial message",
       });
 
-      expect(code).toContain("const [count, setcount]");
-      expect(code).toContain("const [message, setmessage]");
+      expect(code).toContain("const [count, setCount]");
+      expect(code).toContain("const [message, setMessage]");
       expect(code).toContain("useState(0)");
       expect(code).toContain('useState("Initial message")');
     });
@@ -136,8 +139,8 @@ describe("AICodeGenerator", () => {
         }
       );
 
-      expect(code).toContain("const [userData, setuserData] = useState(null)");
-      expect(code).toContain("const [posts, setposts] = useState(null)");
+      expect(code).toContain("const [userData, setUserData] = useState(null)");
+      expect(code).toContain("const [posts, setPosts] = useState(null)");
       expect(code).toContain('fetch("https://api.example.com/user")');
       expect(code).toContain('fetch("https://api.example.com/posts")');
     });

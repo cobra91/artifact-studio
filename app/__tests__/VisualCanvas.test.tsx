@@ -73,7 +73,6 @@ describe("VisualCanvas", () => {
     selectedNodeIds: [],
     onSelectNode: jest.fn(),
     onSelectNodes: jest.fn(),
-    onAddNodesToSelection: jest.fn(),
     onUpdateComponent: jest.fn(),
     onAddComponent: jest.fn(),
     snapToGrid: false,
