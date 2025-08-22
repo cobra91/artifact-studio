@@ -14,17 +14,22 @@
     <script type="text/javascript">
       const renderers = {
         react: (code) => {
-          const transformedCode = Babel.transform(code, {
-            presets: ["react"],
-          }).code;
-          const Component = new Function(
-            "React",
-            "useState",
-            "useEffect",
-            `return ${transformedCode}`,
-          )(React, React.useState, React.useEffect);
-          const root = ReactDOM.createRoot(document.getElementById("root"));
-          root.render(<Component />);
+          try {
+            const transformedCode = Babel.transform(code, {
+              presets: ["react"],
+            }).code;
+            const Component = new Function(
+              "React",
+              "useState",
+              "useEffect",
+              `return (${transformedCode})`
+            )(React, React.useState, React.useEffect);
+            const root = ReactDOM.createRoot(document.getElementById("root"));
+            root.render(React.createElement(Component));
+          } catch (error) {
+            console.error("Error in React renderer:", error);
+            throw error;
+          }
         },
         vue: (code) => {
           const { createApp } = Vue;
