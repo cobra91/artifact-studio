@@ -8,6 +8,9 @@ module.exports = {
     "^.+\\.tsx$": "ts-jest",
   },
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json"],
+  moduleNameMapping: {
+    "^@/(.*)$": "<rootDir>/app/$1",
+  },
   collectCoverageFrom: [
     "app/**/*.{ts,tsx}",
     "!app/**/*.d.ts",
