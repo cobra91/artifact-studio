@@ -395,11 +395,16 @@ export const ArtifactBuilder = () => {
   const handlePaste = async () => {
     const text = await navigator.clipboard.readText();
     try {
-      const node = JSON.parse(text) as ComponentNode;
-      node.id = `${node.type}-${Date.now()}`;
-      node.position.x += 10;
-      node.position.y += 10;
-      updateCanvas([...canvas, node]);
+      // Check if the text looks like a valid JSON object
+      if (text.trim().startsWith('{') && text.trim().endsWith('}')) {
+        const node = JSON.parse(text) as ComponentNode;
+        node.id = `${node.type}-${Date.now()}`;
+        node.position.x += 10;
+        node.position.y += 10;
+        updateCanvas([...canvas, node]);
+      } else {
+        console.warn("Clipboard content is not a valid JSON object");
+      }
     } catch (e) {
       console.error("Failed to parse clipboard content", e);
     }
