@@ -126,7 +126,7 @@ export const HelpModal = ({ isOpen, onClose }: HelpModalProps) => {
         <div className="flex justify-end space-x-3 border-t border-gray-200 pt-4">
           <button
             onClick={onClose}
-            className="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium hover:bg-gray-300"
+            className="rounded-md bg-gray-600 px-4 py-2 text-sm font-medium hover:bg-gray-300"
           >
             Got it!
           </button>

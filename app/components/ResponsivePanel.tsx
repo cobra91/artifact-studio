@@ -14,8 +14,8 @@ export const ResponsivePanel: React.FC = () => {
 
   return (
     <div className="border-b p-4">
-      <h3 className="mb-3 text-lg font-semibold">Responsive Design</h3>
       <div className="flex space-x-2">
+      <h3 className="mb-3 text-lg font-semibold">Component Size</h3>
         {breakpoints.map(bp => (
           <button
             key={bp.value}
@@ -23,7 +23,7 @@ export const ResponsivePanel: React.FC = () => {
             className={`rounded-md px-4 py-2 text-sm font-medium ${
               activeBreakpoint === bp.value
                 ? "bg-blue-500 text-white"
-                : "bg-gray-200 hover:bg-gray-300"
+                : "bg-gray-600 hover:bg-gray-300"
             }`}
           >
             {bp.label}

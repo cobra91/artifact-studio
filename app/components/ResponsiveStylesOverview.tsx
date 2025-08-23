@@ -13,10 +13,8 @@ export const ResponsiveStylesOverview = ({
   const breakpoints = ["base", "sm", "md", "lg"] as const;
 
   return (
-    <div className="rounded border bg-gray-50 p-4">
-      <h4 className="mb-3 text-sm font-medium">
-        Responsive Styles Overview
-      </h4>
+    <div className="rounded border p-4">
+      <h4 className="mb-3 text-sm font-medium">Responsive Styles Overview</h4>
 
       <div className="grid grid-cols-2 gap-3">
         {breakpoints.map(breakpoint => {
@@ -34,7 +32,7 @@ export const ResponsiveStylesOverview = ({
               }`}
             >
               <div className="mb-2 flex items-center justify-between">
-                <span className="font-medium ">{info.label}</span>
+                <span className="font-medium">{info.label}</span>
                 <span className="text-gray-500">{info.width}</span>
               </div>
 

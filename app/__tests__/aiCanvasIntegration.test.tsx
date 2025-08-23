@@ -36,16 +36,16 @@ describe("AI Generation to Canvas Integration Tests", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // Setup OpenAI mock
+    // Setup OpenAI mock with proper typing
     mockOpenAI = {
       chat: {
         completions: {
-          create: jest.fn().mockImplementation(() => Promise.resolve({})),
+          create: jest.fn() as jest.MockedFunction<any>,
         },
       },
     };
     (OpenAI as jest.MockedClass<typeof OpenAI>).mockImplementation(
-      () => mockOpenAI
+      () => mockOpenAI as any
     );
 
     // Setup canvas store mock
@@ -112,7 +112,7 @@ describe("AI Generation to Canvas Integration Tests", () => {
       };
 
       // Mock OpenAI API call
-      (mockOpenAI.chat.completions.create as jest.Mock).mockResolvedValue({
+      (mockOpenAI.chat.completions.create as any).mockResolvedValue({
         choices: [
           {
             message: {
@@ -142,7 +142,7 @@ describe("AI Generation to Canvas Integration Tests", () => {
       // Mock OpenAI API error
       mockOpenAI.chat.completions.create = jest
         .fn()
-        .mockRejectedValue(new Error("OpenAI API Error"));
+        .mockRejectedValue(new Error("OpenAI API Error")) as any;
 
       const request: AIGenerationRequest = {
         prompt: "Create a button",
@@ -167,7 +167,7 @@ describe("AI Generation to Canvas Integration Tests", () => {
             },
           },
         ],
-      });
+      }) as any;
 
       const request: AIGenerationRequest = {
         prompt: "Create a button",

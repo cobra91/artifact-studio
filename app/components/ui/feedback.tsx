@@ -10,11 +10,11 @@ interface ToastProps {
   onClose?: () => void;
 }
 
-export const Toast = ({ 
-  message, 
-  type = "info", 
-  duration = 3000, 
-  onClose 
+export const Toast = ({
+  message,
+  type = "info",
+  duration = 3000,
+  onClose,
 }: ToastProps) => {
   const [isVisible, setIsVisible] = useState(true);
 
@@ -60,8 +60,8 @@ export const Toast = ({
   };
 
   return (
-         <div
-       className={`fixed top-4 right-4 z-[9999] flex items-center gap-3 rounded-lg border px-4 py-3 shadow-lg backdrop-blur-sm transition-all duration-300 ${
+    <div
+      className={`fixed top-4 right-4 z-[9999] flex items-center gap-3 rounded-lg border px-4 py-3 shadow-lg backdrop-blur-sm transition-all duration-300 ${
         isVisible ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
       } ${getTypeClasses()}`}
     >
@@ -74,7 +74,7 @@ export const Toast = ({
             setTimeout(onClose, 300);
           }
         }}
-        className="ml-2 text-white/80 hover:text-white transition-colors"
+        className="ml-2 text-white/80 transition-colors hover:text-white"
       >
         ✕
       </button>
@@ -89,10 +89,10 @@ interface LoadingSpinnerProps {
   className?: string;
 }
 
-export const LoadingSpinner = ({ 
-  size = "md", 
+export const LoadingSpinner = ({
+  size = "md",
   color = "currentColor",
-  className = "" 
+  className = "",
 }: LoadingSpinnerProps) => {
   const getSizeClasses = () => {
     switch (size) {
@@ -108,7 +108,7 @@ export const LoadingSpinner = ({
   return (
     <div className={`animate-spin ${getSizeClasses()} ${className}`}>
       <svg
-        className="w-full h-full"
+        className="h-full w-full"
         fill="none"
         viewBox="0 0 24 24"
         style={{ color }}
@@ -187,26 +187,28 @@ export const ButtonWithFeedback = ({
     <button
       onClick={handleClick}
       disabled={disabled || isLoading || loading}
-      className={`relative overflow-hidden rounded-md px-4 py-2 font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${className} ${getStateClasses()}`}
+      className={`relative overflow-hidden rounded-md px-4 py-2 font-medium transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50 ${className} ${getStateClasses()}`}
     >
-      <span className={`flex items-center gap-2 transition-all duration-200 ${
-        isLoading || loading ? "opacity-0" : "opacity-100"
-      }`}>
+      <span
+        className={`flex items-center gap-2 transition-all duration-200 ${
+          isLoading || loading ? "opacity-0" : "opacity-100"
+        }`}
+      >
         {children}
       </span>
-      
+
       {(isLoading || loading) && (
         <div className="absolute inset-0 flex items-center justify-center">
           <LoadingSpinner size="sm" color="white" />
         </div>
       )}
-      
+
       {showSuccess && (
         <div className="absolute inset-0 flex items-center justify-center bg-green-500 text-white">
           ✓
         </div>
       )}
-      
+
       {showError && (
         <div className="absolute inset-0 flex items-center justify-center bg-red-500 text-white">
           ✕
@@ -219,9 +221,9 @@ export const ButtonWithFeedback = ({
     return (
       <div className="relative inline-block">
         {button}
-        <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 bg-gray-900 text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 rounded bg-gray-900 px-2 py-1 text-xs text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">
           {tooltip}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900" />
+          <div className="absolute top-full left-1/2 h-0 w-0 -translate-x-1/2 border-t-4 border-r-4 border-l-4 border-transparent border-t-gray-900" />
         </div>
       </div>
     );
@@ -248,7 +250,7 @@ export const ProgressBar = ({
 
   return (
     <div className={`w-full ${className}`}>
-      <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
+      <div className="relative h-2 overflow-hidden rounded-full bg-gray-600">
         <div
           className={`h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500 ${
             animated ? "animate-pulse" : ""
@@ -257,7 +259,7 @@ export const ProgressBar = ({
         />
       </div>
       {showLabel && (
-        <div className="mt-1 text-xs text-gray-600 text-center">
+        <div className="mt-1 text-center text-xs text-gray-600">
           {clampedProgress.toFixed(0)}%
         </div>
       )}

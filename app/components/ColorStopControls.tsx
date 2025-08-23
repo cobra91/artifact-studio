@@ -86,7 +86,7 @@ export const ColorStopControls = ({
                   onChange={e =>
                     handlePositionChange(stop.id, parseInt(e.target.value))
                   }
-                  className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200"
+                  className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-600"
                 />
               </div>
 

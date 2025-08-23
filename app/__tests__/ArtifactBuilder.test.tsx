@@ -1,17 +1,29 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 
 import { ArtifactBuilder } from "../components/ArtifactBuilder";
+import { NotificationProvider } from "../components/ui/notifications";
+
+// Test wrapper with necessary providers
+const TestWrapper = ({ children }: { children: React.ReactNode }) => (
+  <NotificationProvider>
+    {children}
+  </NotificationProvider>
+);
 
 describe("ArtifactBuilder", () => {
   it("should add a component and update its style", () => {
-    render(<ArtifactBuilder />);
+    render(
+      <TestWrapper>
+        <ArtifactBuilder />
+      </TestWrapper>
+    );
 
     // Add a text component
     const textButton = screen.getByText("Text");
     fireEvent.click(textButton);
 
     // Check if the component is added
-    const textComponent = screen.getByText("Sample text");
+    const textComponent = screen.getByText("Responsive Text");
     expect(textComponent).toBeInTheDocument();
 
     // Select the component

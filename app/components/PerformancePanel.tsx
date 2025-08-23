@@ -340,7 +340,7 @@ export const PerformancePanel: React.FC = () => {
                         ? "border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20"
                         : status === "pass"
                           ? "border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20"
-                          : "border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800"
+                          : "border-gray-200 dark:border-gray-700 dark:bg-gray-800"
                     }`}
                   >
                     <div className="mb-3 flex items-start justify-between">
@@ -362,33 +362,25 @@ export const PerformancePanel: React.FC = () => {
 
                     <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
                       <div>
-                        <div className="ay-400">
-                          Duration
-                        </div>
+                        <div className="ay-400">Duration</div>
                         <div className="font-semibold text-gray-900 dark:text-white">
                           {formatTime(result.duration)}
                         </div>
                       </div>
                       <div>
-                        <div className="ay-400">
-                          Ops/sec
-                        </div>
+                        <div className="ay-400">Ops/sec</div>
                         <div className="font-semibold text-gray-900 dark:text-white">
                           {result.operationsPerSecond.toFixed(0)}
                         </div>
                       </div>
                       <div>
-                        <div className="ay-400">
-                          Memory
-                        </div>
+                        <div className="ay-400">Memory</div>
                         <div className="font-semibold text-gray-900 dark:text-white">
                           {formatBytes(result.memoryUsage.usedJSHeapSize)}
                         </div>
                       </div>
                       <div>
-                        <div className="ay-400">
-                          Avg Time
-                        </div>
+                        <div className="ay-400">Avg Time</div>
                         <div className="font-semibold text-gray-900 dark:text-white">
                           {formatTime(result.avgOperationTime)}
                         </div>
@@ -396,7 +388,7 @@ export const PerformancePanel: React.FC = () => {
                     </div>
 
                     <div className="mt-3 border-t border-gray-200 pt-3 dark:border-gray-600">
-                      <div className="grid grid-cols-3 gap-4 text-xs ay-400">
+                      <div className="ay-400 grid grid-cols-3 gap-4 text-xs">
                         <div>Min: {formatTime(result.minTime)}</div>
                         <div>Max: {formatTime(result.maxTime)}</div>
                         <div>P95: {formatTime(result.p95Time)}</div>
@@ -411,7 +403,7 @@ export const PerformancePanel: React.FC = () => {
 
         {activeTab === "monitoring" && (
           <div className="space-y-6">
-            <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
+            <div className="rounded-lg p-4 dark:bg-gray-800">
               <h3 className="mb-3 font-semibold text-gray-900 dark:text-white">
                 Real-time Performance Metrics
               </h3>
@@ -429,9 +421,7 @@ export const PerformancePanel: React.FC = () => {
                         ).toFixed(1)
                       : "0"}
                   </div>
-                  <div className="text-sm ay-400">
-                    MB Used
-                  </div>
+                  <div className="ay-400 text-sm">MB Used</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-green-600">
@@ -446,17 +436,13 @@ export const PerformancePanel: React.FC = () => {
                         ).toFixed(1)
                       : "0"}
                   </div>
-                  <div className="text-sm ay-400">
-                    MB Total
-                  </div>
+                  <div className="ay-400 text-sm">MB Total</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-purple-600">
                     {benchmarkResults.size}
                   </div>
-                  <div className="text-sm ay-400">
-                    Benchmarks
-                  </div>
+                  <div className="ay-400 text-sm">Benchmarks</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-orange-600">
@@ -466,9 +452,7 @@ export const PerformancePanel: React.FC = () => {
                       ).length
                     }
                   </div>
-                  <div className="text-sm ay-400">
-                    Failed
-                  </div>
+                  <div className="ay-400 text-sm">Failed</div>
                 </div>
               </div>
             </div>
@@ -490,8 +474,8 @@ export const PerformancePanel: React.FC = () => {
             </div>
 
             {benchmarkResults.size > 0 && (
-              <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800">
-                <pre className="font-mono text-sm whitespace-pre-wrap  dark:text-gray-300">
+              <div className="rounded-lg p-4 dark:bg-gray-800">
+                <pre className="font-mono text-sm whitespace-pre-wrap dark:text-gray-300">
                   {performanceSuite.generateReport()}
                 </pre>
               </div>

@@ -88,7 +88,7 @@ export const AnalyticsPanel = ({ isOpen, onClose }: AnalyticsPanelProps) => {
                 className={`rounded-md px-4 py-2 text-sm font-medium ${
                   activeTab === tab.id
                     ? "bg-blue-600 text-white"
-                    : "bg-gray-100 hover:bg-gray-200"
+                    : "bg-gray-100 hover:bg-gray-600"
                 }`}
               >
                 {tab.label}
@@ -146,7 +146,7 @@ export const AnalyticsPanel = ({ isOpen, onClose }: AnalyticsPanelProps) => {
                   {stats.topComponents.map((component: any, index: number) => (
                     <div
                       key={component.type}
-                      className="flex items-center justify-between rounded-lg bg-gray-50 p-3"
+                      className="flex items-center justify-between rounded-lg p-3"
                     >
                       <div className="flex items-center">
                         <span className="mr-3 flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
@@ -176,7 +176,7 @@ export const AnalyticsPanel = ({ isOpen, onClose }: AnalyticsPanelProps) => {
                     .map(([feature, count]) => (
                       <div
                         key={feature}
-                        className="flex items-center justify-between rounded-lg bg-gray-50 p-3"
+                        className="flex items-center justify-between rounded-lg p-3"
                       >
                         <span className="font-medium">{feature}</span>
                         <span className="text-sm">{count as number} uses</span>
@@ -192,7 +192,7 @@ export const AnalyticsPanel = ({ isOpen, onClose }: AnalyticsPanelProps) => {
           {activeTab === "performance" && (
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Performance Metrics</h3>
-              <div className="rounded-lg bg-gray-50 p-4">
+              <div className="rounded-lg p-4">
                 <p className="mb-2 text-sm">
                   Performance monitoring is active. Real-time metrics are
                   displayed in the performance monitor.
@@ -211,7 +211,7 @@ export const AnalyticsPanel = ({ isOpen, onClose }: AnalyticsPanelProps) => {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-gray-200 bg-gray-50 p-6">
+        <div className="border-t border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-500">
               Data is stored locally and never sent to external servers.

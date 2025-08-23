@@ -40,11 +40,6 @@ describe("Canvas Interactions and State Management", () => {
         snapToGrid: true,
         zoom: 1,
         components: [],
-        draggedComponent: undefined,
-        hoveredComponent: undefined,
-        gridVisible: true,
-        snapToGrid: true,
-        zoom: 1,
       });
     });
     localStorageMock.setItem.mockClear();
@@ -58,7 +53,7 @@ describe("Canvas Interactions and State Management", () => {
       );
 
       act(() => {
-        useCanvasStore.getState().addElement(component);
+        useCanvasStore.getState().addElement(component as any);
         useCanvasStore.getState().selectElement("test-button");
       });
 
@@ -74,8 +69,8 @@ describe("Canvas Interactions and State Management", () => {
       const component2 = createComponentNode("text" as ComponentType, "text-1");
 
       act(() => {
-        useCanvasStore.getState().addElement(component1);
-        useCanvasStore.getState().addElement(component2);
+        useCanvasStore.getState().addElement(component1 as any);
+        useCanvasStore.getState().addElement(component2 as any);
         useCanvasStore.getState().setSelectedNodes(["button-1", "text-1"]);
       });
 

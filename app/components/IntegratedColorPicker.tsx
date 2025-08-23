@@ -39,7 +39,7 @@ export const IntegratedColorPicker = ({
           className={`flex-1 px-4 py-2 text-sm font-medium transition-colors ${
             activeTab === "solid"
               ? "border-b-2 border-blue-600 text-blue-600"
-              : "hover: text-gray-500"
+              : "text-gray-500"
           }`}
         >
           Solid
@@ -49,7 +49,7 @@ export const IntegratedColorPicker = ({
           className={`flex-1 px-4 py-2 text-sm font-medium transition-colors ${
             activeTab === "gradient"
               ? "border-b-2 border-blue-600 text-blue-600"
-              : "hover: text-gray-500"
+              : "text-gray-500"
           }`}
         >
           Gradient

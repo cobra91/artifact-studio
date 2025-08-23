@@ -60,15 +60,21 @@ export const ComponentLibrary = () => {
 
       <div className="flex-1 space-y-2 p-2 md:p-4">
         {componentTemplates.map(template => (
-          <Tooltip key={template.type} content={`Drag to add ${template.name} component`} position="right">
+          <Tooltip
+            key={template.type}
+            content={`Drag to add ${template.name} component`}
+            position="right"
+          >
             <div
               draggable="true"
               onDragStart={e => handleDragStart(e, template.type)}
-              className="glass border-border/30 hover:border-primary/50 hover:bg-accent/50 w-full cursor-grab rounded-lg border p-3 text-left transition-all duration-200 hover-lift"
+              className="glass border-border/30 hover:border-primary/50 hover:bg-accent/50 hover-lift w-full cursor-grab rounded-lg border p-3 text-left transition-all duration-200"
             >
               <div className="flex items-center gap-3">
                 <span className="text-xl">{template.icon}</span>
-                <span className="font-medium text-gray-100">{template.name}</span>
+                <span className="font-medium text-gray-100">
+                  {template.name}
+                </span>
               </div>
             </div>
           </Tooltip>
