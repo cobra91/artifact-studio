@@ -108,7 +108,7 @@ export const CommandPalette = ({
             />
             <button
               onClick={onClose}
-              className="hover: ml-2 rounded-md p-2 text-gray-400 hover:bg-gray-100"
+              className="ml-2 rounded-md p-2 text-gray-400"
               title="Close (Esc)"
             >
               <svg
@@ -140,7 +140,7 @@ export const CommandPalette = ({
                 <button
                   key={command.id}
                   onClick={() => executeCommand(command)}
-                  className={`w-full px-4 py-3 text-left hover:bg-gray-50 ${
+                  className={`w-full px-4 py-3 text-left ${
                     index === selectedIndex
                       ? "border-r-2 border-blue-500 bg-blue-50"
                       : ""
@@ -171,7 +171,7 @@ export const CommandPalette = ({
         </div>
 
         {/* Footer */}
-        <div className="rounded-b-lg border-t border-gray-200 bg-gray-50 px-4 py-3">
+        <div className="rounded-b-lg border-t border-gray-200 px-4 py-3">
           <div className="flex justify-between text-xs text-gray-500">
             <span>Use ↑↓ to navigate, Enter to select, Esc to close</span>
             <span>{filteredCommands.length} commands</span>

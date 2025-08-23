@@ -117,7 +117,7 @@ export const TemplateReviewSection = ({
           <h4 className="mb-2 font-semibold">User Reviews</h4>
           <div className="space-y-3">
             {reviews.map((review, index) => (
-              <div key={index} className="rounded-lg border bg-gray-50 p-3">
+              <div key={index} className="rounded-lg border p-3">
                 <div className="mb-1 flex items-center">
                   <span className="mr-2 font-medium">{review.userId}</span>
                   <div className="flex">

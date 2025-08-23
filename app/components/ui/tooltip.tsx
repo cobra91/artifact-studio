@@ -5,7 +5,15 @@ import { ReactNode, useState } from "react";
 interface TooltipProps {
   children: ReactNode;
   content: string | ReactNode;
-  position?: "top" | "bottom" | "left" | "right" | "top-left" | "top-right" | "bottom-left" | "bottom-right";
+  position?:
+    | "top"
+    | "bottom"
+    | "left"
+    | "right"
+    | "top-left"
+    | "top-right"
+    | "bottom-left"
+    | "bottom-right";
   delay?: number;
   className?: string;
   showArrow?: boolean;
@@ -36,8 +44,9 @@ export const Tooltip = ({
   };
 
   const getPositionClasses = () => {
-    const baseClasses = "absolute z-[9999] px-3 py-2 text-sm rounded-lg shadow-lg backdrop-blur-sm";
-    
+    const baseClasses =
+      "absolute z-[9999] px-3 py-2 text-sm rounded-lg shadow-lg backdrop-blur-sm";
+
     switch (position) {
       case "top":
         return `${baseClasses} bottom-full left-1/2 mb-2 -translate-x-1/2`;
@@ -62,7 +71,7 @@ export const Tooltip = ({
 
   const getArrowClasses = () => {
     const baseClasses = "absolute w-2 h-2 bg-gray-900 transform rotate-45";
-    
+
     switch (position) {
       case "top":
         return `${baseClasses} top-full left-1/2 -mt-1 -translate-x-1/2`;
@@ -86,19 +95,19 @@ export const Tooltip = ({
   };
 
   return (
-    <div 
+    <div
       className="relative inline-block"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {children}
-      
+
       {isVisible && (
         <div
           className={`${getPositionClasses()} ${className}`}
           style={{ maxWidth: `${maxWidth}px` }}
         >
-          <div className="bg-gray-900 text-white rounded-lg px-3 py-2 text-sm">
+          <div className="rounded-lg bg-gray-900 px-3 py-2 text-sm text-white">
             {content}
             {showArrow && <div className={getArrowClasses()} />}
           </div>
@@ -108,7 +117,7 @@ export const Tooltip = ({
   );
 };
 
-// Composant pour les tooltips avec animation d'entrée
+// Component for tooltips with entrance animation
 export const AnimatedTooltip = ({ children, ...props }: TooltipProps) => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -116,18 +125,18 @@ export const AnimatedTooltip = ({ children, ...props }: TooltipProps) => {
   const handleMouseLeave = () => setIsVisible(false);
 
   return (
-    <div 
+    <div
       className="relative inline-block"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {children}
-      
-             <div
-         className={`absolute z-[9999] transition-all duration-200 ease-out ${
-          isVisible 
-            ? "opacity-100 scale-100 translate-y-0" 
-            : "opacity-0 scale-95 translate-y-1 pointer-events-none"
+
+      <div
+        className={`absolute z-[9999] transition-all duration-200 ease-out ${
+          isVisible
+            ? "translate-y-0 scale-100 opacity-100"
+            : "pointer-events-none translate-y-1 scale-95 opacity-0"
         }`}
         style={{
           top: "100%",
@@ -136,9 +145,9 @@ export const AnimatedTooltip = ({ children, ...props }: TooltipProps) => {
           marginTop: "8px",
         }}
       >
-        <div className="bg-gray-900 text-white rounded-lg px-3 py-2 text-sm shadow-lg backdrop-blur-sm">
+        <div className="rounded-lg bg-gray-900 px-3 py-2 text-sm text-white shadow-lg backdrop-blur-sm">
           {props.content}
-          <div className="absolute -top-1 left-1/2 w-2 h-2 bg-gray-900 transform rotate-45 -translate-x-1/2" />
+          <div className="absolute -top-1 left-1/2 h-2 w-2 -translate-x-1/2 rotate-45 transform bg-gray-900" />
         </div>
       </div>
     </div>

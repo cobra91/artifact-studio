@@ -43,9 +43,7 @@ export default function RootLayout({
         className={`${inter.variable} ${geistMono.variable} dark antialiased`}
       >
         <Providers>
-          <NotificationProvider>
-            {children}
-          </NotificationProvider>
+          <NotificationProvider>{children}</NotificationProvider>
         </Providers>
       </body>
     </html>

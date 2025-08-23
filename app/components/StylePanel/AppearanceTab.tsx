@@ -170,9 +170,7 @@ export const AppearanceTab = ({
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium">
-                Opacity
-              </label>
+              <label className="mb-2 block text-sm font-medium">Opacity</label>
               <input
                 type="range"
                 min="0"
@@ -204,9 +202,7 @@ export const AppearanceTab = ({
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium">
-                Opacity
-              </label>
+              <label className="mb-2 block text-sm font-medium">Opacity</label>
               <input
                 type="range"
                 min="0"
@@ -276,9 +272,7 @@ export const AppearanceTab = ({
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium">
-            Eyedropper
-          </label>
+          <label className="mb-2 block text-sm font-medium">Eyedropper</label>
           <Eyedropper
             onColorSelect={color =>
               handleColorChange(color, activeTab === "fill" ? "fill" : "stroke")

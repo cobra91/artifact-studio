@@ -70,7 +70,7 @@ export const VersionPanel = ({ onRestoreVersion }: VersionPanelProps) => {
             </div>
             <button
               onClick={() => handleRestore(version.id)}
-              className="rounded bg-gray-200 px-2 py-1 text-xs hover:bg-gray-300"
+              className="rounded bg-gray-600 px-2 py-1 text-xs hover:bg-gray-300"
             >
               Restore
             </button>

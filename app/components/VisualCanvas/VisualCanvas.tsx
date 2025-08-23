@@ -17,7 +17,8 @@ interface VisualCanvasProps {
   onUpdateComponent: (_id: string, _updates: Partial<ComponentNode>) => void;
   onAddComponent: (
     _type: ComponentType,
-    _position: { x: number; y: number }
+    _position: { x: number; y: number },
+    _parentContainerId?: string
   ) => void;
   snapToGrid: boolean;
   aspectRatioLocked: boolean;
@@ -63,6 +64,7 @@ export const VisualCanvas = ({
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const handleMouseDownOnResizeHandle = (e: MouseEvent, direction: string) => {
+    console.log("🔍 Resize handle mousedown:", direction);
     e.stopPropagation();
     setResizing(direction);
     setDragStart({ x: e.clientX, y: e.clientY });
@@ -115,7 +117,9 @@ export const VisualCanvas = ({
     // Simple selection logic - just select the clicked component
     onSelectNode(node.id, e.ctrlKey || e.metaKey);
 
+    // Force dragging to start immediately
     setIsDragging(true);
+    console.log("🔍 isDragging set to true");
 
     const newInitialPositions = new Map<string, { x: number; y: number }>();
     // Always use the current selection, not trying to predict the next one
@@ -133,6 +137,13 @@ export const VisualCanvas = ({
       });
     setInitialDragPositions(newInitialPositions);
     setDragStart({ x: e.clientX, y: e.clientY });
+
+    console.log(
+      "🔍 Drag started for component:",
+      node.id,
+      "with selection:",
+      currentSelection
+    );
   };
 
   const handleMouseDownOnCanvas = (e: MouseEvent) => {
@@ -158,6 +169,17 @@ export const VisualCanvas = ({
   };
 
   const handleMouseMove = (e: MouseEvent) => {
+    console.log(
+      "🔍 Mouse move - isDragging:",
+      isDragging,
+      "selectedNodeIds:",
+      selectedNodeIds,
+      "rotating:",
+      rotating,
+      "resizing:",
+      resizing
+    );
+
     if (rotating && selectedNodeIds.length === 1 && canvasRef.current) {
       const selectedNode = components.find(c => c.id === selectedNodeIds[0]);
       if (!selectedNode) return;
@@ -183,6 +205,13 @@ export const VisualCanvas = ({
       });
       setDragStart({ x: e.clientX, y: e.clientY });
     } else if (resizing && selectedNodeIds.length === 1 && canvasRef.current) {
+      console.log(
+        "🔍 Resizing component:",
+        selectedNodeIds[0],
+        "direction:",
+        resizing
+      );
+
       const selectedNode = components.find(c => c.id === selectedNodeIds[0]);
       if (!selectedNode) return;
 
@@ -220,12 +249,27 @@ export const VisualCanvas = ({
         newPosition.y = selectedNode.position.y + dy;
       }
 
+      console.log(
+        "🔍 Resize update - position:",
+        newPosition,
+        "size:",
+        newSize
+      );
       onUpdateComponent(selectedNode.id, {
         position: newPosition,
         size: newSize,
       });
       setDragStart({ x: e.clientX, y: e.clientY });
     } else if (isDragging && selectedNodeIds.length > 0 && canvasRef.current) {
+      console.log(
+        "🔍 Dragging components:",
+        selectedNodeIds,
+        "dx:",
+        e.clientX - dragStart.x,
+        "dy:",
+        e.clientY - dragStart.y
+      );
+
       const _canvasRect = canvasRef.current.getBoundingClientRect();
       const dx = e.clientX - dragStart.x;
       const dy = e.clientY - dragStart.y;
@@ -284,6 +328,7 @@ export const VisualCanvas = ({
 
       // Batch update all component positions
       componentsToUpdate.forEach(({ id, position }) => {
+        console.log("🔍 Updating component position:", id, "to:", position);
         onUpdateComponent(id, { position });
       });
     } else if (isSelecting && selectionRect && canvasRef.current) {
@@ -313,15 +358,38 @@ export const VisualCanvas = ({
   };
 
   const handleMouseUp = () => {
+    console.log(
+      "🔍 Mouse up - isDragging was:",
+      isDragging,
+      "selectedNodeIds:",
+      selectedNodeIds
+    );
+
+    if (isDragging) {
+      console.log("🔍 Stopping drag operation");
+    }
+    if (resizing) {
+      console.log("🔍 Stopping resize operation");
+    }
+    if (rotating) {
+      console.log("🔍 Stopping rotate operation");
+    }
+
     setIsDragging(false);
     setRotating(false);
     setIsSelecting(false);
     setSelectionRect(null);
+    setResizing(null);
 
     // Clear guides and perform final position updates
     if (selectedNodeIds.length === 1) {
       const selectedNode = components.find(c => c.id === selectedNodeIds[0]);
       if (selectedNode) {
+        console.log(
+          "🔍 Final position update for:",
+          selectedNode.id,
+          selectedNode.position
+        );
         onUpdateComponent(selectedNode.id, { position: selectedNode.position });
       }
     }
@@ -329,6 +397,29 @@ export const VisualCanvas = ({
 
   const handleMouseLeave = () => {
     handleMouseUp();
+  };
+
+  // Function to find container at drop position
+  const findContainerAtPosition = (x: number, y: number): ComponentNode | null => {
+    // Check if drop position is inside any container
+    for (const component of components) {
+      if (component.type === "container") {
+        const containerX = component.position.x;
+        const containerY = component.position.y;
+        const containerWidth = component.size.width;
+        const containerHeight = component.size.height;
+        
+        if (
+          x >= containerX &&
+          x <= containerX + containerWidth &&
+          y >= containerY &&
+          y <= containerY + containerHeight
+        ) {
+          return component;
+        }
+      }
+    }
+    return null;
   };
 
   const handleDrop = (e: DragEvent) => {
@@ -342,11 +433,31 @@ export const VisualCanvas = ({
     const dragData = JSON.parse(e.dataTransfer?.getData("text/plain") || "{}");
 
     if (dragData.type === "component") {
-      const position = snapToGrid
-        ? { x: Math.round(x / 20) * 20, y: Math.round(y / 20) * 20 }
-        : { x, y };
+      // Check if dropping on a container
+      const targetContainer = findContainerAtPosition(x, y);
+      
+      if (targetContainer) {
+        // Calculate position relative to container
+        const relativeX = x - targetContainer.position.x;
+        const relativeY = y - targetContainer.position.y;
+        
+        const position = snapToGrid
+          ? { 
+              x: Math.round(relativeX / 20) * 20, 
+              y: Math.round(relativeY / 20) * 20 
+            }
+          : { x: relativeX, y: relativeY };
 
-      onAddComponent(dragData.componentType as ComponentType, position);
+        // Add component as child of container
+        onAddComponent(dragData.componentType as ComponentType, position, targetContainer.id);
+      } else {
+        // Add component to canvas at absolute position
+        const position = snapToGrid
+          ? { x: Math.round(x / 20) * 20, y: Math.round(y / 20) * 20 }
+          : { x, y };
+
+        onAddComponent(dragData.componentType as ComponentType, position);
+      }
     }
   };
 
@@ -411,43 +522,43 @@ export const VisualCanvas = ({
           {selectedNodeIds.length > 0 && `(${selectedNodeIds.join(", ")})`}
         </div>
 
-        {/* Zoom controls - adaptatifs selon la taille d'écran */}
+        {/* Zoom controls - adaptive according to screen size */}
         <div className="glass absolute right-4 bottom-4 z-20 flex items-center gap-1 rounded-md px-2 py-2 shadow-lg md:gap-2 md:px-3">
           <Tooltip content="Zoom Out (Ctrl + Scroll)" position="top">
             <button
               onClick={handleZoomOut}
-              className="glass text-foreground hover:bg-accent rounded px-2 py-1 text-sm transition-all duration-200 hover-lift"
+              className="glass text-foreground hover:bg-accent hover-lift rounded px-2 py-1 text-sm transition-all duration-200"
             >
               -
             </button>
           </Tooltip>
-          
+
           <span className="text-foreground min-w-[2.5rem] text-center text-xs font-medium md:min-w-[3rem] md:text-sm">
             {Math.round(zoom * 100)}%
           </span>
-          
+
           <Tooltip content="Zoom In (Ctrl + Scroll)" position="top">
             <button
               onClick={handleZoomIn}
-              className="glass text-foreground hover:bg-accent rounded px-2 py-1 text-sm transition-all duration-200 hover-lift"
+              className="glass text-foreground hover:bg-accent hover-lift rounded px-2 py-1 text-sm transition-all duration-200"
             >
               +
             </button>
           </Tooltip>
-          
+
           <Tooltip content="Zoom to 50%" position="top">
             <button
               onClick={handleZoom50}
-              className="glass text-foreground hover:bg-accent rounded px-2 py-1 text-xs transition-all duration-200 hover-lift md:text-sm"
+              className="glass text-foreground hover:bg-accent hover-lift rounded px-2 py-1 text-xs transition-all duration-200 md:text-sm"
             >
               50%
             </button>
           </Tooltip>
-          
+
           <Tooltip content="Reset zoom to 100%" position="top">
             <button
               onClick={handleZoomReset}
-              className="glass text-foreground hover:bg-accent rounded px-2 py-1 text-xs transition-all duration-200 hover-lift md:text-sm"
+              className="glass text-foreground hover:bg-accent hover-lift rounded px-2 py-1 text-xs transition-all duration-200 md:text-sm"
             >
               <span className="hidden md:inline">Reset</span>
               <span className="md:hidden">↻</span>

@@ -69,8 +69,17 @@ export const ComponentRenderer = ({
     case "text":
       return (
         <span
-          className={`block p-2 text-gray-800 ${isEditMode ? "pointer-events-none" : ""}`}
-          style={combinedStyles}
+          className={`block p-2 ${isEditMode ? "pointer-events-none" : ""}`}
+          style={{
+            ...combinedStyles,
+            color: combinedStyles.color || "#ffffff",
+            backgroundColor: combinedStyles.backgroundColor || "#374151",
+            fontWeight: combinedStyles.fontWeight || "600",
+            textAlign: combinedStyles.textAlign || "left",
+            display: "flex",
+            alignItems: "center",
+            minHeight: "20px",
+          }}
           onMouseDown={isEditMode ? e => e.stopPropagation() : undefined}
         >
           {node.props.children || "Text Component"}
@@ -99,10 +108,54 @@ export const ComponentRenderer = ({
       return (
         <input
           className={`h-full w-full rounded px-3 py-2 ${isEditMode ? "pointer-events-none" : ""}`}
+          type={String(node.props.type) || "text"}
           placeholder={node.props.placeholder || "Input field"}
+          min={node.props.min ? String(node.props.min) : undefined}
+          max={node.props.max ? String(node.props.max) : undefined}
+          step={node.props.step ? String(node.props.step) : undefined}
+          value={node.props.value ? String(node.props.value) : undefined}
           style={{
             ...combinedStyles,
             border: combinedStyles.border || "1px solid #d1d5db",
+            // Special styling for range inputs (sliders)
+            ...(node.props.type === "range" && {
+              WebkitAppearance: "none",
+              appearance: "none",
+              background: "transparent",
+              cursor: "pointer",
+              "&::-webkit-slider-track": {
+                background: "linear-gradient(to right, #3b82f6 0%, #3b82f6 50%, #e5e7eb 50%, #e5e7eb 100%)",
+                height: "8px",
+                borderRadius: "4px",
+                border: "none",
+              },
+              "&::-webkit-slider-thumb": {
+                WebkitAppearance: "none",
+                appearance: "none",
+                height: "20px",
+                width: "20px",
+                borderRadius: "50%",
+                background: "#3b82f6",
+                cursor: "pointer",
+                border: "2px solid #ffffff",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+              },
+              "&::-moz-range-track": {
+                background: "linear-gradient(to right, #3b82f6 0%, #3b82f6 50%, #e5e7eb 50%, #e5e7eb 100%)",
+                height: "8px",
+                borderRadius: "4px",
+                border: "none",
+              },
+              "&::-moz-range-thumb": {
+                height: "20px",
+                width: "20px",
+                borderRadius: "50%",
+                background: "#3b82f6",
+                cursor: "pointer",
+                border: "2px solid #ffffff",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+              },
+            }),
           }}
         />
       );
@@ -110,7 +163,7 @@ export const ComponentRenderer = ({
     case "container":
       return (
         <div
-          className={`h-full w-full rounded border border-gray-200 bg-white p-2 ${isEditMode ? "pointer-events-none" : ""}`}
+          className={`h-full w-full rounded border border-gray-200 bg-white p-2 ${isEditMode ? "pointer-events-auto" : ""}`}
           style={combinedStyles}
         >
           {node.children?.map(child => (
@@ -143,7 +196,7 @@ export const ComponentRenderer = ({
     default:
       return (
         <div
-          className={`flex h-full w-full items-center justify-center rounded border border-gray-300 bg-gray-200 ${isEditMode ? "pointer-events-none" : ""}`}
+          className={`flex h-full w-full items-center justify-center rounded border border-gray-300 bg-gray-600 ${isEditMode ? "pointer-events-none" : ""}`}
         >
           <span className="text-sm">{node.type}</span>
         </div>

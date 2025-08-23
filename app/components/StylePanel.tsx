@@ -189,7 +189,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
               className={`relative rounded px-3 py-1 text-sm ${
                 activeBreakpoint === breakpoint
                   ? "bg-blue-500 text-white"
-                  : "bg-gray-200 hover:bg-gray-300"
+                  : "bg-gray-600 hover:bg-gray-300"
               }`}
             >
               {breakpoint.toUpperCase()}
@@ -202,7 +202,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
       </div>
 
       {/* Responsive Preview */}
-      <div className="rounded border bg-gray-50 p-3">
+      <div className="rounded border p-3">
         <h5 className="mb-2 text-xs font-medium text-gray-500">
           Preview: {activeBreakpoint.toUpperCase()}
         </h5>
@@ -410,7 +410,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             type="text"
             value={selectedNode.props.children || ""}
             onChange={e => updateProp("children", e.target.value)}
-            className="glass w-full rounded border border-border p-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none transition-all duration-200"
+            className="glass border-border text-foreground placeholder:text-muted-foreground focus:border-primary w-full rounded border p-2 text-sm transition-all duration-200 focus:outline-none"
           />
         )}
         {selectedNode.type === "button" && (
@@ -418,7 +418,7 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             type="text"
             value={selectedNode.props.children || ""}
             onChange={e => updateProp("children", e.target.value)}
-            className="glass w-full rounded border border-border p-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none transition-all duration-200"
+            className="glass border-border text-foreground placeholder:text-muted-foreground focus:border-primary w-full rounded border p-2 text-sm transition-all duration-200 focus:outline-none"
           />
         )}
         {selectedNode.type === "input" && (
@@ -426,40 +426,40 @@ export const StylePanel = ({ selectedNode, onUpdateNode }: StylePanelProps) => {
             type="text"
             value={selectedNode.props.placeholder || ""}
             onChange={e => updateProp("placeholder", e.target.value)}
-            className="glass w-full rounded border border-border p-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none transition-all duration-200"
+            className="glass border-border text-foreground placeholder:text-muted-foreground focus:border-primary w-full rounded border p-2 text-sm transition-all duration-200 focus:outline-none"
           />
         )}
       </div>
 
       <div className="mb-6">
-        <div className="flex border-b border-border/20">
+        <div className="border-border/20 flex border-b">
           <button
             onClick={() => setActiveTab("layout")}
-            className={`px-4 py-2 text-sm transition-all duration-200 ${activeTab === "layout" ? "border-b-2 border-primary text-primary" : "text-gray-300 hover:text-gray-100"}`}
+            className={`px-4 py-2 text-sm transition-all duration-200 ${activeTab === "layout" ? "border-primary text-primary border-b-2" : "text-gray-300 hover:text-gray-100"}`}
           >
             Layout
           </button>
           <button
             onClick={() => setActiveTab("typography")}
-            className={`px-4 py-2 text-sm transition-all duration-200 ${activeTab === "typography" ? "border-b-2 border-primary text-primary" : "text-gray-300 hover:text-gray-100"}`}
+            className={`px-4 py-2 text-sm transition-all duration-200 ${activeTab === "typography" ? "border-primary text-primary border-b-2" : "text-gray-300 hover:text-gray-100"}`}
           >
             Typography
           </button>
           <button
             onClick={() => setActiveTab("appearance")}
-            className={`px-4 py-2 text-sm transition-all duration-200 ${activeTab === "appearance" ? "border-b-2 border-primary text-primary" : "text-gray-300 hover:text-gray-100"}`}
+            className={`px-4 py-2 text-sm transition-all duration-200 ${activeTab === "appearance" ? "border-primary text-primary border-b-2" : "text-gray-300 hover:text-gray-100"}`}
           >
             Appearance
           </button>
           <button
             onClick={() => setActiveTab("responsive")}
-            className={`px-4 py-2 text-sm transition-all duration-200 ${activeTab === "responsive" ? "border-b-2 border-primary text-primary" : "text-gray-300 hover:text-gray-100"}`}
+            className={`px-4 py-2 text-sm transition-all duration-200 ${activeTab === "responsive" ? "border-primary text-primary border-b-2" : "text-gray-300 hover:text-gray-100"}`}
           >
             Responsive
           </button>
           <button
             onClick={() => setActiveTab("optimization")}
-            className={`px-4 py-2 text-sm transition-all duration-200 ${activeTab === "optimization" ? "border-b-2 border-primary text-primary" : "text-gray-300 hover:text-gray-100"}`}
+            className={`px-4 py-2 text-sm transition-all duration-200 ${activeTab === "optimization" ? "border-primary text-primary border-b-2" : "text-gray-300 hover:text-gray-100"}`}
           >
             Optimization
           </button>

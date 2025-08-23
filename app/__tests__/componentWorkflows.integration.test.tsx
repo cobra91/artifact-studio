@@ -6,9 +6,18 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
+import React from "react";
 
 import { ArtifactBuilder } from "../components/ArtifactBuilder";
+import { NotificationProvider } from "../components/ui/notifications";
 import { ComponentNode, ComponentType } from "../types/artifact";
+
+// Test wrapper with necessary providers
+const TestWrapper = ({ children }: { children: React.ReactNode }) => (
+  <NotificationProvider>
+    {children}
+  </NotificationProvider>
+);
 
 // Use the global localStorage mock from setup.ts
 const localStorageMock = window.localStorage as jest.Mocked<Storage>;
@@ -34,7 +43,11 @@ describe("Component Creation Workflows", () => {
   });
 
   test("should create component via addComponent function", async () => {
-    render(<ArtifactBuilder />);
+    render(
+      <TestWrapper>
+        <ArtifactBuilder />
+      </TestWrapper>
+    );
 
     // Wait for the canvas to be rendered
     const _canvas = await screen.findByTestId("visual-canvas");
@@ -64,7 +77,11 @@ describe("Component Creation Workflows", () => {
   });
 
   test("should handle component drag and drop from library", async () => {
-    render(<ArtifactBuilder />);
+    render(
+      <TestWrapper>
+        <ArtifactBuilder />
+      </TestWrapper>
+    );
 
     const canvas = await screen.findByTestId("visual-canvas");
 
@@ -93,7 +110,11 @@ describe("Component Creation Workflows", () => {
   });
 
   test("should create components with proper default properties", async () => {
-    render(<ArtifactBuilder />);
+    render(
+      <TestWrapper>
+        <ArtifactBuilder />
+      </TestWrapper>
+    );
 
     await waitFor(() => {
       // The component should initialize with demo components
@@ -128,7 +149,11 @@ describe("Component Editing Workflows", () => {
   });
 
   test("should update component properties through style panel", async () => {
-    render(<ArtifactBuilder />);
+    render(
+      <TestWrapper>
+        <ArtifactBuilder />
+      </TestWrapper>
+    );
 
     // Wait for the style panel to be available
     const styleTab = await screen.findByText("Style");
@@ -148,7 +173,11 @@ describe("Component Editing Workflows", () => {
   });
 
   test("should handle responsive style updates", async () => {
-    render(<ArtifactBuilder />);
+    render(
+      <TestWrapper>
+        <ArtifactBuilder />
+      </TestWrapper>
+    );
 
     // Simulate breakpoint change
     act(() => {

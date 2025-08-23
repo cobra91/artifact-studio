@@ -8,8 +8,8 @@ import {
 } from "../lib/templates";
 import { ArtifactTemplate, TemplateReview } from "../types/artifact";
 
-// Mock fetch globally
-global.fetch = jest.fn();
+// Mock fetch globally with proper typing
+global.fetch = jest.fn() as jest.MockedFunction<typeof fetch>;
 
 describe("Template System", () => {
   beforeEach(() => {

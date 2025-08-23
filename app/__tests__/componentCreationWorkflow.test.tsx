@@ -4,7 +4,13 @@
  */
 
 import { jest } from "@jest/globals";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import React from "react";
 
 import { ComponentLibrary } from "@/components/ComponentLibrary";
@@ -13,11 +19,38 @@ import { StylePanel } from "@/components/StylePanel";
 // Component imports
 import { VisualCanvas } from "../components/VisualCanvas/VisualCanvas";
 import { useCanvasStore } from "../lib/canvasStore";
+// Template utilities
+import { getTemplates } from "../lib/templates";
+import { ArtifactTemplate } from "../types/artifact";
 // Test utilities
 import {
   createMockComponentNode,
   simulateUserInteraction,
 } from "./integration.setup";
+
+// Helper function to create mock templates
+const createMockTemplate = (
+  templateData: Partial<ArtifactTemplate>
+): ArtifactTemplate => ({
+  id: templateData.id || "mock-template-id",
+  name: templateData.name || "Mock Template",
+  description: templateData.description || "A mock template for testing",
+  category: templateData.category || "ui",
+  preview: templateData.preview || "mock-preview.png",
+  code: templateData.code || "<div>Mock Template</div>",
+  components: templateData.components || [],
+  tags: templateData.tags || ["mock", "test"],
+  rating: templateData.rating || 4.5,
+  downloads: templateData.downloads || 100,
+  author: templateData.author || "Test Author",
+  license: templateData.license || "MIT",
+  created: templateData.created || new Date("2024-01-01"),
+  modified: templateData.modified || new Date("2024-01-01"),
+  isPublic: templateData.isPublic !== undefined ? templateData.isPublic : true,
+  framework: templateData.framework || "react",
+  styling: templateData.styling || "tailwindcss",
+  reviews: templateData.reviews || [],
+});
 
 // Mock dependencies
 jest.mock("../lib/canvasStore", () => ({

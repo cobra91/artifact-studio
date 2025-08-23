@@ -57,7 +57,7 @@ export const Modal = ({
       <div
         ref={modalRef}
         className={`w-full ${sizeClasses[size]} transform rounded-lg bg-white shadow-xl transition-all`}
-        onClick={(e) => e.stopPropagation()}
+        onClick={e => e.stopPropagation()}
       >
         {/* Header */}
         {(title || showCloseButton) && (
@@ -68,11 +68,21 @@ export const Modal = ({
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:"
+                className="rounded-md p-2 text-gray-400"
                 title="Close (Esc)"
               >
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             )}
@@ -86,7 +96,7 @@ export const Modal = ({
   );
 
   // Use portal to render modal outside the main component tree
-  if (typeof window !== 'undefined') {
+  if (typeof window !== "undefined") {
     return createPortal(modalContent, document.body);
   }
 

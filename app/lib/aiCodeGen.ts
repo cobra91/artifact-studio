@@ -2,11 +2,25 @@ import OpenAI from "openai";
 
 import { AIGenerationRequest, ComponentNode } from "../types/artifact";
 
-// Initialize the OpenAI client
-// IMPORTANT: Your API key must be set in an environment variable `OPENAI_API_KEY`
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Lazy initialization of OpenAI client to avoid blocking the app
+let openai: OpenAI | null = null;
+
+function getOpenAIClient(): OpenAI {
+  if (!openai) {
+    if (
+      !process.env.OPENAI_API_KEY ||
+      process.env.OPENAI_API_KEY.trim() === ""
+    ) {
+      throw new Error(
+        "OPENAI_API_KEY environment variable is not set or is empty."
+      );
+    }
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+  }
+  return openai;
+}
 
 const systemPrompt = `
 You are an expert web developer specializing in creating component trees from user prompts.
@@ -68,7 +82,8 @@ Here is an example of the required JSON structure for a "user profile card" prom
 `;
 
 async function generateComponentTreeFromAI(
-  request: AIGenerationRequest
+  request: AIGenerationRequest,
+  model: string = "gpt-4o"
 ): Promise<any> {
   const { prompt, framework, styling, theme } = request;
 
@@ -82,8 +97,8 @@ async function generateComponentTreeFromAI(
 
   try {
     console.log("Making OpenAI API call...");
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4-turbo", // Or "gpt-3.5-turbo"
+    const completion = await getOpenAIClient().chat.completions.create({
+      model: model, // Using the selected model
       response_format: { type: "json_object" },
       messages: [
         { role: "system", content: systemPrompt },
@@ -106,13 +121,10 @@ async function generateComponentTreeFromAI(
 
 export class AICodeGenerator {
   async create(
-    request: AIGenerationRequest
+    request: AIGenerationRequest,
+    model?: string
   ): Promise<{ code: string; components: ComponentNode[] }> {
-    if (!process.env.OPENAI_API_KEY) {
-      throw new Error("OPENAI_API_KEY environment variable is not set.");
-    }
-
-    const aiResponse = await generateComponentTreeFromAI(request);
+    const aiResponse = await generateComponentTreeFromAI(request, model);
     const components = this.buildComponentTree(aiResponse);
 
     let code = "";

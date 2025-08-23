@@ -25,7 +25,7 @@ export interface PackageStructure {
   devDependencies: Record<string, string>;
 }
 
-// Classe de base pour les générateurs
+// Base class for generators
 abstract class BaseGenerator {
   protected abstract generateComponent(
     component: ComponentNode,
@@ -39,17 +39,17 @@ abstract class BaseGenerator {
     options: ExportOptions
   ): Record<string, string>;
 
-  // Méthode commune pour générer le package
+  // Common method to generate the package
   async generatePackage(
     components: ComponentNode[],
     options: ExportOptions
   ): Promise<Blob> {
     const zip = new JSZip();
 
-    // Créer la structure de base
+    // Create base structure
     const rootFolder = zip.folder(options.packageName) || zip;
 
-    // Générer les composants
+    // Generate components
     components.forEach((component, _index) => {
       const componentName = this.formatComponentName(component.type);
       const componentCode = this.generateComponent(component, options);
@@ -57,7 +57,7 @@ abstract class BaseGenerator {
       if (options.type === "component" || options.type === "package") {
         rootFolder.file(`src/components/${componentName}.tsx`, componentCode);
 
-        // Générer les fichiers de test si demandé
+        // Generate test files if requested
         if (options.includeTests) {
           const testCode = this.generateComponentTest(component, options);
           rootFolder.file(
@@ -66,7 +66,7 @@ abstract class BaseGenerator {
           );
         }
 
-        // Générer les stories pour Storybook si demandé
+        // Generate Storybook stories if requested
         if (options.includeStorybook) {
           const storyCode = this.generateComponentStory(component, options);
           rootFolder.file(
@@ -77,39 +77,39 @@ abstract class BaseGenerator {
       }
     });
 
-    // Générer le fichier d'index
+    // Generate index file
     const indexContent = this.generateIndexFile(components);
     rootFolder.file("src/index.ts", indexContent);
 
-    // Générer package.json
+    // Generate package.json
     const packageJson = this.generatePackageJson(options);
     rootFolder.file("package.json", packageJson);
 
-    // Générer les fichiers de configuration
+    // Generate configuration files
     const configFiles = this.generateConfigFiles(options);
     Object.entries(configFiles).forEach(([filename, content]) => {
       rootFolder.file(filename, content);
     });
 
-    // Générer les fichiers d'exemple
+    // Generate example files
     const exampleFiles = this.generateExampleFiles(options);
     Object.entries(exampleFiles).forEach(([filename, content]) => {
       const exampleFolder = rootFolder.folder("examples") || rootFolder;
       exampleFolder.file(filename, content);
     });
 
-    // Générer le README
+    // Generate README
     const readme = this.generateReadme(options);
     rootFolder.file("README.md", readme);
 
-    // Générer le fichier de licence
+    // Generate license file
     const license = this.generateLicense(options);
     rootFolder.file("LICENSE", license);
 
     return await zip.generateAsync({ type: "blob" });
   }
 
-  // Méthode pour télécharger le package
+  // Method to download the package
   async downloadPackage(
     components: ComponentNode[],
     options: ExportOptions
@@ -118,7 +118,7 @@ abstract class BaseGenerator {
     saveAs(blob, `${options.packageName}.zip`);
   }
 
-  // Méthodes utilitaires
+  // Utility methods
   protected formatComponentName(name: string): string {
     return name.charAt(0).toUpperCase() + name.slice(1);
   }
@@ -260,7 +260,7 @@ SOFTWARE.`;
   }
 }
 
-// Générateur pour React
+// Generator for React
 class ReactGenerator extends BaseGenerator {
   protected generateComponent(
     component: ComponentNode,
@@ -269,7 +269,7 @@ class ReactGenerator extends BaseGenerator {
     const componentName = this.formatComponentName(component.type);
     const className = component.props?.className || "";
 
-    // Générer les styles selon l'approche choisie
+    // Generate styles according to chosen approach
     let styles = "";
     if (options.styling === "styled-components") {
       styles = `
@@ -351,7 +351,7 @@ export default ${componentName};
       license: options.license,
     };
 
-    // Ajouter les dépendances selon le style
+    // Add dependencies according to style
     if (options.styling === "styled-components") {
       (packageJson.devDependencies as Record<string, string>)[
         "@types/styled-components"
@@ -482,7 +482,7 @@ dist/
     // setupTests.ts
     files["src/setupTests.ts"] = `import '@testing-library/jest-dom';`;
 
-    // Ajouter les fichiers de configuration pour styled-components si nécessaire
+    // Add configuration files for styled-components if necessary
     if (options.styling === "styled-components") {
       files["src/styled.d.ts"] = `import 'styled-components';
 
@@ -532,7 +532,7 @@ export default ExampleWithProps;
   }
 }
 
-// Générateur pour Vue
+// Generator for Vue
 class VueGenerator extends BaseGenerator {
   protected generateComponent(
     component: ComponentNode,
@@ -692,7 +692,7 @@ dist/
   }
 }
 
-// Générateur pour Svelte
+// Generator for Svelte
 class SvelteGenerator extends BaseGenerator {
   protected generateComponent(
     component: ComponentNode,
@@ -873,7 +873,7 @@ dist/
   }
 }
 
-// Générateur pour Next.js
+// Generator for Next.js
 class NextjsGenerator extends BaseGenerator {
   protected generateComponent(
     component: ComponentNode,
@@ -1007,7 +1007,7 @@ yarn-error.log*
       2
     );
 
-    // Créer la structure de pages
+    // Create pages structure
     files["pages/_app.tsx"] = `import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 
@@ -1029,11 +1029,11 @@ export default function Home() {
 }
 `;
 
-    // Créer la structure de composants
+    // Create components structure
     files["components/index.ts"] = `// Export your components here
 `;
 
-    // Créer les styles globaux
+    // Create global styles
     files["styles/globals.css"] = `/* Global styles */
 body {
   margin: 0;
@@ -1097,7 +1097,7 @@ ${exports}
   }
 }
 
-// Factory pour créer les générateurs appropriés
+// Factory to create appropriate generators
 export class PackageGeneratorFactory {
   static createGenerator(framework: Framework | "nextjs"): BaseGenerator {
     switch (framework) {
@@ -1115,7 +1115,7 @@ export class PackageGeneratorFactory {
   }
 }
 
-// Fonction utilitaire pour générer et télécharger un package
+// Utility function to generate and download a package
 export async function generateAndDownloadPackage(
   components: ComponentNode[],
   options: ExportOptions

@@ -48,7 +48,7 @@ export const ResponsivePreview = ({
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="border-b bg-gray-50 p-4">
+      <div className="border-b p-4">
         <h3 className="mb-2 text-lg font-semibold text-gray-800">
           Responsive Preview
         </h3>
@@ -123,7 +123,7 @@ export const ResponsivePreview = ({
       </div>
 
       {/* Footer Info */}
-      <div className="border-t bg-gray-50 p-3 text-xs">
+      <div className="border-t p-3 text-xs">
         <div className="flex items-center justify-between">
           <span>Preview: {getPreviewLabel()}</span>
           <span>Width: {getPreviewWidth()}</span>

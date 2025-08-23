@@ -97,7 +97,7 @@ export const HelpSystem = ({
   const finishOnboarding = useCallback(() => {
     setIsVisible(false);
     onFinishOnboarding();
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       localStorage.setItem("onboarding-completed", "true");
     }
   }, [onFinishOnboarding]);
@@ -121,10 +121,10 @@ export const HelpSystem = ({
   }, [finishOnboarding]);
 
   const getElementPosition = useCallback((selector: string) => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return { top: 100, left: 100, width: 200, height: 100 };
     }
-    
+
     const element = document.querySelector(selector);
     if (!element) return { top: 100, left: 100, width: 200, height: 100 };
 
@@ -216,7 +216,7 @@ export const HelpSystem = ({
               {currentStep > 0 && (
                 <button
                   onClick={prevStep}
-                  className="rounded bg-gray-200 px-3 py-1.5 text-sm text-gray-800 hover:bg-gray-300"
+                  className="rounded bg-gray-600 px-3 py-1.5 text-sm text-gray-800 hover:bg-gray-300"
                 >
                   Back
                 </button>

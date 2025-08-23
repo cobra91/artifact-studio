@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, ReactNode,useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 
 import { Toast } from "./feedback";
 
@@ -18,12 +18,16 @@ interface NotificationContextType {
   clearAll: () => void;
 }
 
-const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
+const NotificationContext = createContext<NotificationContextType | undefined>(
+  undefined
+);
 
 export const useNotifications = () => {
   const context = useContext(NotificationContext);
   if (!context) {
-    throw new Error("useNotifications must be used within a NotificationProvider");
+    throw new Error(
+      "useNotifications must be used within a NotificationProvider"
+    );
   }
   return context;
 };
@@ -32,13 +36,15 @@ interface NotificationProviderProps {
   children: ReactNode;
 }
 
-export const NotificationProvider = ({ children }: NotificationProviderProps) => {
+export const NotificationProvider = ({
+  children,
+}: NotificationProviderProps) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const addNotification = (notification: Omit<Notification, "id">) => {
     const id = Math.random().toString(36).substr(2, 9);
     const newNotification = { ...notification, id };
-    
+
     setNotifications(prev => [...prev, newNotification]);
   };
 
@@ -51,16 +57,18 @@ export const NotificationProvider = ({ children }: NotificationProviderProps) =>
   };
 
   return (
-    <NotificationContext.Provider value={{
-      notifications,
-      addNotification,
-      removeNotification,
-      clearAll,
-    }}>
+    <NotificationContext.Provider
+      value={{
+        notifications,
+        addNotification,
+        removeNotification,
+        clearAll,
+      }}
+    >
       {children}
-      
-             {/* Notification Container */}
-       <div className="fixed top-4 right-4 z-[9999] space-y-2">
+
+      {/* Notification Container */}
+      <div className="fixed top-4 right-4 z-[9999] space-y-2">
         {notifications.map((notification, index) => (
           <div
             key={notification.id}
@@ -88,13 +96,13 @@ export const useQuickNotifications = () => {
   const { addNotification } = useNotifications();
 
   return {
-    success: (message: string, duration = 3000) => 
+    success: (message: string, duration = 3000) =>
       addNotification({ message, type: "success", duration }),
-    error: (message: string, duration = 5000) => 
+    error: (message: string, duration = 5000) =>
       addNotification({ message, type: "error", duration }),
-    warning: (message: string, duration = 4000) => 
+    warning: (message: string, duration = 4000) =>
       addNotification({ message, type: "warning", duration }),
-    info: (message: string, duration = 3000) => 
+    info: (message: string, duration = 3000) =>
       addNotification({ message, type: "info", duration }),
   };
 };

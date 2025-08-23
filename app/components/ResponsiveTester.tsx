@@ -26,7 +26,7 @@ export const ResponsiveTester = ({ selectedNode }: ResponsiveTesterProps) => {
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="border-b bg-gray-50 p-4">
+      <div className="border-b p-4">
         <h3 className="mb-2 text-lg font-semibold text-gray-800">
           Responsive Tester
         </h3>
@@ -100,7 +100,7 @@ export const ResponsiveTester = ({ selectedNode }: ResponsiveTesterProps) => {
       </div>
 
       {/* Info Panel */}
-      <div className="border-t bg-gray-50 p-4">
+      <div className="border-t p-4">
         <div className="grid grid-cols-2 gap-4 text-xs">
           <div>
             <span className="font-medium text-gray-700">

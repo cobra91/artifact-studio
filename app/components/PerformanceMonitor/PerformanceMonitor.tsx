@@ -26,12 +26,12 @@ export function PerformanceMonitor() {
             </span>
           </div>
           <div className="flex flex-col gap-2">
-            <div className="h-48 rounded bg-gray-50 p-2 dark:bg-gray-700">
+            <div className="h-48 rounded p-2 dark:bg-gray-700">
               <div className="mb-1 flex justify-between text-xs">
                 <span>Memory Usage</span>
                 <span>47.68MB / 4,095.75MB</span>
               </div>
-              <div className="relative h-full overflow-hidden rounded bg-gray-200 dark:bg-gray-600">
+              <div className="relative h-full overflow-hidden rounded bg-gray-600 dark:bg-gray-600">
                 <div
                   className="absolute top-0 bottom-0 left-0 bg-green-500"
                   style={{ width: "20%" }}
