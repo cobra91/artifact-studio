@@ -489,4 +489,6 @@ ${spaces}</${Element}>`;
   }
 }
 
+// Export both the class and a default instance
 export const aiCodeGen = new AICodeGenerator();
+export default AICodeGenerator;

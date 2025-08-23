@@ -12,11 +12,17 @@ import { ArtifactBuilder } from "../components/ArtifactBuilder";
 import { NotificationProvider } from "../components/ui/notifications";
 import { ComponentNode, ComponentType } from "../types/artifact";
 
+<<<<<<< Updated upstream
 // Test wrapper component
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <NotificationProvider>
     {children}
   </NotificationProvider>
+=======
+// Test wrapper with necessary providers
+const TestWrapper = ({ children }: { children: React.ReactNode }) => (
+  <NotificationProvider>{children}</NotificationProvider>
+>>>>>>> Stashed changes
 );
 
 // Use the global localStorage mock from setup.ts

@@ -103,6 +103,50 @@ export const ComponentRenderer = ({
           style={{
             ...combinedStyles,
             border: combinedStyles.border || "1px solid #d1d5db",
+<<<<<<< Updated upstream
+=======
+            // Special styling for range inputs (sliders)
+            ...(node.props.type === "range" && {
+              WebkitAppearance: "none",
+              appearance: "none",
+              background: "transparent",
+              cursor: "pointer",
+              "&::-webkit-slider-track": {
+                background:
+                  "linear-gradient(to right, #3b82f6 0%, #3b82f6 50%, #e5e7eb 50%, #e5e7eb 100%)",
+                height: "8px",
+                borderRadius: "4px",
+                border: "none",
+              },
+              "&::-webkit-slider-thumb": {
+                WebkitAppearance: "none",
+                appearance: "none",
+                height: "20px",
+                width: "20px",
+                borderRadius: "50%",
+                background: "#3b82f6",
+                cursor: "pointer",
+                border: "2px solid #ffffff",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+              },
+              "&::-moz-range-track": {
+                background:
+                  "linear-gradient(to right, #3b82f6 0%, #3b82f6 50%, #e5e7eb 50%, #e5e7eb 100%)",
+                height: "8px",
+                borderRadius: "4px",
+                border: "none",
+              },
+              "&::-moz-range-thumb": {
+                height: "20px",
+                width: "20px",
+                borderRadius: "50%",
+                background: "#3b82f6",
+                cursor: "pointer",
+                border: "2px solid #ffffff",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+              },
+            }),
+>>>>>>> Stashed changes
           }}
         />
       );

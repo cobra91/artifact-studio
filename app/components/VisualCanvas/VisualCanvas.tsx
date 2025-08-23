@@ -331,6 +331,35 @@ export const VisualCanvas = ({
     handleMouseUp();
   };
 
+<<<<<<< Updated upstream
+=======
+  // Function to find container at drop position
+  const findContainerAtPosition = (
+    x: number,
+    y: number
+  ): ComponentNode | null => {
+    // Check if drop position is inside any container
+    for (const component of components) {
+      if (component.type === "container") {
+        const containerX = component.position.x;
+        const containerY = component.position.y;
+        const containerWidth = component.size.width;
+        const containerHeight = component.size.height;
+
+        if (
+          x >= containerX &&
+          x <= containerX + containerWidth &&
+          y >= containerY &&
+          y <= containerY + containerHeight
+        ) {
+          return component;
+        }
+      }
+    }
+    return null;
+  };
+
+>>>>>>> Stashed changes
   const handleDrop = (e: DragEvent) => {
     e.preventDefault();
     const rect = canvasRef.current?.getBoundingClientRect();
@@ -342,11 +371,43 @@ export const VisualCanvas = ({
     const dragData = JSON.parse(e.dataTransfer?.getData("text/plain") || "{}");
 
     if (dragData.type === "component") {
+<<<<<<< Updated upstream
       const position = snapToGrid
         ? { x: Math.round(x / 20) * 20, y: Math.round(y / 20) * 20 }
         : { x, y };
 
       onAddComponent(dragData.componentType as ComponentType, position);
+=======
+      // Check if dropping on a container
+      const targetContainer = findContainerAtPosition(x, y);
+
+      if (targetContainer) {
+        // Calculate position relative to container
+        const relativeX = x - targetContainer.position.x;
+        const relativeY = y - targetContainer.position.y;
+
+        const position = snapToGrid
+          ? {
+              x: Math.round(relativeX / 20) * 20,
+              y: Math.round(relativeY / 20) * 20,
+            }
+          : { x: relativeX, y: relativeY };
+
+        // Add component as child of container
+        onAddComponent(
+          dragData.componentType as ComponentType,
+          position,
+          targetContainer.id
+        );
+      } else {
+        // Add component to canvas at absolute position
+        const position = snapToGrid
+          ? { x: Math.round(x / 20) * 20, y: Math.round(y / 20) * 20 }
+          : { x, y };
+
+        onAddComponent(dragData.componentType as ComponentType, position);
+      }
+>>>>>>> Stashed changes
     }
   };
 

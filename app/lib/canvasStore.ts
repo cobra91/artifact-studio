@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+<<<<<<< Updated upstream
 import { CanvasState } from "../types/artifact";
 import { triggerAutoSave } from "./autoSave";
 
@@ -18,20 +19,36 @@ interface CanvasElement {
   strokeOpacity?: number;
   [key: string]: any;
 }
+=======
+import { CanvasState, ComponentNode } from "../types/artifact";
+>>>>>>> Stashed changes
 
 interface CanvasStore extends CanvasState {
-  elements: CanvasElement[];
+  // Canvas-specific properties
+  elements: ComponentNode[];
   selectedElementId: string | null;
   recentColors: string[];
-  addElement: (element: CanvasElement) => void;
-  updateElement: (id: string, updates: Partial<CanvasElement>) => void;
+  
+  // Canvas operations
+  addElement: (element: ComponentNode) => void;
+  updateElement: (id: string, updates: Partial<ComponentNode>) => void;
   deleteElement: (id: string) => void;
   selectElement: (id: string | null) => void;
+  
+  // Color management
   addRecentColor: (color: string) => void;
   clearRecentColors: () => void;
+  
+  // State management
   setActiveBreakpoint: (breakpoint: "base" | "sm" | "md" | "lg") => void;
   setSelectedNodes: (nodes: string[] | ((prev: string[]) => string[])) => void;
   setSnapToGrid: (snap: boolean) => void;
+  
+  // Component management
+  addComponent: (component: ComponentNode) => void;
+  updateComponent: (id: string, updates: Partial<ComponentNode>) => void;
+  deleteComponent: (id: string) => void;
+  setComponents: (components: ComponentNode[]) => void;
 }
 
 export const useCanvasStore = create<CanvasStore>()(
@@ -114,6 +131,28 @@ export const useCanvasStore = create<CanvasStore>()(
             typeof nodes === "function" ? nodes(state.selectedNodes) : nodes,
         })),
       setSnapToGrid: snap => set(() => ({ snapToGrid: snap })),
+      
+      // Component management methods
+      addComponent: component =>
+        set(state => ({
+          components: [...state.components, component],
+        })),
+      
+      updateComponent: (id, updates) =>
+        set(state => ({
+          components: state.components.map(comp =>
+            comp.id === id ? { ...comp, ...updates } : comp
+          ),
+        })),
+      
+      deleteComponent: id =>
+        set(state => ({
+          components: state.components.filter(comp => comp.id !== id),
+          selectedNodes: state.selectedNodes.filter(nodeId => nodeId !== id),
+        })),
+      
+      setComponents: components =>
+        set(() => ({ components })),
     }),
     {
       name: "canvas-store",
