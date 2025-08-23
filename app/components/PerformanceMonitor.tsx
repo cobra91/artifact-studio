@@ -92,7 +92,7 @@ export const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({
     <div
       className={`fixed top-4 right-4 z-50 rounded-lg border bg-white shadow-lg dark:bg-gray-800 ${className}`}
     >
-      <div className="min-w-80 p-4">
+      <div className="min-w-85 p-4">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
             Performance Monitor

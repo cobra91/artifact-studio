@@ -154,9 +154,7 @@ export const AIPromptPanel = ({
       config.model = selectedModel;
     }
 
-    console.log("Calling onGenerate with:", { request, config });
     const result = await onGenerate(request, config);
-    console.log("onGenerate result:", result);
 
     if (result) {
       generationHistory.addGeneration(request, result.components);
@@ -179,11 +177,6 @@ export const AIPromptPanel = ({
       entry.components.length > 0
     ) {
       onRestoreComponents(entry.components);
-      console.log(
-        "Restored",
-        entry.components.length,
-        "components from history"
-      );
     }
   };
 

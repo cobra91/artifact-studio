@@ -16,26 +16,20 @@ import {
   ComponentType,
   SandboxResult,
 } from "../types/artifact";
-import { ABTestPanel } from "./ABTestPanel";
 import { AIPromptPanel } from "./AIPromptPanel";
 import { AnalyticsPanel } from "./AnalyticsPanel";
 import { AnimationPanel } from "./AnimationPanel";
-import { ApiConnectionPanel } from "./ApiConnectionPanel";
 import { CommandPalette } from "./CommandPalette";
 import { ComponentLibrary } from "./ComponentLibrary";
-import { DeploymentPanel } from "./DeploymentPanel";
 import { ExportPackageModal } from "./ExportPackageModal";
 import { HelpModal } from "./HelpModal";
 import { LiveCursors } from "./LiveCursors";
 import { LivePreview } from "./LivePreview";
-import { PerformancePanel } from "./PerformancePanel";
 import { ResponsivePanel } from "./ResponsivePanel";
-import { StateManagerPanel } from "./StateManagerPanel";
 import { StylePanel } from "./StylePanel";
 import { ButtonWithFeedback } from "./ui/feedback";
 import { useQuickNotifications } from "./ui/notifications";
 import { Tooltip } from "./ui/tooltip";
-import { VersionPanel } from "./VersionPanel";
 import { VisualCanvas } from "./VisualCanvas/VisualCanvas";
 
 // Hook to detect screen size
@@ -68,12 +62,7 @@ type RightPanelTab =
   | "AI"
   | "Style"
   | "Animate"
-  | "State"
-  | "API"
-  | "Perf"
-  | "Versions"
-  | "A/B"
-  | "Deploy";
+  | "State";
 
 // Helper function to get default properties for a new component
 const getComponentDefaults = (type: ComponentType) => {
@@ -866,7 +855,7 @@ export const ArtifactBuilder = () => {
     [updateCanvas, activeBreakpoint]
   );
 
-  const handleAddState = (key: string, value: any) => {
+  /* const handleAddState = (key: string, value: any) => {
     setAppState(prev => ({ ...prev, [key]: value }));
   };
 
@@ -882,7 +871,7 @@ export const ArtifactBuilder = () => {
 
   const handleRestoreVersion = (components: ComponentNode[]) => {
     updateCanvas(components);
-  };
+  }; */
 
   const selectedNode = useMemo(() => {
     if (selectedNodeIds.length !== 1) return null;
@@ -1114,14 +1103,14 @@ export const ArtifactBuilder = () => {
         category: "Panels",
         action: () => setActiveTab("Animate"),
       },
-      {
+      /* {
         id: "open-deploy-panel",
         name: "Open Deploy Panel",
         description: "Switch to the deployment panel",
         shortcut: "",
         category: "Panels",
         action: () => setActiveTab("Deploy"),
-      },
+      }, */
       // Help
       {
         id: "show-onboarding",
@@ -1370,7 +1359,7 @@ export const ArtifactBuilder = () => {
         return <StylePanel {...panelProps} />;
       case "Animate":
         return <AnimationPanel {...panelProps} />;
-      case "State":
+/*       case "State":
         return (
           <StateManagerPanel {...panelProps} onAddState={handleAddState} />
         );
@@ -1385,7 +1374,7 @@ export const ArtifactBuilder = () => {
       case "A/B":
         return <ABTestPanel selectedNode={selectedNode} />;
       case "Deploy":
-        return <DeploymentPanel />;
+        return <DeploymentPanel />; */
       default:
         return null;
     }
@@ -1400,7 +1389,7 @@ export const ArtifactBuilder = () => {
           return "🎨";
         case "Animate":
           return "✨";
-        case "State":
+/*         case "State":
           return "⚡";
         case "API":
           return "🔌";
@@ -1411,7 +1400,7 @@ export const ArtifactBuilder = () => {
         case "A/B":
           return "🧪";
         case "Deploy":
-          return "🚀";
+          return "🚀"; */
         default:
           return "📄";
       }
@@ -1651,15 +1640,6 @@ export const ArtifactBuilder = () => {
               </button>
             </Tooltip>
 
-            {/* Mode indicator - hidden on mobile */}
-            {screenSize !== "mobile" && (
-              <div
-                className={`glass rounded-md px-3 py-2 text-sm font-medium ${isEditMode ? "bg-primary/20 text-primary border-primary/30 border" : "bg-secondary/20 text-secondary border-secondary/30 border"}`}
-              >
-                {isEditMode ? "EDIT MODE" : "PREVIEW MODE"}
-              </div>
-            )}
-
             {/* Boutons d'outils - adaptatifs */}
             {screenSize === "desktop" && (
               <button
@@ -1714,7 +1694,12 @@ export const ArtifactBuilder = () => {
 
               {/* Component Library */}
               <div className="flex-1">
-                <ComponentLibrary />
+                <ComponentLibrary 
+                  onAddTemplate={(components) => {
+                    updateCanvas(prev => [...prev, ...components]);
+                    notifications.success(`Added ${components.length} components from template`);
+                  }}
+                />
               </div>
 
               {/* Navigation Tabs */}
@@ -1725,12 +1710,7 @@ export const ArtifactBuilder = () => {
                     "Style",
                     "Animate",
                     "State",
-                    "API",
-                    "Perf",
-                    "Versions",
-                    "A/B",
-                    "Deploy",
-                  ] as RightPanelTab[]
+                                     ] as RightPanelTab[]
                 ).map(tab => (
                   <div key={tab}>
                     <TabButton tabName={tab} />
@@ -1776,7 +1756,7 @@ export const ArtifactBuilder = () => {
                   }}
                   className="glass hover-lift rounded-md px-3 py-2 text-sm text-gray-200 transition-all duration-200 hover:text-gray-100"
                 >
-                  {isLeftPanelOpen ? "◀" : "▶"}
+                  {isLeftPanelOpen ? "🗂️" : "📁"}
                 </button>
               </Tooltip>
 
@@ -1799,7 +1779,7 @@ export const ArtifactBuilder = () => {
                   }}
                   className="glass hover-lift rounded-md px-3 py-2 text-sm text-gray-200 transition-all duration-200 hover:text-gray-100"
                 >
-                  {isRightPanelOpen ? "▶" : "◀"}
+                  {isRightPanelOpen ? "⚙️" : "🔧"}
                 </button>
               </Tooltip>
 
@@ -1820,7 +1800,7 @@ export const ArtifactBuilder = () => {
                   }}
                   className="glass hover-lift rounded-md px-3 py-2 text-sm text-gray-200 transition-all duration-200 hover:text-gray-100"
                 >
-                  {isPreviewPanelOpen ? "◀" : "▶"}
+                  {isPreviewPanelOpen ? "👁️" : "👀"}
                 </button>
               </Tooltip>
 

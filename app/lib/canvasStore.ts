@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-import { CanvasState } from "../types/artifact";
+import { CanvasState, ComponentNode, ComponentType } from "../types/artifact";
 
 interface CanvasElement {
   id: string;
@@ -31,6 +31,10 @@ interface CanvasStore extends CanvasState {
   setActiveBreakpoint: (breakpoint: "base" | "sm" | "md" | "lg") => void;
   setSelectedNodes: (nodes: string[] | ((prev: string[]) => string[])) => void;
   setSnapToGrid: (snap: boolean) => void;
+  addComponent: (type: ComponentType, componentData?: Partial<ComponentNode>) => void;
+  updateComponent: (id: string, updates: Partial<ComponentNode>) => void;
+  deleteComponent: (id: string) => void;
+  setComponents: (components: ComponentNode[]) => void;
 }
 
 export const useCanvasStore = create<CanvasStore>()(
@@ -96,12 +100,57 @@ export const useCanvasStore = create<CanvasStore>()(
             typeof nodes === "function" ? nodes(state.selectedNodes) : nodes,
         })),
       setSnapToGrid: snap => set(() => ({ snapToGrid: snap })),
+
+      // Component management methods
+      addComponent: (type, componentData = {}) => {
+        const newComponent: ComponentNode = {
+          id: componentData.id || `component_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+          type,
+          props: componentData.props || {},
+          position: componentData.position || { x: 100, y: 100 },
+          size: componentData.size || { width: 200, height: 100 },
+          styles: componentData.styles || {},
+          children: componentData.children || [],
+          responsiveStyles: componentData.responsiveStyles || {
+            base: {},
+            sm: {},
+            md: {},
+            lg: {},
+          },
+          metadata: componentData.metadata || {
+            version: "1.0.0",
+            created: new Date(),
+            modified: new Date(),
+          },
+        };
+
+        set(state => ({
+          components: [...state.components, newComponent],
+        }));
+      },
+
+      updateComponent: (id, updates) =>
+        set(state => ({
+          components: state.components.map(component =>
+            component.id === id ? { ...component, ...updates } : component
+          ),
+        })),
+
+      deleteComponent: (id) =>
+        set(state => ({
+          components: state.components.filter(component => component.id !== id),
+          selectedNodes: state.selectedNodes.filter(nodeId => nodeId !== id),
+        })),
+
+      setComponents: (components) =>
+        set(() => ({ components })),
     }),
     {
       name: "canvas-store",
       partialize: state => ({
         recentColors: state.recentColors,
         activeBreakpoint: state.activeBreakpoint,
+        components: state.components,
       }),
     }
   )

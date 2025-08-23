@@ -83,7 +83,7 @@ export const Eyedropper = ({
         disabled={disabled}
         className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
           disabled
-            ? "cursor-not-allowed bg-gray-100 text-gray-400"
+            ? "cursor-not-allowed bg-gray-900 text-gray-400"
             : "bg-blue-500 text-white hover:bg-blue-600"
         } `}
         title="Pick color from canvas"

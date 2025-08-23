@@ -29,7 +29,7 @@ export const StylePresetsPanel: React.FC<StylePresetsPanelProps> = ({
             <button
               key={preset.id}
               onClick={() => handleApplyPreset(preset)}
-              className="rounded-md bg-gray-100 px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-600"
+              className="rounded-md bg-gray-900 px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-600"
             >
               <div className="font-medium">{preset.name}</div>
               <div className="text-xs">{preset.description}</div>
@@ -45,7 +45,7 @@ export const StylePresetsPanel: React.FC<StylePresetsPanelProps> = ({
             <button
               key={template.id}
               onClick={() => handleApplyTemplate(template)}
-              className="rounded-md bg-gray-100 px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-600"
+              className="rounded-md bg-gray-900 px-3 py-2 text-left text-sm text-gray-800 hover:bg-gray-600"
             >
               <div className="font-medium">{template.name}</div>
               <div className="text-xs">{template.description}</div>

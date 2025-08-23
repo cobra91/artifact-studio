@@ -159,7 +159,7 @@ export const CommandPalette = ({
                       </div>
                     </div>
                     {command.shortcut && (
-                      <div className="ml-4 rounded bg-gray-100 px-2 py-1 font-mono text-xs">
+                      <div className="ml-4 rounded bg-gray-900 px-2 py-1 font-mono text-xs">
                         {command.shortcut}
                       </div>
                     )}
