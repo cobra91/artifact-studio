@@ -88,7 +88,7 @@ export const AnalyticsPanel = ({ isOpen, onClose }: AnalyticsPanelProps) => {
                 className={`rounded-md px-4 py-2 text-sm font-medium ${
                   activeTab === tab.id
                     ? "bg-blue-600 text-white"
-                    : "bg-gray-100 hover:bg-gray-600"
+                    : "bg-gray-900 hover:bg-gray-600"
                 }`}
               >
                 {tab.label}
@@ -98,7 +98,7 @@ export const AnalyticsPanel = ({ isOpen, onClose }: AnalyticsPanelProps) => {
         </div>
 
         {/* Content */}
-        <div className="max-h-96 overflow-y-auto p-6">
+        <div className="max-h-96 overflow-y-auto p-6 text-gray-900">
           {activeTab === "overview" && (
             <div className="space-y-6">
               <div className="grid grid-cols-2 gap-4 md:grid-cols-4">

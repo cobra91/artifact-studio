@@ -517,7 +517,7 @@ export const VisualCanvas = ({
           {activeBreakpoint.toUpperCase()}
         </div>
         {/* Selection indicator */}
-        <div className="glass text-foreground absolute top-2 left-2 z-20 rounded-md px-3 py-1 text-sm font-medium shadow-lg">
+        <div className="glass text-foreground absolute top-2 left-15 z-20 rounded-md px-3 py-1 text-sm font-medium shadow-lg">
           Selected: {selectedNodeIds.length}{" "}
           {selectedNodeIds.length > 0 && `(${selectedNodeIds.join(", ")})`}
         </div>

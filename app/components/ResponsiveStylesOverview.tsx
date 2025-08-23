@@ -28,7 +28,7 @@ export const ResponsiveStylesOverview = ({
               className={`rounded border p-3 text-xs ${
                 hasCustomStyles
                   ? "border-blue-200 bg-blue-50"
-                  : "border-gray-200 bg-gray-100"
+                  : "border-gray-200 bg-gray-900"
               }`}
             >
               <div className="mb-2 flex items-center justify-between">

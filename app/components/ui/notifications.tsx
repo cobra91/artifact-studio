@@ -68,14 +68,15 @@ export const NotificationProvider = ({
       {children}
 
       {/* Notification Container */}
-      <div className="fixed top-4 right-4 z-[9999] space-y-2">
+      <div className="fixed top-4 right-4 z-[9999] space-y-2 max-w-sm">
         {notifications.map((notification, index) => (
           <div
             key={notification.id}
-            className="transition-all duration-300"
+            className="transition-all duration-300 ease-in-out"
             style={{
-              transform: `translateX(${index * 10}px)`,
+              transform: `translateY(${index * 5}px)`,
               zIndex: 1000 - index,
+              opacity: 1 - (index * 0.1),
             }}
           >
             <Toast

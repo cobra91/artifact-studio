@@ -62,7 +62,7 @@ export const ResponsivePreview = ({
       </div>
 
       {/* Preview Container */}
-      <div className="flex-1 overflow-auto bg-gray-100 p-4">
+      <div className="flex-1 overflow-auto bg-gray-900 p-4">
         <div className="flex justify-center">
           <div
             className="border border-gray-200 bg-white shadow-lg transition-all duration-300"

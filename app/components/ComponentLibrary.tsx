@@ -2,10 +2,18 @@
 
 import { DragEvent } from "react";
 
-import { ComponentType } from "../types/artifact";
+import { loadTemplate } from "../lib/templateLoader";
+import { ComponentNode, ComponentType } from "../types/artifact";
+import { useQuickNotifications } from "./ui/notifications";
 import { Tooltip } from "./ui/tooltip";
 
-export const ComponentLibrary = () => {
+interface ComponentLibraryProps {
+  onAddTemplate?: (components: ComponentNode[]) => void;
+}
+
+export const ComponentLibrary = ({ onAddTemplate }: ComponentLibraryProps) => {
+  const { success, error, info } = useQuickNotifications();
+
   const componentTemplates = [
     {
       name: "Container",
@@ -47,6 +55,30 @@ export const ComponentLibrary = () => {
     e.dataTransfer.setData("text/plain", JSON.stringify(dragData));
   };
 
+  const handleTemplateClick = async (templateId: string) => {
+    try {
+      info(`Loading ${templateId} template...`);
+
+      const templateComponents = await loadTemplate(templateId);
+      
+      // Ensure unique IDs for all components
+      const componentsWithUniqueIds = templateComponents.map(component => ({
+        ...component,
+        id: `${component.id}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+      }));
+      
+      // Use the callback to add template components to the canvas
+      if (onAddTemplate) {
+        onAddTemplate(componentsWithUniqueIds);
+      }
+
+      success(`${templateId} template has been added to the canvas!`);
+    } catch (err) {
+      console.error("Failed to load template:", err);
+      error(err instanceof Error ? err.message : "Unknown error occurred");
+    }
+  };
+
   return (
     <div className="flex h-full flex-col">
       <div className="border-border/20 border-b p-2 md:p-4">
@@ -85,19 +117,42 @@ export const ComponentLibrary = () => {
         <h3 className="md:text-md mb-2 text-sm font-medium text-gray-200">
           Templates
         </h3>
+        <p className="text-xs text-gray-400 mb-3">
+          Click to load complete templates
+        </p>
         <div className="space-y-2">
-          <button className="glass border-secondary/30 hover:bg-secondary/10 hover:border-secondary/50 w-full rounded border p-2 text-left text-sm text-gray-200 transition-all duration-200">
-            🧮 Calculator
-          </button>
-          <button className="glass border-primary/30 hover:bg-primary/10 hover:border-primary/50 w-full rounded border p-2 text-left text-sm text-gray-200 transition-all duration-200">
-            📊 Dashboard
-          </button>
-          <button className="glass border-secondary/30 hover:bg-secondary/10 hover:border-secondary/50 w-full rounded border p-2 text-left text-sm text-gray-200 transition-all duration-200">
-            📝 Form
-          </button>
-          <button className="glass border-primary/30 hover:bg-primary/10 hover:border-primary/50 w-full rounded border p-2 text-left text-sm text-gray-200 transition-all duration-200">
-            🎯 Quiz
-          </button>
+          <Tooltip content="Load a loan calculator template with interactive inputs">
+            <button 
+              onClick={() => handleTemplateClick("calculator")}
+              className="glass border-secondary/30 hover:bg-secondary/10 hover:border-secondary/50 w-full rounded border p-2 text-left text-sm text-gray-200 transition-all duration-200"
+            >
+              🧮 Calculator
+            </button>
+          </Tooltip>
+          <Tooltip content="Load an analytics dashboard with charts and metrics">
+            <button 
+              onClick={() => handleTemplateClick("dashboard")}
+              className="glass border-primary/30 hover:bg-primary/10 hover:border-primary/50 w-full rounded border p-2 text-left text-sm text-gray-200 transition-all duration-200"
+            >
+              📊 Dashboard
+            </button>
+          </Tooltip>
+          <Tooltip content="Load a contact form with validation">
+            <button 
+              onClick={() => handleTemplateClick("form")}
+              className="glass border-secondary/30 hover:bg-secondary/10 hover:border-secondary/50 w-full rounded border p-2 text-left text-sm text-gray-200 transition-all duration-200"
+            >
+              📝 Form
+            </button>
+          </Tooltip>
+          <Tooltip content="Load an interactive quiz with multiple choice questions">
+            <button 
+              onClick={() => handleTemplateClick("quiz")}
+              className="glass border-primary/30 hover:bg-primary/10 hover:border-primary/50 w-full rounded border p-2 text-left text-sm text-gray-200 transition-all duration-200"
+            >
+              🎯 Quiz
+            </button>
+          </Tooltip>
         </div>
       </div>
     </div>
