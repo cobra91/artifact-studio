@@ -331,8 +331,6 @@ export const VisualCanvas = ({
     handleMouseUp();
   };
 
-<<<<<<< Updated upstream
-=======
   // Function to find container at drop position
   const findContainerAtPosition = (
     x: number,
@@ -358,8 +356,6 @@ export const VisualCanvas = ({
     }
     return null;
   };
-
->>>>>>> Stashed changes
   const handleDrop = (e: DragEvent) => {
     e.preventDefault();
     const rect = canvasRef.current?.getBoundingClientRect();
@@ -371,13 +367,6 @@ export const VisualCanvas = ({
     const dragData = JSON.parse(e.dataTransfer?.getData("text/plain") || "{}");
 
     if (dragData.type === "component") {
-<<<<<<< Updated upstream
-      const position = snapToGrid
-        ? { x: Math.round(x / 20) * 20, y: Math.round(y / 20) * 20 }
-        : { x, y };
-
-      onAddComponent(dragData.componentType as ComponentType, position);
-=======
       // Check if dropping on a container
       const targetContainer = findContainerAtPosition(x, y);
 
@@ -394,10 +383,14 @@ export const VisualCanvas = ({
           : { x: relativeX, y: relativeY };
 
         // Add component as child of container
+        // For now, we'll add it at the absolute position and let the parent component handle hierarchy
+        const absolutePosition = {
+          x: targetContainer.position.x + position.x,
+          y: targetContainer.position.y + position.y
+        };
         onAddComponent(
           dragData.componentType as ComponentType,
-          position,
-          targetContainer.id
+          absolutePosition
         );
       } else {
         // Add component to canvas at absolute position
@@ -407,7 +400,6 @@ export const VisualCanvas = ({
 
         onAddComponent(dragData.componentType as ComponentType, position);
       }
->>>>>>> Stashed changes
     }
   };
 

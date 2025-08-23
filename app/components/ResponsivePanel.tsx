@@ -16,10 +16,6 @@ export const ResponsivePanel: React.FC = () => {
     <div className="border-b p-4">
       <h3 className="mb-3 text-lg font-semibold">Responsive Design</h3>
       <div className="flex space-x-2">
-<<<<<<< Updated upstream
-=======
-        <h3 className="mb-3 text-lg font-semibold">Component Size</h3>
->>>>>>> Stashed changes
         {breakpoints.map(bp => (
           <button
             key={bp.value}

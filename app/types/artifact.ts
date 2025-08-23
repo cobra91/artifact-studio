@@ -86,6 +86,24 @@ export interface ComponentMetadata {
   hidden?: boolean;
 }
 
+// Main Artifact type representing a complete design artifact
+export interface Artifact {
+  id: string;
+  name: string;
+  description?: string;
+  components: ComponentNode[];
+  metadata?: {
+    version: string;
+    created: Date;
+    modified: Date;
+    author?: string;
+    tags?: string[];
+  };
+  framework?: Framework;
+  styling?: StylingApproach;
+  theme?: string;
+}
+
 // Enhanced template system with community features
 export interface ArtifactTemplate {
   id: string;

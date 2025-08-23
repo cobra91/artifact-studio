@@ -416,7 +416,7 @@ export class UIEnhancer {
     const analyzeComponent = (component: ComponentNode) => {
       totalComponents++;
       
-      if (component.responsiveStyles && component.responsiveStyles[breakpoint]) {
+      if (component.responsiveStyles && component.responsiveStyles[breakpoint as keyof typeof component.responsiveStyles]) {
         optimizedComponents++;
       }
       
@@ -518,8 +518,8 @@ export class UIEnhancer {
         });
       }
 
-      // Check for missing mobile styles
-      if (!component.responsiveStyles || !component.responsiveStyles.mobile) {
+      // Check for missing mobile styles (checking for 'sm' as the smallest breakpoint)
+      if (!component.responsiveStyles || !component.responsiveStyles.sm) {
         issues.push({
           component: component.id,
           issue: 'Component lacks mobile-specific styling',

@@ -1,15 +1,12 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 
 import { ArtifactBuilder } from "../components/ArtifactBuilder";
-<<<<<<< Updated upstream
-=======
 import { NotificationProvider } from "../components/ui/notifications";
 
 // Test wrapper with necessary providers
-const TestWrapper = ({ children }: { children: React.ReactNode }) => (
+const _TestWrapper = ({ children }: { children: React.ReactNode }) => (
   <NotificationProvider>{children}</NotificationProvider>
 );
->>>>>>> Stashed changes
 
 describe("ArtifactBuilder", () => {
   it("should add a component and update its style", () => {

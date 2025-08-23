@@ -1,27 +1,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-<<<<<<< Updated upstream
-import { CanvasState } from "../types/artifact";
-import { triggerAutoSave } from "./autoSave";
-
-interface CanvasElement {
-  id: string;
-  type: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  fill?: string;
-  stroke?: string;
-  strokeWidth?: number;
-  fillOpacity?: number;
-  strokeOpacity?: number;
-  [key: string]: any;
-}
-=======
 import { CanvasState, ComponentNode } from "../types/artifact";
->>>>>>> Stashed changes
+import { triggerAutoSave } from "./autoSave";
 
 interface CanvasStore extends CanvasState {
   // Canvas-specific properties
@@ -77,14 +58,13 @@ export const useCanvasStore = create<CanvasStore>()(
           const updatedElement = { ...updates };
           
           // Apply grid snapping if enabled and position is being updated
-          if (state.snapToGrid && (updates.x !== undefined || updates.y !== undefined)) {
+          if (state.snapToGrid && updates.position) {
             const gridSize = 20;
-            if (updates.x !== undefined) {
-              updatedElement.x = Math.round(updates.x / gridSize) * gridSize;
-            }
-            if (updates.y !== undefined) {
-              updatedElement.y = Math.round(updates.y / gridSize) * gridSize;
-            }
+            updatedElement.position = {
+              ...updates.position,
+              x: Math.round(updates.position.x / gridSize) * gridSize,
+              y: Math.round(updates.position.y / gridSize) * gridSize,
+            };
           }
           
           return {

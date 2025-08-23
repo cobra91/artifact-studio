@@ -1,6 +1,6 @@
 // Advanced UI improvements and enhancements system
-import { ComponentNode, Artifact } from "../types/artifact";
-import { AccessibilityReport, ResponsiveDesignAnalysis, generateAccessibilityReport, generateResponsiveReport } from "./uiEnhancer";
+import { Artifact, ComponentNode } from "../types/artifact";
+import { generateAccessibilityReport, generateResponsiveReport } from "./uiEnhancer";
 
 export interface ComponentLibraryEntry {
   id: string;

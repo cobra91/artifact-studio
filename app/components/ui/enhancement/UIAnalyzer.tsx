@@ -1,19 +1,19 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { AlertTriangle, CheckCircle, Eye, Monitor, Palette, Smartphone,TrendingUp, Users, Zap } from "lucide-react";
+import React, { useEffect,useState } from 'react';
+import { Bar, BarChart, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer, Tooltip,XAxis, YAxis } from 'recharts';
+
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChartContainer } from "@/components/ui/chart";
 import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, LineChart, Line } from 'recharts';
-import { Artifact } from "@/types/artifact";
-import { uiImprovements, DesignSystemMetrics, UIImprovementSuggestion } from "@/lib/uiImprovements";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { generateAccessibilityReport, generateResponsiveReport } from "@/lib/uiEnhancer";
-import { AlertTriangle, CheckCircle, Info, Zap, Monitor, Palette, Users, TrendingUp, Eye, Smartphone } from "lucide-react";
+import { DesignSystemMetrics, uiImprovements, UIImprovementSuggestion } from "@/lib/uiImprovements";
+import { Artifact } from "@/types/artifact";
 
 interface UIAnalyzerProps {
   artifact: Artifact;
@@ -30,7 +30,7 @@ export function UIAnalyzer({ artifact, onApplyImprovement }: UIAnalyzerProps) {
 
   useEffect(() => {
     analyzeArtifact();
-  }, [artifact]);
+  }, [artifact]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const analyzeArtifact = async () => {
     setIsAnalyzing(true);
@@ -80,11 +80,6 @@ export function UIAnalyzer({ artifact, onApplyImprovement }: UIAnalyzerProps) {
     return 'text-red-600';
   };
 
-  const getScoreIcon = (score: number) => {
-    if (score >= 90) return <CheckCircle className="w-4 h-4 text-green-600" />;
-    if (score >= 70) return <Info className="w-4 h-4 text-blue-600" />;
-    return <AlertTriangle className="w-4 h-4 text-red-600" />;
-  };
 
   if (isAnalyzing || !metrics) {
     return (
@@ -179,7 +174,7 @@ export function UIAnalyzer({ artifact, onApplyImprovement }: UIAnalyzerProps) {
                         height={80}
                       />
                       <YAxis domain={[0, 100]} />
-                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Tooltip />
                       <Bar dataKey="value" fill="var(--color-value)" />
                     </BarChart>
                   </ResponsiveContainer>
@@ -417,7 +412,7 @@ export function UIAnalyzer({ artifact, onApplyImprovement }: UIAnalyzerProps) {
             <CardContent>
               <ScrollArea className="h-[600px]">
                 <div className="space-y-4">
-                  {suggestions.map((suggestion, index) => (
+                  {suggestions.map((suggestion, _index) => (
                     <div key={suggestion.id} className="border rounded-lg p-4">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-2">

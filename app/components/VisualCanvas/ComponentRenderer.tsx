@@ -103,8 +103,6 @@ export const ComponentRenderer = ({
           style={{
             ...combinedStyles,
             border: combinedStyles.border || "1px solid #d1d5db",
-<<<<<<< Updated upstream
-=======
             // Special styling for range inputs (sliders)
             ...(node.props.type === "range" && {
               WebkitAppearance: "none",
@@ -146,7 +144,6 @@ export const ComponentRenderer = ({
                 boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
               },
             }),
->>>>>>> Stashed changes
           }}
         />
       );
