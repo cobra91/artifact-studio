@@ -18,9 +18,8 @@ const ALLOWED_ORIGINS = [
   "https://artifact-studio.vercel.app",
 ];
 
-// Protected API routes that require authentication
-const PROTECTED_ROUTES = ["/api/generate", "/api/deploy"];
-// Note: /api/providers removed - endpoint only returns public information about AI providers
+// Protected API routes that require authentication (can be disabled with DISABLE_AUTH=true)
+const PROTECTED_ROUTES = ["/api/generate", "/api/deploy", "/api/providers"];
 
 // Routes that require API key authentication
 const API_KEY_ROUTES = ["/api/webhooks", "/api/admin"];
@@ -110,9 +109,10 @@ export async function middleware(request: NextRequest) {
   }
 
   // Session-based authentication for protected routes
-  // Temporarily disabled for development - enable in production
+  // Can be disabled globally with DISABLE_AUTH=true environment variable
   if (
     process.env.NODE_ENV === "production" &&
+    process.env.DISABLE_AUTH !== "true" &&
     PROTECTED_ROUTES.some(route => pathname.startsWith(route))
   ) {
     const sessionToken = request.cookies.get("session-token")?.value;

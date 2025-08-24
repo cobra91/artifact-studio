@@ -6,7 +6,6 @@ import { debug } from "../../lib/debug";
 import {
   InputValidator,
   RateLimiter,
-  SessionManager,
 } from "../../lib/security";
 import { StreamHandlerApi } from "../../utils/stream-handler";
 
@@ -34,31 +33,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Session validation - temporarily disabled for development
-    let _userId: string | undefined;
+    // Session validation - disabled for development
+    // let _userId: string | undefined;
 
-    if (process.env.NODE_ENV === "production") {
-      const sessionToken = request.cookies.get("session-token")?.value;
-      const authHeader = request.headers.get("Authorization");
+    // Temporarily disabled authentication for development
+    // if (process.env.NODE_ENV === "production") {
+    //   const sessionToken = request.cookies.get("session-token")?.value;
+    //   const authHeader = request.headers.get("Authorization");
 
-      if (!sessionToken && !authHeader) {
-        return NextResponse.json(
-          { error: "Authentication required" },
-          { status: 401 }
-        );
-      }
+    //   if (!sessionToken && !authHeader) {
+    //     return NextResponse.json(
+    //       { error: "Authentication required" },
+    //       { status: 401 }
+    //     );
+    //   }
 
-      if (sessionToken) {
-        const sessionValidation = SessionManager.validateSession(sessionToken);
-        if (!sessionValidation.valid) {
-          return NextResponse.json(
-            { error: "Invalid session" },
-            { status: 401 }
-          );
-        }
-        _userId = sessionValidation.userId;
-      }
-    }
+    //   if (sessionToken) {
+    //     const sessionValidation = SessionManager.validateSession(sessionToken);
+    //     if (!sessionValidation.valid) {
+    //       return NextResponse.json(
+    //         { error: "Invalid session" },
+    //         { status: 401 }
+    //       );
+    //     }
+    //     _userId = sessionValidation.userId;
+    //   }
+    // }
 
     // Parse and validate request body
     const body = await request.json();
