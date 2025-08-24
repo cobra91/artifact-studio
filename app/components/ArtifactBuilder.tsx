@@ -1382,7 +1382,6 @@ export const ArtifactBuilder = () => {
     }
   };
 
-
   return (
     <div className="relative flex h-screen font-sans">
       {/* Command Palette */}
@@ -1401,7 +1400,7 @@ export const ArtifactBuilder = () => {
       {/* Main Area */}
       <div className="flex flex-1 flex-col">
         {/* Toolbar */}
-        <div className="glass border-border/20 flex h-16 flex-shrink-0 items-center justify-between border-b px-1 md:px-4 overflow-hidden">
+        <div className="glass border-border/20 flex h-16 flex-shrink-0 items-center justify-between overflow-hidden border-b px-1 md:px-4">
           <div className="flex items-center gap-2">
             {/* Menu burger pour mobile */}
             {screenSize === "mobile" && (
@@ -1461,12 +1460,17 @@ export const ArtifactBuilder = () => {
               </button>
             </Tooltip>
 
-            <Tooltip content={`${isEditMode ? "Preview" : "Edit"} mode`} position="bottom">
+            <Tooltip
+              content={`${isEditMode ? "Preview" : "Edit"} mode`}
+              position="bottom"
+            >
               <button
                 className={`glass hover-lift rounded-md px-2 py-1 text-sm transition-all duration-200 ${isEditMode ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"}`}
                 onClick={() => {
                   toggleEditMode();
-                  notifications.info(`${isEditMode ? "Preview" : "Edit"} mode activated`);
+                  notifications.info(
+                    `${isEditMode ? "Preview" : "Edit"} mode activated`
+                  );
                 }}
               >
                 {isEditMode ? "👀" : "✏️"}
@@ -1492,8 +1496,8 @@ export const ArtifactBuilder = () => {
                 screenSize === "mobile"
                   ? "absolute z-50 h-full w-full"
                   : screenSize === "tablet"
-                    ? "w-48 min-w-48 max-w-48"
-                    : "w-56 min-w-56 max-w-56"
+                    ? "w-48 max-w-48 min-w-48"
+                    : "w-56 max-w-56 min-w-56"
               }`}
             >
               {/* Bouton de fermeture sur mobile */}
@@ -1540,7 +1544,7 @@ export const ArtifactBuilder = () => {
             />
 
             {/* Panel toggle buttons - positioned on left edge of canvas to avoid collisions */}
-            <div className="absolute top-1/2 left-4 z-30 flex flex-col gap-2 -translate-y-1/2">
+            <div className="absolute top-1/2 left-4 z-30 flex -translate-y-1/2 flex-col gap-2">
               <Tooltip
                 content={
                   isLeftPanelOpen
@@ -1622,8 +1626,8 @@ export const ArtifactBuilder = () => {
                 screenSize === "mobile"
                   ? "absolute right-0 z-50 h-full w-full"
                   : screenSize === "tablet"
-                    ? "w-64 min-w-64 max-w-64"
-                    : "w-72 min-w-72 max-w-72"
+                    ? "w-64 max-w-64 min-w-64"
+                    : "w-72 max-w-72 min-w-72"
               }`}
             >
               {/* Bouton de fermeture sur mobile */}
@@ -1648,8 +1652,8 @@ export const ArtifactBuilder = () => {
                 screenSize === "mobile"
                   ? "absolute right-0 z-40 h-full w-full"
                   : screenSize === "tablet"
-                    ? "w-72 min-w-72 max-w-72"
-                    : "w-80 min-w-80 max-w-80"
+                    ? "w-72 max-w-72 min-w-72"
+                    : "w-80 max-w-80 min-w-80"
               }`}
             >
               {/* Bouton de fermeture sur mobile */}

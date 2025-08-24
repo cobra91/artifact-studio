@@ -172,10 +172,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Add AIML if API key is configured
-    if (
-      process.env.AIML_API_KEY &&
-      process.env.AIML_API_KEY.trim() !== ""
-    ) {
+    if (process.env.AIML_API_KEY && process.env.AIML_API_KEY.trim() !== "") {
       providers.push("aiml");
 
       // Get AIML models

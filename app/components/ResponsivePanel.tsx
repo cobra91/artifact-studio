@@ -20,7 +20,7 @@ export const ResponsivePanel: React.FC = () => {
           <button
             key={bp.value}
             onClick={() => setActiveBreakpoint(bp.value)}
-            className={`glass text-foreground hover:bg-accent hover-lift rounded-md text-sm transition-all duration-200 disabled:opacity-50 px-4 py-2 ${
+            className={`glass text-foreground hover:bg-accent hover-lift rounded-md px-4 py-2 text-sm transition-all duration-200 disabled:opacity-50 ${
               activeBreakpoint === bp.value
                 ? "bg-blue-500 text-white"
                 : "bg-gray-600 hover:bg-gray-300"

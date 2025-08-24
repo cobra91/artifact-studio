@@ -34,7 +34,7 @@ export const AnimationPanel = ({
       <select
         value={animation}
         onChange={handleAnimationChange}
-        className="w-full rounded border p-2 bg-gray-800"
+        className="w-full rounded border bg-gray-800 p-2"
         disabled={!selectedNode}
       >
         <option value="">None</option>

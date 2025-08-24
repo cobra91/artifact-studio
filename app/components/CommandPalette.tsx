@@ -103,7 +103,7 @@ export const CommandPalette = ({
               placeholder="Type a command or search..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="flex-1 border-none bg-transparent px-4 py-3 text-lg outline-none text-black"
+              className="flex-1 border-none bg-transparent px-4 py-3 text-lg text-black outline-none"
               autoFocus
             />
             <button

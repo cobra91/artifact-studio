@@ -15,7 +15,11 @@ interface ComponentLibraryProps {
   onTabChange?: (tab: RightPanelTab) => void;
 }
 
-export const ComponentLibrary = ({ onAddTemplate, activeTab, onTabChange }: ComponentLibraryProps) => {
+export const ComponentLibrary = ({
+  onAddTemplate,
+  activeTab,
+  onTabChange,
+}: ComponentLibraryProps) => {
   const { success, error, info } = useQuickNotifications();
 
   const componentTemplates = [
