@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { RateLimiter, SessionManager } from "../../lib/security";
+import { RateLimiter } from "../../lib/security";
 import { OpenAIScraperService } from "../../services/openai-scraper.service";
 
 export async function GET(request: NextRequest) {
@@ -27,28 +27,32 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Session validation - temporarily disabled for development
-    if (process.env.NODE_ENV === "production") {
-      const sessionToken = request.cookies.get("session-token")?.value;
-      const authHeader = request.headers.get("Authorization");
+    // Authentication disabled for /api/providers endpoint
+    // This endpoint only returns public information about available AI providers
+    // No sensitive data is exposed, authentication is not required
+    
+    // Session validation - disabled for this public endpoint
+    // if (process.env.NODE_ENV === "production") {
+    //   const sessionToken = request.cookies.get("session-token")?.value;
+    //   const authHeader = request.headers.get("Authorization");
 
-      if (!sessionToken && !authHeader) {
-        return NextResponse.json(
-          { error: "Authentication required" },
-          { status: 401 }
-        );
-      }
+    //   if (!sessionToken && !authHeader) {
+    //     return NextResponse.json(
+    //       { error: "Authentication required" },
+    //       { status: 401 }
+    //     );
+    //   }
 
-      if (sessionToken) {
-        const sessionValidation = SessionManager.validateSession(sessionToken);
-        if (!sessionValidation.valid) {
-          return NextResponse.json(
-            { error: "Invalid session" },
-            { status: 401 }
-          );
-        }
-      }
-    }
+    //   if (sessionToken) {
+    //     const sessionValidation = SessionManager.validateSession(sessionToken);
+    //     if (!sessionValidation.valid) {
+    //       return NextResponse.json(
+    //         { error: "Invalid session" },
+    //         { status: 401 }
+    //       );
+    //     }
+    //   }
+    // }
     const providers = [];
     let openRouterModels = [];
     let aimlModels = [];
