@@ -13,12 +13,14 @@ interface ComponentLibraryProps {
   onAddTemplate?: (components: ComponentNode[]) => void;
   activeTab?: RightPanelTab;
   onTabChange?: (tab: RightPanelTab) => void;
+  onPreviewPanelToggle?: (open: boolean) => void;
 }
 
 export const ComponentLibrary = ({
   onAddTemplate,
   activeTab,
   onTabChange,
+  onPreviewPanelToggle,
 }: ComponentLibraryProps) => {
   const { success, error, info } = useQuickNotifications();
 
@@ -124,7 +126,10 @@ export const ComponentLibrary = ({
       <div className="border-border/20 border-t p-2 md:p-4">
         <div className="grid grid-cols-2 gap-2">
           <button
-            onClick={() => onTabChange?.("AI" as RightPanelTab)}
+            onClick={() => {
+              onTabChange?.("AI" as RightPanelTab);
+              onPreviewPanelToggle?.(true); // Ouvre le LivePreview car lié à l'AI
+            }}
             className={`glass flex items-center justify-center gap-2 rounded border p-2 text-sm transition-all duration-200 ${
               activeTab === "AI"
                 ? "border-accent/50 bg-accent/10 text-accent"
@@ -134,7 +139,10 @@ export const ComponentLibrary = ({
             🤖 AI
           </button>
           <button
-            onClick={() => onTabChange?.("Style" as RightPanelTab)}
+            onClick={() => {
+              onTabChange?.("Style" as RightPanelTab);
+              onPreviewPanelToggle?.(false); // Ferme le LivePreview car non lié au Style
+            }}
             className={`glass flex items-center justify-center gap-2 rounded border p-2 text-sm transition-all duration-200 ${
               activeTab === "Style"
                 ? "border-secondary/50 bg-secondary/10 text-secondary"
@@ -144,7 +152,10 @@ export const ComponentLibrary = ({
             🎨 Style
           </button>
           <button
-            onClick={() => onTabChange?.("Animate" as RightPanelTab)}
+            onClick={() => {
+              onTabChange?.("Animate" as RightPanelTab);
+              onPreviewPanelToggle?.(false); // Ferme le LivePreview car non lié à l'Animation
+            }}
             className={`glass flex items-center justify-center gap-2 rounded border p-2 text-sm transition-all duration-200 ${
               activeTab === "Animate"
                 ? "border-primary/50 bg-primary/10 text-primary"
@@ -154,7 +165,10 @@ export const ComponentLibrary = ({
             ✨ Animate
           </button>
           <button
-            onClick={() => onTabChange?.("State" as RightPanelTab)}
+            onClick={() => {
+              onTabChange?.("State" as RightPanelTab);
+              onPreviewPanelToggle?.(false); // Ferme le LivePreview car non lié au State
+            }}
             className={`glass flex items-center justify-center gap-2 rounded border p-2 text-sm transition-all duration-200 ${
               activeTab === "State"
                 ? "border-border/50 bg-border/10 text-border"

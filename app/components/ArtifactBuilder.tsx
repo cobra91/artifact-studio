@@ -1523,6 +1523,7 @@ export const ArtifactBuilder = () => {
                   }}
                   activeTab={activeTab}
                   onTabChange={setActiveTab}
+                  onPreviewPanelToggle={setIsPreviewPanelOpen}
                 />
               </div>
             </div>
