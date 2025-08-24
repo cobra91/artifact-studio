@@ -1,8 +1,9 @@
+import { debug } from "@/lib/debug";
+
 import { AIGenerationRequest, ComponentNode } from "../types/artifact";
 import { aiCodeGen } from "./aiCodeGen";
 import { aimlCodeGen } from "./aimlProvider";
 import { openRouterCodeGen } from "./openRouterProvider";
-import { debug } from "@/lib/debug";
 
 export type AIProvider = "openai" | "aiml" | "openrouter";
 
