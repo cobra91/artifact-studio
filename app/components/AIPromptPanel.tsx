@@ -82,8 +82,8 @@ export const AIPromptPanel = ({
 
         setAvailableProviders(providers);
 
-        // Set the first available provider as default
-        if (providers.length > 0) {
+        // Only set default provider and model on initial load
+        if (providers.length > 0 && !aiProvider) {
           setAiProvider(providers[0]);
 
           // Set default model based on provider
@@ -99,8 +99,8 @@ export const AIPromptPanel = ({
         // Set OpenRouter models if available
         if (openRouterModels.length > 0) {
           setAvailableModels(openRouterModels);
-          // Only set default if not already set
-          if (!selectedModel) {
+          // Only set default if not already set and provider is openrouter
+          if (!selectedModel && aiProvider === "openrouter") {
             setSelectedModel(openRouterModels[0].id);
           }
         }
@@ -108,8 +108,8 @@ export const AIPromptPanel = ({
         // Set AIML models if available
         if (aimlModels.length > 0) {
           setAvailableAimlModels(aimlModels);
-          // Only set default if not already set
-          if (!selectedModel) {
+          // Only set default if not already set and provider is aiml
+          if (!selectedModel && aiProvider === "aiml") {
             setSelectedModel(aimlModels[0].id);
           }
         }
@@ -117,8 +117,8 @@ export const AIPromptPanel = ({
         // Set OpenAI models if available
         if (openaiModels.length > 0) {
           setAvailableOpenaiModels(openaiModels);
-          // Only set default if not already set
-          if (!selectedModel) {
+          // Only set default if not already set and provider is openai
+          if (!selectedModel && aiProvider === "openai") {
             setSelectedModel(openaiModels[0].id);
           }
         }
@@ -127,7 +127,7 @@ export const AIPromptPanel = ({
         console.error("Error fetching providers:", error);
         setAvailableProviders([]);
       });
-  }, [selectedModel]);
+  }, []); // Remove selectedModel dependency
 
   const handleGenerate = async () => {
     console.log("handleGenerate called with prompt:", prompt);
