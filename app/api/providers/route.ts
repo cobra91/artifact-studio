@@ -1,16 +1,61 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
+import { RateLimiter, SessionManager } from "../../lib/security";
 import { OpenAIScraperService } from "../../services/openai-scraper.service";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    // Rate limiting check
+    const clientId = RateLimiter.getClientId(request);
+    const rateLimitResult = RateLimiter.checkRateLimit(clientId);
+
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        {
+          error: "Rate limit exceeded",
+          retryAfter: rateLimitResult.retryAfter,
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": rateLimitResult.retryAfter.toString(),
+            "X-RateLimit-Limit": "10",
+            "X-RateLimit-Remaining": "0",
+            "X-RateLimit-Reset": rateLimitResult.resetTime.toString(),
+          },
+        }
+      );
+    }
+
+    // Session validation - temporarily disabled for development
+    if (process.env.NODE_ENV === "production") {
+      const sessionToken = request.cookies.get("session-token")?.value;
+      const authHeader = request.headers.get("Authorization");
+
+      if (!sessionToken && !authHeader) {
+        return NextResponse.json(
+          { error: "Authentication required" },
+          { status: 401 }
+        );
+      }
+
+      if (sessionToken) {
+        const sessionValidation = SessionManager.validateSession(sessionToken);
+        if (!sessionValidation.valid) {
+          return NextResponse.json(
+            { error: "Invalid session" },
+            { status: 401 }
+          );
+        }
+      }
+    }
     const providers = [];
     let openRouterModels = [];
     let aimlModels = [];
     let openaiModels: Array<{ id: string; name: string; description: string }> =
       [];
 
-    // Add OpenRouter if API key is configured (accept "empty" as valid test value)
+    // Add OpenRouter if API key is configured
     if (
       process.env.OPENROUTER_API_KEY &&
       process.env.OPENROUTER_API_KEY.trim() !== ""
@@ -126,8 +171,11 @@ export async function GET() {
       }
     }
 
-    // Add AIML if API key is configured (accept "empty" as valid test value)
-    if (process.env.AIML_API_KEY && process.env.AIML_API_KEY.trim() !== "") {
+    // Add AIML if API key is configured
+    if (
+      process.env.AIML_API_KEY &&
+      process.env.AIML_API_KEY.trim() !== ""
+    ) {
       providers.push("aiml");
 
       // Get AIML models
@@ -177,12 +225,25 @@ export async function GET() {
       }
     }
 
-    return NextResponse.json({
-      providers,
-      openRouterModels,
-      aimlModels,
-      openaiModels,
-    });
+    return NextResponse.json(
+      {
+        providers,
+        openRouterModels,
+        aimlModels,
+        openaiModels,
+        rateLimit: {
+          remaining: rateLimitResult.remaining,
+          resetTime: rateLimitResult.resetTime,
+        },
+      },
+      {
+        headers: {
+          "X-RateLimit-Limit": "10",
+          "X-RateLimit-Remaining": rateLimitResult.remaining.toString(),
+          "X-RateLimit-Reset": rateLimitResult.resetTime.toString(),
+        },
+      }
+    );
   } catch (error) {
     console.error("Error in providers API:", error);
     // Return empty arrays as fallback

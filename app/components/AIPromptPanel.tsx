@@ -48,6 +48,8 @@ export const AIPromptPanel = ({
   const [availableProviders, setAvailableProviders] = useState<AIProvider[]>(
     []
   );
+  const [isLoadingProviders, setIsLoadingProviders] = useState(true);
+  const [providerError, setProviderError] = useState<string | null>(null);
 
   // Handle provider change
   const handleProviderChange = (newProvider: AIProvider) => {
@@ -69,11 +71,17 @@ export const AIPromptPanel = ({
     setHistory(generationHistory.getHistory());
 
     // Fetch available providers from API
-    fetch("/api/providers")
-      .then(res => res.json())
-      .then(data => {
-        console.log("Providers API response:", data);
+    setIsLoadingProviders(true);
+    setProviderError(null);
 
+    fetch("/api/providers")
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(data => {
         // Ensure data has the expected structure
         const providers = data?.providers || [];
         const openRouterModels = data?.openRouterModels || [];
@@ -126,11 +134,16 @@ export const AIPromptPanel = ({
       .catch(error => {
         console.error("Error fetching providers:", error);
         setAvailableProviders([]);
+        setProviderError(
+          "Failed to load AI providers. Please check your configuration."
+        );
+      })
+      .finally(() => {
+        setIsLoadingProviders(false);
       });
-  }, []); // Remove selectedModel dependency
+  }, [aiProvider, selectedModel]); // Include dependencies
 
   const handleGenerate = async () => {
-    console.log("handleGenerate called with prompt:", prompt);
     if (!prompt.trim()) return;
 
     const request = {
@@ -214,7 +227,27 @@ export const AIPromptPanel = ({
           <label className="mb-1 block text-sm font-medium text-gray-200">
             AI Provider
           </label>
-          {availableProviders.length > 0 ? (
+          {isLoadingProviders ? (
+            <div className="flex items-center justify-center p-4">
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
+              <span className="ml-2 text-sm text-gray-300">
+                Loading AI providers...
+              </span>
+            </div>
+          ) : providerError ? (
+            <div className="rounded-md border border-red-600 bg-red-900/20 p-3">
+              <p className="mb-2 text-sm font-medium text-red-200">
+                ⚠️ Error loading AI providers
+              </p>
+              <p className="mb-3 text-sm text-red-100">{providerError}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="text-xs text-red-200 underline hover:text-red-100"
+              >
+                Try again
+              </button>
+            </div>
+          ) : availableProviders.length > 0 ? (
             <>
               <select
                 value={aiProvider}

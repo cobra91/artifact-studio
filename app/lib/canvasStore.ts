@@ -31,7 +31,10 @@ interface CanvasStore extends CanvasState {
   setActiveBreakpoint: (breakpoint: "base" | "sm" | "md" | "lg") => void;
   setSelectedNodes: (nodes: string[] | ((prev: string[]) => string[])) => void;
   setSnapToGrid: (snap: boolean) => void;
-  addComponent: (type: ComponentType, componentData?: Partial<ComponentNode>) => void;
+  addComponent: (
+    type: ComponentType,
+    componentData?: Partial<ComponentNode>
+  ) => void;
   updateComponent: (id: string, updates: Partial<ComponentNode>) => void;
   deleteComponent: (id: string) => void;
   setComponents: (components: ComponentNode[]) => void;
@@ -104,7 +107,9 @@ export const useCanvasStore = create<CanvasStore>()(
       // Component management methods
       addComponent: (type, componentData = {}) => {
         const newComponent: ComponentNode = {
-          id: componentData.id || `component_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+          id:
+            componentData.id ||
+            `component_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
           type,
           props: componentData.props || {},
           position: componentData.position || { x: 100, y: 100 },
@@ -136,14 +141,13 @@ export const useCanvasStore = create<CanvasStore>()(
           ),
         })),
 
-      deleteComponent: (id) =>
+      deleteComponent: id =>
         set(state => ({
           components: state.components.filter(component => component.id !== id),
           selectedNodes: state.selectedNodes.filter(nodeId => nodeId !== id),
         })),
 
-      setComponents: (components) =>
-        set(() => ({ components })),
+      setComponents: components => set(() => ({ components })),
     }),
     {
       name: "canvas-store",

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-import { LiveCursors } from "../components/LiveCursors";
+// import { LiveCursors } from "../components/LiveCursors";
 
 interface Template {
   id: string;
@@ -134,7 +134,7 @@ export default function Marketplace() {
           ))}
         </div>
       </div>
-      <LiveCursors />
+      {/* <LiveCursors /> */}
     </div>
   );
 }

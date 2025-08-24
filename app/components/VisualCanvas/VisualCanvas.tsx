@@ -3,6 +3,7 @@
 import { CSSProperties, DragEvent, MouseEvent, useRef, useState } from "react";
 
 import { useCanvasStore as _useCanvasStore } from "../../lib/canvasStore";
+import { debug } from "../../lib/debug";
 import { ComponentNode, ComponentType } from "../../types/artifact";
 import { PerformanceMonitor } from "../PerformanceMonitor/PerformanceMonitor";
 import { usePerformanceMonitor } from "../PerformanceMonitor/usePerformanceMonitor";
@@ -64,7 +65,7 @@ export const VisualCanvas = ({
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const handleMouseDownOnResizeHandle = (e: MouseEvent, direction: string) => {
-    console.log("🔍 Resize handle mousedown:", direction);
+    debug.log("🔍 Resize handle mousedown:", direction);
     e.stopPropagation();
     setResizing(direction);
     setDragStart({ x: e.clientX, y: e.clientY });
@@ -106,7 +107,7 @@ export const VisualCanvas = ({
   };
 
   const handleMouseDownOnComponent = (e: MouseEvent, node: ComponentNode) => {
-    console.log("🔍 Component mousedown:", {
+    debug.log("🔍 Component mousedown:", {
       nodeId: node.id,
       target: e.target,
       currentTarget: e.currentTarget,
@@ -119,7 +120,7 @@ export const VisualCanvas = ({
 
     // Force dragging to start immediately
     setIsDragging(true);
-    console.log("🔍 isDragging set to true");
+    debug.log("🔍 isDragging set to true");
 
     const newInitialPositions = new Map<string, { x: number; y: number }>();
     // Always use the current selection, not trying to predict the next one
@@ -138,7 +139,7 @@ export const VisualCanvas = ({
     setInitialDragPositions(newInitialPositions);
     setDragStart({ x: e.clientX, y: e.clientY });
 
-    console.log(
+    debug.log(
       "🔍 Drag started for component:",
       node.id,
       "with selection:",
@@ -147,7 +148,7 @@ export const VisualCanvas = ({
   };
 
   const handleMouseDownOnCanvas = (e: MouseEvent) => {
-    console.log("🔍 Canvas mousedown:", {
+    debug.log("🔍 Canvas mousedown:", {
       target: e.target,
       currentTarget: e.currentTarget,
       shouldDeselect: e.target === e.currentTarget,
@@ -163,13 +164,13 @@ export const VisualCanvas = ({
       height: 0,
     });
     if (!e.ctrlKey && !e.metaKey) {
-      console.log("🔍 Deselecting from canvas click");
+      debug.log("🔍 Deselecting from canvas click");
       onSelectNodes([], false);
     }
   };
 
   const handleMouseMove = (e: MouseEvent) => {
-    console.log(
+    debug.log(
       "🔍 Mouse move - isDragging:",
       isDragging,
       "selectedNodeIds:",
@@ -205,7 +206,7 @@ export const VisualCanvas = ({
       });
       setDragStart({ x: e.clientX, y: e.clientY });
     } else if (resizing && selectedNodeIds.length === 1 && canvasRef.current) {
-      console.log(
+      debug.log(
         "🔍 Resizing component:",
         selectedNodeIds[0],
         "direction:",
@@ -249,19 +250,14 @@ export const VisualCanvas = ({
         newPosition.y = selectedNode.position.y + dy;
       }
 
-      console.log(
-        "🔍 Resize update - position:",
-        newPosition,
-        "size:",
-        newSize
-      );
+      debug.log("🔍 Resize update - position:", newPosition, "size:", newSize);
       onUpdateComponent(selectedNode.id, {
         position: newPosition,
         size: newSize,
       });
       setDragStart({ x: e.clientX, y: e.clientY });
     } else if (isDragging && selectedNodeIds.length > 0 && canvasRef.current) {
-      console.log(
+      debug.log(
         "🔍 Dragging components:",
         selectedNodeIds,
         "dx:",
@@ -328,7 +324,7 @@ export const VisualCanvas = ({
 
       // Batch update all component positions
       componentsToUpdate.forEach(({ id, position }) => {
-        console.log("🔍 Updating component position:", id, "to:", position);
+        debug.log("🔍 Updating component position:", id, "to:", position);
         onUpdateComponent(id, { position });
       });
     } else if (isSelecting && selectionRect && canvasRef.current) {
@@ -358,7 +354,7 @@ export const VisualCanvas = ({
   };
 
   const handleMouseUp = () => {
-    console.log(
+    debug.log(
       "🔍 Mouse up - isDragging was:",
       isDragging,
       "selectedNodeIds:",
@@ -366,13 +362,13 @@ export const VisualCanvas = ({
     );
 
     if (isDragging) {
-      console.log("🔍 Stopping drag operation");
+      debug.log("🔍 Stopping drag operation");
     }
     if (resizing) {
-      console.log("🔍 Stopping resize operation");
+      debug.log("🔍 Stopping resize operation");
     }
     if (rotating) {
-      console.log("🔍 Stopping rotate operation");
+      debug.log("🔍 Stopping rotate operation");
     }
 
     setIsDragging(false);
@@ -385,7 +381,7 @@ export const VisualCanvas = ({
     if (selectedNodeIds.length === 1) {
       const selectedNode = components.find(c => c.id === selectedNodeIds[0]);
       if (selectedNode) {
-        console.log(
+        debug.log(
           "🔍 Final position update for:",
           selectedNode.id,
           selectedNode.position
@@ -400,7 +396,10 @@ export const VisualCanvas = ({
   };
 
   // Function to find container at drop position
-  const findContainerAtPosition = (x: number, y: number): ComponentNode | null => {
+  const findContainerAtPosition = (
+    x: number,
+    y: number
+  ): ComponentNode | null => {
     // Check if drop position is inside any container
     for (const component of components) {
       if (component.type === "container") {
@@ -408,7 +407,7 @@ export const VisualCanvas = ({
         const containerY = component.position.y;
         const containerWidth = component.size.width;
         const containerHeight = component.size.height;
-        
+
         if (
           x >= containerX &&
           x <= containerX + containerWidth &&
@@ -430,26 +429,37 @@ export const VisualCanvas = ({
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    const dragData = JSON.parse(e.dataTransfer?.getData("text/plain") || "{}");
+    let dragData: { type?: string; componentType?: ComponentType } = {};
+    try {
+      const dataText = e.dataTransfer?.getData("text/plain") || "{}";
+      dragData = JSON.parse(dataText);
+    } catch (error) {
+      debug.log("Failed to parse drag data:", error);
+      return;
+    }
 
     if (dragData.type === "component") {
       // Check if dropping on a container
       const targetContainer = findContainerAtPosition(x, y);
-      
+
       if (targetContainer) {
         // Calculate position relative to container
         const relativeX = x - targetContainer.position.x;
         const relativeY = y - targetContainer.position.y;
-        
+
         const position = snapToGrid
-          ? { 
-              x: Math.round(relativeX / 20) * 20, 
-              y: Math.round(relativeY / 20) * 20 
+          ? {
+              x: Math.round(relativeX / 20) * 20,
+              y: Math.round(relativeY / 20) * 20,
             }
           : { x: relativeX, y: relativeY };
 
         // Add component as child of container
-        onAddComponent(dragData.componentType as ComponentType, position, targetContainer.id);
+        onAddComponent(
+          dragData.componentType as ComponentType,
+          position,
+          targetContainer.id
+        );
       } else {
         // Add component to canvas at absolute position
         const position = snapToGrid
@@ -606,7 +616,7 @@ export const VisualCanvas = ({
             <div
               key={node.id}
               onMouseDown={e => {
-                console.log(
+                debug.log(
                   "🔍 DIV mousedown triggered for:",
                   node.id,
                   "target:",

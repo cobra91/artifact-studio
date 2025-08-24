@@ -1,3 +1,4 @@
+import { debug } from "@/lib/debug";
 import {
   DeploymentConfig,
   DeploymentCredentials,
@@ -39,11 +40,11 @@ export class VercelDeploymentProvider extends BaseDeploymentProvider {
         deploymentId,
         status => {
           // In real implementation, this would update a state store
-          console.log("Deployment update:", status);
+          debug.log("Deployment update:", status);
         },
         progress => {
           // Handle progress updates
-          console.log("Deployment progress:", progress + "%");
+          debug.log("Deployment progress:", progress + "%");
         }
       );
 
@@ -75,7 +76,7 @@ export class VercelDeploymentProvider extends BaseDeploymentProvider {
 
   async cancel(deploymentId: string): Promise<boolean> {
     // In real implementation, this would call the Vercel API to cancel deployment
-    console.log("Cancelling Vercel deployment:", deploymentId);
+    debug.log("Cancelling Vercel deployment:", deploymentId);
     return true;
   }
 

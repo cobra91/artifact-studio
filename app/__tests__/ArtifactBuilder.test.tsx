@@ -5,9 +5,7 @@ import { NotificationProvider } from "../components/ui/notifications";
 
 // Test wrapper with necessary providers
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-  <NotificationProvider>
-    {children}
-  </NotificationProvider>
+  <NotificationProvider>{children}</NotificationProvider>
 );
 
 describe("ArtifactBuilder", () => {

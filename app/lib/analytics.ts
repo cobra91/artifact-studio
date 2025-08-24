@@ -1,3 +1,5 @@
+import { debug } from "@/lib/debug";
+
 interface AnalyticsEvent {
   event: string;
   properties: Record<string, any>;
@@ -72,7 +74,7 @@ class Analytics {
 
     // In a real app, you would send this to your analytics service
     if (process.env.NODE_ENV === "development") {
-      console.log("📊 Analytics Event:", analyticsEvent);
+      debug.log("📊 Analytics Event:", analyticsEvent);
     }
   }
 

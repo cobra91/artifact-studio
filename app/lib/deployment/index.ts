@@ -1,3 +1,5 @@
+import { debug } from "@/lib/debug";
+
 import { GitHubPagesDeploymentProvider } from "./github-pages";
 import { NetlifyDeploymentProvider } from "./netlify";
 import { deploymentManager } from "./providers";
@@ -10,7 +12,7 @@ export function initializeDeploymentProviders() {
 
   if (typeof window !== "undefined") {
     // Client-side initialization
-    console.log(
+    debug.log(
       "Deployment providers initialized:",
       deploymentManager.getAvailablePlatforms()
     );

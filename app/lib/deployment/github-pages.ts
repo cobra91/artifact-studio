@@ -1,3 +1,4 @@
+import { debug } from "@/lib/debug";
 import {
   DeploymentConfig,
   DeploymentCredentials,
@@ -41,10 +42,10 @@ export class GitHubPagesDeploymentProvider extends BaseDeploymentProvider {
       const status = await this.simulateDeploymentProgress(
         deploymentId,
         status => {
-          console.log("Deployment update:", status);
+          debug.log("Deployment update:", status);
         },
         progress => {
-          console.log("Deployment progress:", progress + "%");
+          debug.log("Deployment progress:", progress + "%");
         }
       );
 
@@ -76,7 +77,7 @@ export class GitHubPagesDeploymentProvider extends BaseDeploymentProvider {
   }
 
   async cancel(_deploymentId: string): Promise<boolean> {
-    console.log("GitHub Pages deployments cannot be cancelled once started");
+    debug.log("GitHub Pages deployments cannot be cancelled once started");
     return false;
   }
 

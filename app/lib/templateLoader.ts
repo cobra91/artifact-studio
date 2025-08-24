@@ -6,12 +6,14 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "calc-container",
       type: "container" as ComponentType,
-      props: { className: "p-6 bg-white rounded-lg shadow-lg max-w-md mx-auto" },
+      props: {
+        className: "p-6 bg-white rounded-lg shadow-lg max-w-md mx-auto",
+      },
       position: { x: 50, y: 50 },
       size: { width: 400, height: 500 },
       styles: {
         padding: "24px",
-        
+
         borderRadius: "8px",
         boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)",
         maxWidth: "400px",
@@ -22,9 +24,9 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "calc-title",
       type: "text" as ComponentType,
-      props: { 
+      props: {
         className: "text-2xl font-bold text-gray-800 mb-6 text-center",
-        children: "Loan Calculator"
+        children: "Loan Calculator",
       },
       position: { x: 70, y: 70 },
       size: { width: 360, height: 40 },
@@ -52,10 +54,11 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "calc-amount",
       type: "input" as ComponentType,
-      props: { 
+      props: {
         placeholder: "Loan Amount",
         type: "number",
-        className: "w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        className:
+          "w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent",
       },
       position: { x: 70, y: 150 },
       size: { width: 360, height: 50 },
@@ -71,10 +74,11 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "calc-rate",
       type: "input" as ComponentType,
-      props: { 
+      props: {
         placeholder: "Interest Rate (%)",
         type: "number",
-        className: "w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        className:
+          "w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent",
       },
       position: { x: 70, y: 210 },
       size: { width: 360, height: 50 },
@@ -90,10 +94,11 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "calc-term",
       type: "input" as ComponentType,
-      props: { 
+      props: {
         placeholder: "Loan Term (years)",
         type: "number",
-        className: "w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        className:
+          "w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent",
       },
       position: { x: 70, y: 270 },
       size: { width: 360, height: 50 },
@@ -123,9 +128,9 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "calc-result-text",
       type: "text" as ComponentType,
-      props: { 
+      props: {
         className: "text-lg font-semibold text-blue-800",
-        children: "Monthly Payment: $0"
+        children: "Monthly Payment: $0",
       },
       position: { x: 90, y: 370 },
       size: { width: 320, height: 60 },
@@ -136,7 +141,7 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
       },
     },
   ],
-  
+
   dashboard: [
     {
       id: "dashboard-container",
@@ -154,9 +159,9 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "dashboard-header",
       type: "text" as ComponentType,
-      props: { 
+      props: {
         className: "text-3xl font-bold text-gray-800 mb-6",
-        children: "Analytics Dashboard"
+        children: "Analytics Dashboard",
       },
       position: { x: 70, y: 70 },
       size: { width: 560, height: 50 },
@@ -188,7 +193,6 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
       position: { x: 70, y: 160 },
       size: { width: 170, height: 80 },
       styles: {
-        
         padding: "16px",
         borderRadius: "8px",
         boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
@@ -198,9 +202,9 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "stat-1-label",
       type: "text" as ComponentType,
-      props: { 
+      props: {
         className: "text-sm text-gray-600",
-        children: "Total Users"
+        children: "Total Users",
       },
       position: { x: 90, y: 170 },
       size: { width: 130, height: 20 },
@@ -212,9 +216,9 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "stat-1-value",
       type: "text" as ComponentType,
-      props: { 
+      props: {
         className: "text-2xl font-bold text-blue-600",
-        children: "12,345"
+        children: "12,345",
       },
       position: { x: 90, y: 190 },
       size: { width: 130, height: 30 },
@@ -231,7 +235,6 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
       position: { x: 260, y: 160 },
       size: { width: 170, height: 80 },
       styles: {
-        
         padding: "16px",
         borderRadius: "8px",
         boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
@@ -241,9 +244,9 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "stat-2-label",
       type: "text" as ComponentType,
-      props: { 
+      props: {
         className: "text-sm text-gray-600",
-        children: "Revenue"
+        children: "Revenue",
       },
       position: { x: 280, y: 170 },
       size: { width: 130, height: 20 },
@@ -255,9 +258,9 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "stat-2-value",
       type: "text" as ComponentType,
-      props: { 
+      props: {
         className: "text-2xl font-bold text-green-600",
-        children: "$45,678"
+        children: "$45,678",
       },
       position: { x: 280, y: 190 },
       size: { width: 130, height: 30 },
@@ -274,7 +277,6 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
       position: { x: 450, y: 160 },
       size: { width: 170, height: 80 },
       styles: {
-        
         padding: "16px",
         borderRadius: "8px",
         boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
@@ -284,9 +286,9 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "stat-3-label",
       type: "text" as ComponentType,
-      props: { 
+      props: {
         className: "text-sm text-gray-600",
-        children: "Growth"
+        children: "Growth",
       },
       position: { x: 470, y: 170 },
       size: { width: 130, height: 20 },
@@ -298,9 +300,9 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "stat-3-value",
       type: "text" as ComponentType,
-      props: { 
+      props: {
         className: "text-2xl font-bold text-purple-600",
-        children: "+23%"
+        children: "+23%",
       },
       position: { x: 470, y: 190 },
       size: { width: 130, height: 30 },
@@ -317,7 +319,6 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
       position: { x: 70, y: 260 },
       size: { width: 560, height: 120 },
       styles: {
-        
         padding: "16px",
         borderRadius: "8px",
         boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
@@ -327,9 +328,9 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "chart-title",
       type: "text" as ComponentType,
-      props: { 
+      props: {
         className: "text-lg font-semibold text-gray-800 mb-4",
-        children: "Monthly Performance"
+        children: "Monthly Performance",
       },
       position: { x: 90, y: 280 },
       size: { width: 520, height: 30 },
@@ -343,9 +344,9 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "chart-placeholder",
       type: "text" as ComponentType,
-      props: { 
+      props: {
         className: "text-gray-500 text-center py-8",
-        children: "📊 Chart visualization will be rendered here"
+        children: "📊 Chart visualization will be rendered here",
       },
       position: { x: 90, y: 320 },
       size: { width: 520, height: 40 },
@@ -361,12 +362,14 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "form-container",
       type: "container" as ComponentType,
-      props: { className: "p-6 bg-white rounded-lg shadow-lg max-w-md mx-auto" },
+      props: {
+        className: "p-6 bg-white rounded-lg shadow-lg max-w-md mx-auto",
+      },
       position: { x: 50, y: 50 },
       size: { width: 450, height: 600 },
       styles: {
         padding: "24px",
-        
+
         borderRadius: "8px",
         boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)",
         maxWidth: "450px",
@@ -377,9 +380,9 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "form-title",
       type: "text" as ComponentType,
-      props: { 
+      props: {
         className: "text-2xl font-bold text-gray-800 mb-6 text-center",
-        children: "Contact Form"
+        children: "Contact Form",
       },
       position: { x: 70, y: 70 },
       size: { width: 410, height: 40 },
@@ -407,9 +410,10 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "form-name",
       type: "input" as ComponentType,
-      props: { 
+      props: {
         placeholder: "Your Name",
-        className: "w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        className:
+          "w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent",
       },
       position: { x: 70, y: 150 },
       size: { width: 410, height: 50 },
@@ -425,10 +429,11 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "form-email",
       type: "input" as ComponentType,
-      props: { 
+      props: {
         placeholder: "Your Email",
         type: "email",
-        className: "w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        className:
+          "w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent",
       },
       position: { x: 70, y: 210 },
       size: { width: 410, height: 50 },
@@ -444,9 +449,10 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "form-subject",
       type: "input" as ComponentType,
-      props: { 
+      props: {
         placeholder: "Subject",
-        className: "w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        className:
+          "w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent",
       },
       position: { x: 70, y: 270 },
       size: { width: 410, height: 50 },
@@ -462,9 +468,10 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "form-message",
       type: "input" as ComponentType,
-      props: { 
+      props: {
         placeholder: "Your Message",
-        className: "w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        className:
+          "w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent",
       },
       position: { x: 70, y: 330 },
       size: { width: 410, height: 120 },
@@ -482,9 +489,10 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "form-submit",
       type: "button" as ComponentType,
-      props: { 
-        className: "w-full bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 transition-colors duration-200 font-medium",
-        children: "Send Message"
+      props: {
+        className:
+          "w-full bg-blue-600 text-white py-3 px-6 rounded-md hover:bg-blue-700 transition-colors duration-200 font-medium",
+        children: "Send Message",
       },
       position: { x: 70, y: 500 },
       size: { width: 410, height: 50 },
@@ -506,7 +514,9 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "quiz-container",
       type: "container" as ComponentType,
-      props: { className: "p-6 bg-white rounded-lg shadow-lg max-w-lg mx-auto" },
+      props: {
+        className: "p-6 bg-white rounded-lg shadow-lg max-w-lg mx-auto",
+      },
       position: { x: 50, y: 50 },
       size: { width: 500, height: 600 },
       styles: {
@@ -532,9 +542,9 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "quiz-title",
       type: "text" as ComponentType,
-      props: { 
+      props: {
         className: "text-2xl font-bold text-gray-800 mb-2",
-        children: "Interactive Quiz"
+        children: "Interactive Quiz",
       },
       position: { x: 70, y: 70 },
       size: { width: 460, height: 40 },
@@ -548,9 +558,9 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "quiz-score",
       type: "text" as ComponentType,
-      props: { 
+      props: {
         className: "text-sm text-gray-600",
-        children: "Score: 0/0"
+        children: "Score: 0/0",
       },
       position: { x: 70, y: 110 },
       size: { width: 460, height: 20 },
@@ -562,9 +572,9 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "quiz-question",
       type: "text" as ComponentType,
-      props: { 
+      props: {
         className: "text-lg font-medium text-gray-800 mb-6",
-        children: "What is the capital of France?"
+        children: "What is the capital of France?",
       },
       position: { x: 70, y: 170 },
       size: { width: 460, height: 60 },
@@ -591,9 +601,10 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "quiz-option-1",
       type: "button" as ComponentType,
-      props: { 
-        className: "w-full p-4 text-left border border-gray-300 rounded-md hover:bg-gray-50 transition-colors duration-200",
-        children: "A. London"
+      props: {
+        className:
+          "w-full p-4 text-left border border-gray-300 rounded-md hover:bg-gray-50 transition-colors duration-200",
+        children: "A. London",
       },
       position: { x: 70, y: 250 },
       size: { width: 460, height: 50 },
@@ -610,9 +621,10 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "quiz-option-2",
       type: "button" as ComponentType,
-      props: { 
-        className: "w-full p-4 text-left border border-gray-300 rounded-md hover:bg-gray-50 transition-colors duration-200",
-        children: "B. Paris"
+      props: {
+        className:
+          "w-full p-4 text-left border border-gray-300 rounded-md hover:bg-gray-50 transition-colors duration-200",
+        children: "B. Paris",
       },
       position: { x: 70, y: 310 },
       size: { width: 460, height: 50 },
@@ -629,9 +641,10 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "quiz-option-3",
       type: "button" as ComponentType,
-      props: { 
-        className: "w-full p-4 text-left border border-gray-300 rounded-md hover:bg-gray-50 transition-colors duration-200",
-        children: "C. Berlin"
+      props: {
+        className:
+          "w-full p-4 text-left border border-gray-300 rounded-md hover:bg-gray-50 transition-colors duration-200",
+        children: "C. Berlin",
       },
       position: { x: 70, y: 370 },
       size: { width: 460, height: 50 },
@@ -648,9 +661,10 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "quiz-option-4",
       type: "button" as ComponentType,
-      props: { 
-        className: "w-full p-4 text-left border border-gray-300 rounded-md hover:bg-gray-50 transition-colors duration-200",
-        children: "D. Madrid"
+      props: {
+        className:
+          "w-full p-4 text-left border border-gray-300 rounded-md hover:bg-gray-50 transition-colors duration-200",
+        children: "D. Madrid",
       },
       position: { x: 70, y: 430 },
       size: { width: 460, height: 50 },
@@ -660,7 +674,7 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
         textAlign: "left",
         border: "1px solid #d1d5db",
         borderRadius: "6px",
-        
+
         fontSize: "16px",
         cursor: "pointer",
       },
@@ -682,9 +696,9 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
     {
       id: "quiz-progress-text",
       type: "text" as ComponentType,
-      props: { 
+      props: {
         className: "text-sm text-gray-600 text-center",
-        children: "Question 1 of 5"
+        children: "Question 1 of 5",
       },
       position: { x: 90, y: 490 },
       size: { width: 420, height: 20 },
@@ -697,7 +711,9 @@ const TEMPLATE_COMPONENTS: Record<string, ComponentNode[]> = {
   ],
 };
 
-export const loadTemplate = async (templateId: string): Promise<ComponentNode[]> => {
+export const loadTemplate = async (
+  templateId: string
+): Promise<ComponentNode[]> => {
   // Check if template exists in our predefined templates
   if (TEMPLATE_COMPONENTS[templateId]) {
     // Clone the template components to avoid mutations
@@ -709,7 +725,7 @@ export const loadTemplate = async (templateId: string): Promise<ComponentNode[]>
     const response = await fetch("/templates.json");
     const templates = await response.json();
     const template = templates.find((t: any) => t.id === templateId);
-    
+
     if (template) {
       // For now, return a basic container with template info
       // In a full implementation, you would parse the template.code or template.components
@@ -730,9 +746,9 @@ export const loadTemplate = async (templateId: string): Promise<ComponentNode[]>
         {
           id: "template-name",
           type: "text" as ComponentType,
-          props: { 
+          props: {
             className: "text-xl font-bold text-blue-800 mb-2",
-            children: template.name
+            children: template.name,
           },
           position: { x: 70, y: 70 },
           size: { width: 360, height: 30 },
@@ -746,9 +762,9 @@ export const loadTemplate = async (templateId: string): Promise<ComponentNode[]>
         {
           id: "template-desc",
           type: "text" as ComponentType,
-          props: { 
+          props: {
             className: "text-blue-700",
-            children: template.description
+            children: template.description,
           },
           position: { x: 70, y: 110 },
           size: { width: 360, height: 80 },

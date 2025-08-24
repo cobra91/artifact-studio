@@ -56,15 +56,6 @@ export const ComponentRenderer = ({
     transform: node.rotation ? `rotate(${node.rotation}deg)` : undefined,
   } as CSSProperties;
 
-  // Debug: Log styles for gradient debugging
-  if (
-    node.styles.backgroundColor &&
-    node.styles.backgroundColor.includes("gradient")
-  ) {
-    console.log("🎨 Component styles:", node.styles);
-    console.log("🎨 Combined styles:", combinedStyles);
-  }
-
   switch (node.type) {
     case "text":
       return (
@@ -124,7 +115,8 @@ export const ComponentRenderer = ({
               background: "transparent",
               cursor: "pointer",
               "&::-webkit-slider-track": {
-                background: "linear-gradient(to right, #3b82f6 0%, #3b82f6 50%, #e5e7eb 50%, #e5e7eb 100%)",
+                background:
+                  "linear-gradient(to right, #3b82f6 0%, #3b82f6 50%, #e5e7eb 50%, #e5e7eb 100%)",
                 height: "8px",
                 borderRadius: "4px",
                 border: "none",
@@ -141,7 +133,8 @@ export const ComponentRenderer = ({
                 boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
               },
               "&::-moz-range-track": {
-                background: "linear-gradient(to right, #3b82f6 0%, #3b82f6 50%, #e5e7eb 50%, #e5e7eb 100%)",
+                background:
+                  "linear-gradient(to right, #3b82f6 0%, #3b82f6 50%, #e5e7eb 50%, #e5e7eb 100%)",
                 height: "8px",
                 borderRadius: "4px",
                 border: "none",

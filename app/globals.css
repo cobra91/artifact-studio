@@ -521,3 +521,7 @@
     z-index: 9998;
   }
 }
+
+select {
+  background-color: #1f2937;
+}

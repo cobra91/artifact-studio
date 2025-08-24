@@ -2,6 +2,7 @@ import { AIGenerationRequest, ComponentNode } from "../types/artifact";
 import { aiCodeGen } from "./aiCodeGen";
 import { aimlCodeGen } from "./aimlProvider";
 import { openRouterCodeGen } from "./openRouterProvider";
+import { debug } from "@/lib/debug";
 
 export type AIProvider = "openai" | "aiml" | "openrouter";
 
@@ -43,16 +44,16 @@ export class UnifiedAIProvider {
     try {
       switch (finalConfig.provider) {
         case "aiml":
-          console.log("Using AIML provider...");
+          debug.log("Using AIML provider...");
           return await aimlCodeGen.create(request, finalConfig.model);
 
         case "openrouter":
-          console.log("Using OpenRouter provider...");
+          debug.log("Using OpenRouter provider...");
           return await openRouterCodeGen.create(request, finalConfig.model);
 
         case "openai":
         default:
-          console.log("Using OpenAI provider...");
+          debug.log("Using OpenAI provider...");
           return await aiCodeGen.create(request, finalConfig.model);
       }
     } catch (error) {
@@ -65,7 +66,7 @@ export class UnifiedAIProvider {
 
       for (const fallbackProvider of otherProviders) {
         try {
-          console.log(`Falling back to ${fallbackProvider} provider...`);
+          debug.log(`Falling back to ${fallbackProvider} provider...`);
           switch (fallbackProvider) {
             case "aiml":
               return await aimlCodeGen.create(request, finalConfig.model);
@@ -111,7 +112,7 @@ export class UnifiedAIProvider {
     try {
       switch (finalConfig.provider) {
         case "aiml":
-          console.log("Using AIML provider...");
+          debug.log("Using AIML provider...");
           const aimlResult = await aimlCodeGen.create(
             request,
             finalConfig.model
@@ -119,7 +120,7 @@ export class UnifiedAIProvider {
           return { ...aimlResult, provider: "aiml" };
 
         case "openrouter":
-          console.log("Using OpenRouter provider...");
+          debug.log("Using OpenRouter provider...");
           const openRouterResult = await openRouterCodeGen.create(
             request,
             finalConfig.model
@@ -128,7 +129,7 @@ export class UnifiedAIProvider {
 
         case "openai":
         default:
-          console.log("Using OpenAI provider...");
+          debug.log("Using OpenAI provider...");
           const openaiResult = await aiCodeGen.create(
             request,
             finalConfig.model
@@ -145,7 +146,7 @@ export class UnifiedAIProvider {
 
       for (const fallbackProvider of otherProviders) {
         try {
-          console.log(`Falling back to ${fallbackProvider} provider...`);
+          debug.log(`Falling back to ${fallbackProvider} provider...`);
           switch (fallbackProvider) {
             case "aiml":
               const aimlFallbackResult = await aimlCodeGen.create(

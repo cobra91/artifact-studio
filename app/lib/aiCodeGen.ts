@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 
 import { AIGenerationRequest, ComponentNode } from "../types/artifact";
+import { debug } from "./debug";
 
 // Lazy initialization of OpenAI client to avoid blocking the app
 let openai: OpenAI | null = null;
@@ -23,6 +24,8 @@ function getOpenAIClient(): OpenAI {
 }
 
 const systemPrompt = `
+Be the more concise.
+
 You are an expert web developer specializing in creating component trees from user prompts.
 Your task is to generate a JSON object representing the component structure based on the user's request.
 The JSON object must have three top-level keys: "components", "layout", and "componentDetails".
@@ -96,7 +99,7 @@ async function generateComponentTreeFromAI(
   `;
 
   try {
-    console.log("Making OpenAI API call...");
+    debug.log("Making OpenAI API call...");
     const completion = await getOpenAIClient().chat.completions.create({
       model: model, // Using the selected model
       response_format: { type: "json_object" },
@@ -111,7 +114,7 @@ async function generateComponentTreeFromAI(
       throw new Error("Empty response from OpenAI");
     }
 
-    console.log("Received response from OpenAI.");
+    debug.log("Received response from OpenAI.");
     return JSON.parse(content);
   } catch (error) {
     console.error("Error calling OpenAI API:", error);

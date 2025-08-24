@@ -10,6 +10,7 @@ import {
   trackFeature,
 } from "../lib/analytics";
 import { useCanvasStore } from "../lib/canvasStore";
+import { debug } from "../lib/debug";
 import {
   AIGenerationRequest,
   ComponentNode,
@@ -23,11 +24,8 @@ import { CommandPalette } from "./CommandPalette";
 import { ComponentLibrary } from "./ComponentLibrary";
 import { ExportPackageModal } from "./ExportPackageModal";
 import { HelpModal } from "./HelpModal";
-import { LiveCursors } from "./LiveCursors";
 import { LivePreview } from "./LivePreview";
-import { ResponsivePanel } from "./ResponsivePanel";
 import { StylePanel } from "./StylePanel";
-import { ButtonWithFeedback } from "./ui/feedback";
 import { useQuickNotifications } from "./ui/notifications";
 import { Tooltip } from "./ui/tooltip";
 import { VisualCanvas } from "./VisualCanvas/VisualCanvas";
@@ -58,11 +56,7 @@ const useScreenSize = () => {
   return screenSize;
 };
 
-type RightPanelTab =
-  | "AI"
-  | "Style"
-  | "Animate"
-  | "State";
+type RightPanelTab = "AI" | "Style" | "Animate" | "State";
 
 // Helper function to get default properties for a new component
 const getComponentDefaults = (type: ComponentType) => {
@@ -237,7 +231,7 @@ export const ArtifactBuilder = () => {
       setIsRightPanelOpen(false);
       setIsPreviewPanelOpen(false);
     } else if (screenSize === "tablet") {
-      setIsLeftPanelOpen(false);
+      setIsLeftPanelOpen(true); // Keep left panel open on tablet to access AI/Style/Animate/State buttons
       setIsRightPanelOpen(true);
       setIsPreviewPanelOpen(false);
     } else {
@@ -263,26 +257,26 @@ export const ArtifactBuilder = () => {
   }, []);
 
   const setSingleNodeSelection = useCallback((nodeId: string) => {
-    console.log("🔍 setSingleNodeSelection called with:", nodeId);
+    debug.log("🔍 setSingleNodeSelection called with:", nodeId);
     setSelectedNodeIds([nodeId]);
   }, []);
 
   const handleSelectNode = useCallback(
     (nodeId: string | null, ctrlPressed: boolean) => {
-      console.log("🔍 handleSelectNode called:", {
+      debug.log("🔍 handleSelectNode called:", {
         nodeId,
         ctrlPressed,
         currentSelection: selectedNodeIds,
       });
 
       if (nodeId === null) {
-        console.log("🔍 Deselecting all");
+        debug.log("🔍 Deselecting all");
         setSelectedNodeIds([]);
       } else if (ctrlPressed) {
-        console.log("🔍 Toggle selection for:", nodeId);
+        debug.log("🔍 Toggle selection for:", nodeId);
         toggleNodeSelection(nodeId);
       } else {
-        console.log("🔍 Single selection for:", nodeId);
+        debug.log("🔍 Single selection for:", nodeId);
         setSingleNodeSelection(nodeId);
       }
     },
@@ -416,11 +410,11 @@ export const ArtifactBuilder = () => {
     request: AIGenerationRequest,
     config?: { provider: AIProvider }
   ): Promise<SandboxResult> => {
-    console.log("generateFromPrompt called with:", { request, config });
+    debug.log("generateFromPrompt called with:", { request, config });
     setIsGenerating(true);
     setFramework(request.framework);
     try {
-      console.log("Calling generate API...");
+      debug.log("Calling generate API...");
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: {
@@ -440,7 +434,7 @@ export const ArtifactBuilder = () => {
       // Check if response is streaming
       const contentType = response.headers.get("content-type");
       if (contentType?.includes("text/event-stream")) {
-        console.log("Handling streaming response...");
+        debug.log("Handling streaming response...");
 
         // Handle streaming response
         const reader = response.body?.getReader();
@@ -488,11 +482,11 @@ export const ArtifactBuilder = () => {
             .replace(/\s*```$/, "");
         }
 
-        console.log("Cleaned content:", cleanContent.substring(0, 200) + "...");
+        debug.log("Cleaned content:", cleanContent.substring(0, 200) + "...");
 
         // Parse the complete JSON response
         const parsedContent = JSON.parse(cleanContent);
-        console.log("Parsed streaming content:", parsedContent);
+        debug.log("Parsed streaming content:", parsedContent);
 
         // Convert the parsed content to components and code
         let components: ComponentNode[] = [];
@@ -576,7 +570,8 @@ export const ArtifactBuilder = () => {
                     width: "100%",
                     height: "20px",
                     borderRadius: "10px",
-                    background: "linear-gradient(to right, #3b82f6 0%, #3b82f6 50%, #e5e7eb 50%, #e5e7eb 100%)",
+                    background:
+                      "linear-gradient(to right, #3b82f6 0%, #3b82f6 50%, #e5e7eb 50%, #e5e7eb 100%)",
                     outline: "none",
                     opacity: "1",
                     transition: "all 0.3s",
@@ -657,13 +652,13 @@ export const ArtifactBuilder = () => {
             children: components,
           };
 
-                      // Update component positions to be relative to parent
-            components.forEach((component, index) => {
-              component.position = {
-                x: 24 + (index % 2) * 280,
-                y: 24 + Math.floor(index / 2) * 60,
-              };
-            });
+          // Update component positions to be relative to parent
+          components.forEach((component, index) => {
+            component.position = {
+              x: 24 + (index % 2) * 280,
+              y: 24 + Math.floor(index / 2) * 60,
+            };
+          });
 
           // Replace components array with just the parent container
           components = [parentContainer];
@@ -694,7 +689,7 @@ export const ArtifactBuilder = () => {
       } else {
         // Handle regular JSON response
         const jsonResult = await response.json();
-        console.log("Generate API result:", jsonResult);
+        debug.log("Generate API result:", jsonResult);
 
         if (!jsonResult.success) {
           throw new Error(jsonResult.error || "Generation failed");
@@ -726,7 +721,11 @@ export const ArtifactBuilder = () => {
   };
 
   const addComponent = useCallback(
-    (type: ComponentType, position: { x: number; y: number }, parentContainerId?: string) => {
+    (
+      type: ComponentType,
+      position: { x: number; y: number },
+      parentContainerId?: string
+    ) => {
       const defaults = getComponentDefaults(type);
       const newComponent: ComponentNode = {
         id: `${type}-${Date.now()}`,
@@ -739,12 +738,15 @@ export const ArtifactBuilder = () => {
 
       if (parentContainerId) {
         // Add component as child of container
-        updateCanvas(prev => 
+        updateCanvas(prev =>
           prev.map(component => {
-            if (component.id === parentContainerId && component.type === "container") {
+            if (
+              component.id === parentContainerId &&
+              component.type === "container"
+            ) {
               return {
                 ...component,
-                children: [...(component.children || []), newComponent]
+                children: [...(component.children || []), newComponent],
               };
             }
             return component;
@@ -754,7 +756,7 @@ export const ArtifactBuilder = () => {
         // Add component to canvas
         updateCanvas(prev => [...prev, newComponent]);
       }
-      
+
       trackComponentCreate(type);
     },
     [updateCanvas]
@@ -823,7 +825,7 @@ export const ArtifactBuilder = () => {
 
   const updateComponent = useCallback(
     (id: string, updates: Partial<ComponentNode>) => {
-      console.log("🔍 updateComponent called with:", id, updates);
+      debug.log("🔍 updateComponent called with:", id, updates);
       updateCanvas(prev =>
         prev.map(comp => {
           if (comp.id === id) {
@@ -1221,29 +1223,29 @@ export const ArtifactBuilder = () => {
             e.preventDefault();
             if (selectedNode) {
               handleCopy();
-              console.log("📋 Copied component:", selectedNode.id);
+              debug.log("📋 Copied component:", selectedNode.id);
             }
             break;
           case "v":
             e.preventDefault();
             handlePaste();
-            console.log("📋 Pasting component...");
+            debug.log("📋 Pasting component...");
             break;
           case "z":
             e.preventDefault();
             if (e.shiftKey) {
               handleRedo();
-              console.log("↪️ Redo");
+              debug.log("↪️ Redo");
             } else {
               handleUndo();
-              console.log("↩️ Undo");
+              debug.log("↩️ Undo");
             }
             break;
           case "a":
             e.preventDefault();
             // Select all components
             setSelectedNodeIds(canvas.map(c => c.id));
-            console.log("🔵 Selected all components");
+            debug.log("🔵 Selected all components");
             break;
           case "d":
             e.preventDefault();
@@ -1259,38 +1261,38 @@ export const ArtifactBuilder = () => {
               };
               updateCanvas([...canvas, duplicated]);
               setSelectedNodeIds([duplicated.id]);
-              console.log("📄 Duplicated component:", duplicated.id);
+              debug.log("📄 Duplicated component:", duplicated.id);
             }
             break;
           case "s":
             e.preventDefault();
             handleSave();
-            console.log("💾 Saved project");
+            debug.log("💾 Saved project");
             break;
           case "k":
             e.preventDefault();
             setIsCommandPaletteOpen(true);
-            console.log("⌘ Opened command palette");
+            debug.log("⌘ Opened command palette");
             break;
           case "l":
             if (e.shiftKey) {
               e.preventDefault();
               setIsLeftPanelOpen(!isLeftPanelOpen);
-              console.log("🔧 Toggled left panel");
+              debug.log("🔧 Toggled left panel");
             }
             break;
           case "r":
             if (e.shiftKey) {
               e.preventDefault();
               setIsRightPanelOpen(!isRightPanelOpen);
-              console.log("🔧 Toggled right panel");
+              debug.log("🔧 Toggled right panel");
             }
             break;
           case "p":
             if (e.shiftKey) {
               e.preventDefault();
               setIsPreviewPanelOpen(!isPreviewPanelOpen);
-              console.log("🔧 Toggled preview panel");
+              debug.log("🔧 Toggled preview panel");
             }
             break;
         }
@@ -1309,13 +1311,13 @@ export const ArtifactBuilder = () => {
                 prev.filter(c => !selectedNodeIds.includes(c.id))
               );
               setSelectedNodeIds([]);
-              console.log("🗑️ Deleted selected components");
+              debug.log("🗑️ Deleted selected components");
             }
             break;
           case "escape":
             e.preventDefault();
             setSelectedNodeIds([]);
-            console.log("❌ Cleared selection");
+            debug.log("❌ Cleared selection");
             break;
         }
       }
@@ -1359,7 +1361,7 @@ export const ArtifactBuilder = () => {
         return <StylePanel {...panelProps} />;
       case "Animate":
         return <AnimationPanel {...panelProps} />;
-/*       case "State":
+      /*       case "State":
         return (
           <StateManagerPanel {...panelProps} onAddState={handleAddState} />
         );
@@ -1380,51 +1382,9 @@ export const ArtifactBuilder = () => {
     }
   };
 
-  const TabButton = ({ tabName }: { tabName: RightPanelTab }) => {
-    const getIcon = (tab: string) => {
-      switch (tab) {
-        case "AI":
-          return "🤖";
-        case "Style":
-          return "🎨";
-        case "Animate":
-          return "✨";
-/*         case "State":
-          return "⚡";
-        case "API":
-          return "🔌";
-        case "Perf":
-          return "📊";
-        case "Versions":
-          return "📝";
-        case "A/B":
-          return "🧪";
-        case "Deploy":
-          return "🚀"; */
-        default:
-          return "📄";
-      }
-    };
-
-    return (
-      <button
-        onClick={() => setActiveTab(tabName)}
-        className={`w-full px-4 py-3 text-left text-sm font-medium transition-all duration-200 ${
-          activeTab === tabName
-            ? "bg-primary/10 text-primary border-primary border-r-2"
-            : "hover:bg-accent/50 text-gray-300 hover:text-gray-100"
-        }`}
-      >
-        <span className="mr-2">{getIcon(tabName)}</span>
-        {tabName}
-      </button>
-    );
-  };
 
   return (
     <div className="relative flex h-screen font-sans">
-      <LiveCursors />
-
       {/* Command Palette */}
       <CommandPalette
         isOpen={isCommandPaletteOpen}
@@ -1441,7 +1401,7 @@ export const ArtifactBuilder = () => {
       {/* Main Area */}
       <div className="flex flex-1 flex-col">
         {/* Toolbar */}
-        <div className="glass border-border/20 flex h-16 flex-shrink-0 items-center justify-between border-b px-2 md:px-4">
+        <div className="glass border-border/20 flex h-16 flex-shrink-0 items-center justify-between border-b px-1 md:px-4 overflow-hidden">
           <div className="flex items-center gap-2">
             {/* Menu burger pour mobile */}
             {screenSize === "mobile" && (
@@ -1461,208 +1421,64 @@ export const ArtifactBuilder = () => {
                 : "Visual Artifact Studio"}
             </h1>
           </div>
-          <div
-            className={`flex items-center ${screenSize === "mobile" ? "gap-1" : "gap-2"}`}
-          >
-            {screenSize !== "mobile" && <ResponsivePanel />}
-
-            {/* Boutons principaux - toujours visibles */}
-            <Tooltip content="Undo last action (Ctrl+Z)" position="bottom">
+          <div className={`flex items-center gap-2`}>
+            {/* Boutons essentiels seulement */}
+            <Tooltip content="Undo (Ctrl+Z)" position="bottom">
               <button
                 onClick={() => {
                   handleUndo();
                   notifications.info("Action undone");
                 }}
                 disabled={historyIndex === 0}
-                className={`glass text-foreground hover:bg-accent hover-lift rounded-md text-sm transition-all duration-200 disabled:opacity-50 ${screenSize === "mobile" ? "px-2 py-1" : "px-4 py-2"}`}
+                className="glass text-foreground hover:bg-accent hover-lift rounded-md px-2 py-1 text-sm transition-all duration-200 disabled:opacity-50"
               >
-                {screenSize === "mobile" ? "↶" : "Undo"}
+                ↶
               </button>
             </Tooltip>
 
-            <Tooltip content="Redo last action (Ctrl+Y)" position="bottom">
+            <Tooltip content="Redo (Ctrl+Y)" position="bottom">
               <button
                 onClick={() => {
                   handleRedo();
                   notifications.info("Action restored");
                 }}
                 disabled={historyIndex === history.length - 1}
-                className={`glass text-foreground hover:bg-accent hover-lift rounded-md text-sm transition-all duration-200 disabled:opacity-50 ${screenSize === "mobile" ? "px-2 py-1" : "px-4 py-2"}`}
+                className="glass text-foreground hover:bg-accent hover-lift rounded-md px-2 py-1 text-sm transition-all duration-200 disabled:opacity-50"
               >
-                {screenSize === "mobile" ? "↷" : "Redo"}
+                ↷
               </button>
             </Tooltip>
 
-            {/* Hidden buttons on mobile */}
-            {screenSize !== "mobile" && (
-              <>
-                <Tooltip
-                  content="Copy selected component (Ctrl+C)"
-                  position="bottom"
-                >
-                  <ButtonWithFeedback
-                    onClick={() => {
-                      handleCopy();
-                      notifications.success("Component copied!");
-                    }}
-                    disabled={!selectedNode}
-                    className="glass text-foreground hover:bg-accent hover-lift rounded-md px-4 py-2 text-sm transition-all duration-200 disabled:opacity-50"
-                  >
-                    Copy
-                  </ButtonWithFeedback>
-                </Tooltip>
-
-                <Tooltip content="Paste component (Ctrl+V)" position="bottom">
-                  <ButtonWithFeedback
-                    onClick={() => {
-                      handlePaste();
-                      notifications.success("Component pasted!");
-                    }}
-                    className="glass text-foreground hover:bg-accent hover-lift rounded-md px-4 py-2 text-sm transition-all duration-200"
-                  >
-                    Paste
-                  </ButtonWithFeedback>
-                </Tooltip>
-              </>
-            )}
-            {/* Configuration buttons - hidden on mobile */}
-            {screenSize !== "mobile" && (
-              <>
-                <Tooltip
-                  content={`${snapToGrid ? "Disable" : "Enable"} snap to grid`}
-                  position="bottom"
-                >
-                  <button
-                    className={`glass hover-lift rounded-md px-4 py-2 text-sm transition-all duration-200 ${snapToGrid ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-accent"}`}
-                    onClick={() => {
-                      setSnapToGrid(!snapToGrid);
-                      notifications.info(
-                                                 snapToGrid
-                           ? "Snap to grid disabled"
-                           : "Snap to grid enabled"
-                      );
-                    }}
-                  >
-                    {screenSize === "tablet" ? "⊞" : "Snap to Grid"}
-                  </button>
-                </Tooltip>
-
-                <Tooltip
-                  content={`${aspectRatioLocked ? "Unlock" : "Lock"} aspect ratio`}
-                  position="bottom"
-                >
-                  <button
-                    className={`glass hover-lift rounded-md px-4 py-2 text-sm transition-all duration-200 ${aspectRatioLocked ? "bg-primary text-primary-foreground" : "text-foreground hover:bg-accent"}`}
-                    onClick={() => {
-                      setAspectRatioLocked(!aspectRatioLocked);
-                      notifications.info(
-                                                 aspectRatioLocked
-                           ? "Aspect ratio unlocked"
-                           : "Aspect ratio locked"
-                      );
-                    }}
-                  >
-                    {screenSize === "tablet" ? "🔒" : "Lock Aspect Ratio"}
-                  </button>
-                </Tooltip>
-              </>
-            )}
-
-            {/* Action buttons - simplified according to screen */}
-            {screenSize === "desktop" && (
-              <>
-                <button
-                  className="glass text-foreground hover:bg-accent rounded-md px-4 py-2 text-sm transition-all duration-200 disabled:opacity-50"
-                  onClick={groupSelectedNodes}
-                  disabled={selectedNodeIds.length < 2}
-                >
-                  Group
-                </button>
-                <button
-                  className="glass text-foreground hover:bg-accent rounded-md px-4 py-2 text-sm transition-all duration-200 disabled:opacity-50"
-                  onClick={ungroupSelectedNodes}
-                  disabled={
-                    selectedNodeIds.length !== 1 ||
-                    canvas.find(c => c.id === selectedNodeIds[0])?.type !==
-                      "container"
-                  }
-                >
-                  Ungroup
-                </button>
-                <button
-                  className="glass text-foreground hover:bg-accent rounded-md px-4 py-2 text-sm transition-all duration-200 disabled:opacity-50"
-                  onClick={handleSave}
-                >
-                  Save
-                </button>
-                <button
-                  className="glass text-foreground hover:bg-accent rounded-md px-4 py-2 text-sm transition-all duration-200 disabled:opacity-50"
-                  onClick={handleDeploy}
-                >
-                  Deploy
-                </button>
-              </>
-            )}
-
-            {/* Main actions - always visible but adapted */}
-            <Tooltip content="Export project package" position="bottom">
+            <Tooltip content="Export" position="bottom">
               <button
-                className={`glass bg-secondary text-secondary-foreground hover:bg-secondary/90 hover-lift rounded-md text-sm transition-all duration-200 ${screenSize === "mobile" ? "px-2 py-1" : "px-4 py-2"}`}
+                className="glass bg-secondary text-secondary-foreground hover:bg-secondary/90 hover-lift rounded-md px-2 py-1 text-sm transition-all duration-200"
                 onClick={() => {
                   setIsExportModalOpen(true);
                   notifications.info("Opening export...");
                 }}
               >
-                {screenSize === "mobile" ? "📦" : "Export Package"}
+                📦
               </button>
             </Tooltip>
 
-            <Tooltip
-              content={`Switch to ${isEditMode ? "preview" : "edit"} mode`}
-              position="bottom"
-            >
+            <Tooltip content={`${isEditMode ? "Preview" : "Edit"} mode`} position="bottom">
               <button
-                className={`glass hover-lift rounded-md text-sm transition-all duration-200 ${isEditMode ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"} ${screenSize === "mobile" ? "px-2 py-1" : "px-4 py-2"}`}
+                className={`glass hover-lift rounded-md px-2 py-1 text-sm transition-all duration-200 ${isEditMode ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"}`}
                 onClick={() => {
                   toggleEditMode();
-                                     notifications.info(
-                     `${isEditMode ? "Preview" : "Edit"} mode activated`
-                   );
+                  notifications.info(`${isEditMode ? "Preview" : "Edit"} mode activated`);
                 }}
               >
-                {screenSize === "mobile"
-                  ? isEditMode
-                    ? "👀"
-                    : "✏️"
-                  : isEditMode
-                    ? "Preview"
-                    : "Edit"}
+                {isEditMode ? "👀" : "✏️"}
               </button>
             </Tooltip>
 
-            {/* Boutons d'outils - adaptatifs */}
-            {screenSize === "desktop" && (
-              <button
-                className="glass bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-md px-4 py-2 text-sm transition-all duration-200"
-                onClick={() => {
-                  if (
-                    typeof window !== "undefined" &&
-                    (window as any).togglePerformanceMonitor
-                  ) {
-                    (window as any).togglePerformanceMonitor();
-                  }
-                }}
-              >
-                Show Monitor
-              </button>
-            )}
-
             <button
-              className={`glass bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-md text-sm transition-all duration-200 ${screenSize === "mobile" ? "px-2 py-1" : "px-4 py-2"}`}
+              className="glass bg-secondary text-secondary-foreground hover:bg-secondary/90 rounded-md px-2 py-1 text-sm transition-all duration-200"
               onClick={() => setIsCommandPaletteOpen(true)}
-              title="Open Command Palette (Ctrl+K)"
+              title="Commands (Ctrl+K)"
             >
-              {screenSize === "mobile" ? "⌘" : "⌘ Commands"}
+              ⌘
             </button>
           </div>
         </div>
@@ -1676,8 +1492,8 @@ export const ArtifactBuilder = () => {
                 screenSize === "mobile"
                   ? "absolute z-50 h-full w-full"
                   : screenSize === "tablet"
-                    ? "w-56"
-                    : "w-64"
+                    ? "w-48 min-w-48 max-w-48"
+                    : "w-56 min-w-56 max-w-56"
               }`}
             >
               {/* Bouton de fermeture sur mobile */}
@@ -1694,34 +1510,22 @@ export const ArtifactBuilder = () => {
 
               {/* Component Library */}
               <div className="flex-1">
-                <ComponentLibrary 
-                  onAddTemplate={(components) => {
+                <ComponentLibrary
+                  onAddTemplate={components => {
                     updateCanvas(prev => [...prev, ...components]);
-                    notifications.success(`Added ${components.length} components from template`);
+                    notifications.success(
+                      `Added ${components.length} components from template`
+                    );
                   }}
+                  activeTab={activeTab}
+                  onTabChange={setActiveTab}
                 />
-              </div>
-
-              {/* Navigation Tabs */}
-              <div className="border-border/20 border-t">
-                {(
-                  [
-                    "AI",
-                    "Style",
-                    "Animate",
-                    "State",
-                                     ] as RightPanelTab[]
-                ).map(tab => (
-                  <div key={tab}>
-                    <TabButton tabName={tab} />
-                  </div>
-                ))}
               </div>
             </div>
           )}
 
           {/* Canvas Area - Main workspace */}
-          <div className="visual-canvas relative h-full flex-1 overflow-auto">
+          <div className="visual-canvas relative h-full flex-1 overflow-hidden">
             <VisualCanvas
               components={canvas}
               selectedNodeIds={selectedNodeIds}
@@ -1735,8 +1539,8 @@ export const ArtifactBuilder = () => {
               isEditMode={isEditMode}
             />
 
-            {/* Panel toggle buttons */}
-            <div className="absolute top-4 left-4 z-30 flex flex-col gap-2">
+            {/* Panel toggle buttons - positioned on left edge of canvas to avoid collisions */}
+            <div className="absolute top-1/2 left-4 z-30 flex flex-col gap-2 -translate-y-1/2">
               <Tooltip
                 content={
                   isLeftPanelOpen
@@ -1748,11 +1552,9 @@ export const ArtifactBuilder = () => {
                 <button
                   onClick={() => {
                     setIsLeftPanelOpen(!isLeftPanelOpen);
-                                         notifications.info(
-                       isLeftPanelOpen
-                         ? "Left panel hidden"
-                         : "Left panel shown"
-                     );
+                    notifications.info(
+                      isLeftPanelOpen ? "Left panel hidden" : "Left panel shown"
+                    );
                   }}
                   className="glass hover-lift rounded-md px-3 py-2 text-sm text-gray-200 transition-all duration-200 hover:text-gray-100"
                 >
@@ -1771,11 +1573,11 @@ export const ArtifactBuilder = () => {
                 <button
                   onClick={() => {
                     setIsRightPanelOpen(!isRightPanelOpen);
-                                         notifications.info(
-                       isRightPanelOpen
-                         ? "Right panel hidden"
-                         : "Right panel shown"
-                     );
+                    notifications.info(
+                      isRightPanelOpen
+                        ? "Right panel hidden"
+                        : "Right panel shown"
+                    );
                   }}
                   className="glass hover-lift rounded-md px-3 py-2 text-sm text-gray-200 transition-all duration-200 hover:text-gray-100"
                 >
@@ -1794,9 +1596,9 @@ export const ArtifactBuilder = () => {
                 <button
                   onClick={() => {
                     setIsPreviewPanelOpen(!isPreviewPanelOpen);
-                                         notifications.info(
-                       isPreviewPanelOpen ? "Preview hidden" : "Preview shown"
-                     );
+                    notifications.info(
+                      isPreviewPanelOpen ? "Preview hidden" : "Preview shown"
+                    );
                   }}
                   className="glass hover-lift rounded-md px-3 py-2 text-sm text-gray-200 transition-all duration-200 hover:text-gray-100"
                 >
@@ -1816,12 +1618,12 @@ export const ArtifactBuilder = () => {
           {/* Right Panel - Properties & Settings */}
           {isRightPanelOpen && (
             <div
-              className={`glass style-panel border-border/20 flex-shrink-0 overflow-y-auto border-l ${
+              className={`glass style-panel border-border/20 flex-shrink-0 border-l ${
                 screenSize === "mobile"
                   ? "absolute right-0 z-50 h-full w-full"
                   : screenSize === "tablet"
-                    ? "w-72"
-                    : "w-80"
+                    ? "w-64 min-w-64 max-w-64"
+                    : "w-72 min-w-72 max-w-72"
               }`}
             >
               {/* Bouton de fermeture sur mobile */}
@@ -1846,8 +1648,8 @@ export const ArtifactBuilder = () => {
                 screenSize === "mobile"
                   ? "absolute right-0 z-40 h-full w-full"
                   : screenSize === "tablet"
-                    ? "w-80"
-                    : "w-96"
+                    ? "w-72 min-w-72 max-w-72"
+                    : "w-80 min-w-80 max-w-80"
               }`}
             >
               {/* Bouton de fermeture sur mobile */}

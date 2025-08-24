@@ -1,4 +1,5 @@
 import { AIGenerationRequest, ComponentNode } from "../types/artifact";
+import { debug } from "./debug";
 
 // AIML Provider API configuration
 const AIML_API_URL = process.env.AIML_API_URL || "https://api.aimlapi.com/v1";
@@ -29,6 +30,8 @@ interface AIMLResponse {
 }
 
 const systemPrompt = `
+Be the more concise.
+
 You are an expert web developer specializing in creating component trees from user prompts.
 Your task is to generate a JSON object representing the component structure based on the user's request.
 The JSON object must have three top-level keys: "components", "layout", and "componentDetails".
@@ -115,11 +118,14 @@ async function generateComponentTreeFromAIML(
     ],
     response_format: { type: "json_object" },
     temperature: 0.7,
-    max_tokens: 4000,
+    max_tokens: 8000,
   };
 
   try {
-    console.log("Making AIML API call to GPT-5...");
+    debug.log("Making AIML API call to GPT-5...");
+    debug.log("AIML API URL:", AIML_API_URL);
+    debug.log("AIML API Key configured:", !!AIML_API_KEY);
+    debug.log("Request payload:", JSON.stringify(aimlRequest, null, 2));
 
     const response = await fetch(`${AIML_API_URL}/chat/completions`, {
       method: "POST",
@@ -136,14 +142,18 @@ async function generateComponentTreeFromAIML(
     }
 
     const data: AIMLResponse = await response.json();
+    debug.log("AIML API response:", data);
+
     const content = data.choices[0]?.message?.content;
+    debug.log("AIML API content:", content);
 
     if (!content) {
+      debug.log("Empty content from AIML API, full response:", data);
       throw new Error("Empty response from AIML API");
     }
 
-    console.log("Received response from AIML API (GPT-5).");
-    console.log("Token usage:", data.usage);
+    debug.log("Received response from AIML API (GPT-5).");
+    debug.log("Token usage:", data.usage);
 
     return JSON.parse(content);
   } catch (error) {
@@ -179,61 +189,105 @@ export class AIMLCodeGenerator {
 
   private buildComponentTree(aiResponse: any): ComponentNode[] {
     const { layout, componentDetails } = aiResponse;
-
+  
     if (!layout || !componentDetails) {
-      console.error(
-        "Invalid AI Response: missing layout or componentDetails",
-        aiResponse
-      );
+      console.error("Invalid AI Response: missing layout or componentDetails", aiResponse);
       return [];
     }
-
+  
     const componentMap = new Map<string, ComponentNode>();
-
-    // Create all component nodes from componentDetails
-    Object.entries(componentDetails).forEach(([id, detail]: [string, any]) => {
+    
+    // Helper function to get default size based on component type
+    const getDefaultSize = (type: string) => {
+      switch (type) {
+        case "text":
+          return { width: 200, height: 40 };
+        case "button":
+          return { width: 120, height: 50 };
+        case "input":
+          return { width: 250, height: 40 };
+        case "image":
+          return { width: 200, height: 150 };
+        case "container":
+          return { width: 400, height: 300 };
+        default:
+          return { width: 150, height: 100 };
+      }
+    };
+  
+    // Create all component nodes from componentDetails with proper sizing
+    let yOffset = 50;
+    Object.entries(componentDetails).forEach(([id, detail]: [string, any], index) => {
+      const defaultSize = getDefaultSize(detail.type);
       const node: ComponentNode = {
         id,
         type: detail.type,
         props: {
           ...detail.props,
-          children: detail.content,
+          // For text and button components, ensure content is in props.children
+          ...(detail.type === "text" && detail.content && { children: detail.content }),
+          ...(detail.type === "button" && detail.content && { children: detail.content })
         },
-        position: { x: 0, y: 0 },
-        size: { width: 0, height: 0 },
+        position: {
+          x: id === 'root' ? 100 : 100,
+          y: id === 'root' ? 100 : yOffset + (index * 20)
+        },
+        size: defaultSize,
         styles: layout[id]?.styles || {},
         children: [], // Initialize children as an empty array
       };
+      
+      // Adjust yOffset for next component
+      if (id !== 'root') {
+        yOffset += defaultSize.height + 20;
+      }
+      
       componentMap.set(id, node);
     });
-
+  
     // Build the tree structure using the layout information
     const rootNodes: ComponentNode[] = [];
     const childIds = new Set<string>();
-
+  
     Object.entries(layout).forEach(([parentId, layoutInfo]: [string, any]) => {
       const parentNode = componentMap.get(parentId);
       if (parentNode && layoutInfo.children) {
+        let childY = 20; // Start positioning children 20px from top of parent
+        
         layoutInfo.children.forEach((childId: string) => {
           const childNode = componentMap.get(childId);
           if (childNode) {
-            if (!parentNode.children) {
-              parentNode.children = [];
+            parentNode.children ??= [];
+            
+            // Position children relative to parent for containers
+            if (parentNode.type === 'container') {
+              childNode.position = {
+                x: parentNode.position.x + 20, // 20px from left edge of parent
+                y: parentNode.position.y + childY
+              };
+              childY += childNode.size.height + 15; // Add spacing between children
+              
+              // Expand parent container to fit children if needed
+              const minParentHeight = childY + 20;
+              if (parentNode.size.height < minParentHeight) {
+                parentNode.size.height = minParentHeight;
+              }
             }
+            
             parentNode.children.push(childNode);
             childIds.add(childId);
           }
         });
       }
     });
-
+  
     // Find the root node(s) - those that are not children of any other node
     componentMap.forEach(node => {
       if (!childIds.has(node.id)) {
         rootNodes.push(node);
       }
     });
-
+  
     return rootNodes;
   }
 

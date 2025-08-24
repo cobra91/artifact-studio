@@ -14,9 +14,7 @@ import { ComponentNode, ComponentType } from "../types/artifact";
 
 // Test wrapper with necessary providers
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-  <NotificationProvider>
-    {children}
-  </NotificationProvider>
+  <NotificationProvider>{children}</NotificationProvider>
 );
 
 // Use the global localStorage mock from setup.ts

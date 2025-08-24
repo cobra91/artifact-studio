@@ -1,3 +1,4 @@
+import { debug } from "@/lib/debug";
 import {
   DeploymentConfig,
   DeploymentCredentials,
@@ -35,10 +36,10 @@ export class NetlifyDeploymentProvider extends BaseDeploymentProvider {
       const status = await this.simulateDeploymentProgress(
         deploymentId,
         status => {
-          console.log("Deployment update:", status);
+          debug.log("Deployment update:", status);
         },
         progress => {
-          console.log("Deployment progress:", progress + "%");
+          debug.log("Deployment progress:", progress + "%");
         }
       );
 
@@ -66,7 +67,7 @@ export class NetlifyDeploymentProvider extends BaseDeploymentProvider {
   }
 
   async cancel(deploymentId: string): Promise<boolean> {
-    console.log("Cancelling Netlify deployment:", deploymentId);
+    debug.log("Cancelling Netlify deployment:", deploymentId);
     return true;
   }
 

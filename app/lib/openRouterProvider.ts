@@ -1,3 +1,5 @@
+import { debug } from "@/lib/debug";
+
 import { AIGenerationRequest, ComponentNode } from "../types/artifact";
 
 // OpenRouter Provider API configuration
@@ -30,6 +32,8 @@ interface OpenRouterResponse {
 }
 
 const systemPrompt = `
+Be the more concise.
+
 You are an expert web developer specializing in creating component trees from user prompts.
 Your task is to generate a JSON object representing the component structure based on the user's request.
 The JSON object must have three top-level keys: "components", "layout", and "componentDetails".
@@ -120,7 +124,7 @@ async function generateComponentTreeFromOpenRouter(
   };
 
   try {
-    console.log(`Making OpenRouter API call with model: ${model}...`);
+    debug.log(`Making OpenRouter API call with model: ${model}...`);
 
     const response = await fetch(`${OPENROUTER_API_URL}/chat/completions`, {
       method: "POST",
@@ -142,7 +146,7 @@ async function generateComponentTreeFromOpenRouter(
     }
 
     const responseText = await response.text();
-    console.log(
+    debug.log(
       "Raw response from OpenRouter:",
       responseText.substring(0, 200) + "..."
     );
@@ -153,7 +157,7 @@ async function generateComponentTreeFromOpenRouter(
       data = JSON.parse(responseText);
     } catch {
       // If that fails, try to parse as SSE format
-      console.log("Failed to parse as JSON, trying SSE format...");
+      debug.log("Failed to parse as JSON, trying SSE format...");
       const lines = responseText.split("\n");
       const dataLines = lines.filter(line => line.startsWith("data: "));
 
@@ -206,8 +210,8 @@ async function generateComponentTreeFromOpenRouter(
       throw new Error("Empty response from OpenRouter API");
     }
 
-    console.log("Received response from OpenRouter API.");
-    console.log("Token usage:", data.usage);
+    debug.log("Received response from OpenRouter API.");
+    debug.log("Token usage:", data.usage);
 
     return JSON.parse(content);
   } catch (error) {

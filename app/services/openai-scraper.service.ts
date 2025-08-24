@@ -1,9 +1,10 @@
 // services/openai-scraper.service.ts
+import { debug } from "@/lib/debug";
 
 // Simple logger replacement
 const log = {
   info: (context: string, message: string) =>
-    console.log(`[${context}] ${message}`),
+    debug.log(`[${context}] ${message}`),
   warn: (context: string, message: string) =>
     console.warn(`[${context}] ${message}`),
   error: (context: string, message: string) =>

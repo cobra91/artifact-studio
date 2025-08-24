@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { debug } from "@/lib/debug";
+
 import { useCanvasStore } from "../../lib/canvasStore";
 import { ColorUtils } from "../../lib/colorUtils";
 import { styleProperties } from "../../lib/styleProperties";
@@ -64,7 +66,7 @@ export const AppearanceTab = ({
   };
 
   const handleGradientChange = (gradient: string) => {
-    console.log("🎨 Gradient applied:", gradient);
+    debug.log("🎨 Gradient applied:", gradient);
     onUpdateElement({
       styles: {
         backgroundColor: gradient,

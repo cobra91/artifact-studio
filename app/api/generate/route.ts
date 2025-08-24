@@ -1,32 +1,95 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { aiCodeGen } from "../../lib/aiCodeGen";
+import { aiCodeGen as openAiCodeGen } from "../../lib/aiCodeGen";
 import { aimlCodeGen } from "../../lib/aimlProvider";
+import { debug } from "../../lib/debug";
+import {
+  InputValidator,
+  RateLimiter,
+  SessionManager,
+} from "../../lib/security";
 import { StreamHandlerApi } from "../../utils/stream-handler";
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting check
+    const clientId = RateLimiter.getClientId(request);
+    const rateLimitResult = RateLimiter.checkRateLimit(clientId);
+
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        {
+          error: "Rate limit exceeded",
+          retryAfter: rateLimitResult.retryAfter,
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": rateLimitResult.retryAfter.toString(),
+            "X-RateLimit-Limit": "10",
+            "X-RateLimit-Remaining": "0",
+            "X-RateLimit-Reset": rateLimitResult.resetTime.toString(),
+          },
+        }
+      );
+    }
+
+    // Session validation - temporarily disabled for development
+    let _userId: string | undefined;
+
+    if (process.env.NODE_ENV === "production") {
+      const sessionToken = request.cookies.get("session-token")?.value;
+      const authHeader = request.headers.get("Authorization");
+
+      if (!sessionToken && !authHeader) {
+        return NextResponse.json(
+          { error: "Authentication required" },
+          { status: 401 }
+        );
+      }
+
+      if (sessionToken) {
+        const sessionValidation = SessionManager.validateSession(sessionToken);
+        if (!sessionValidation.valid) {
+          return NextResponse.json(
+            { error: "Invalid session" },
+            { status: 401 }
+          );
+        }
+        _userId = sessionValidation.userId;
+      }
+    }
+
+    // Parse and validate request body
     const body = await request.json();
     const { aiRequest, config } = body;
 
-    console.log("Generate API called with:", { aiRequest, config });
-    console.log("Environment variables check:");
-    console.log(
-      "OPENAI_API_KEY:",
-      process.env.OPENAI_API_KEY ? "SET" : "NOT SET"
-    );
-    console.log("AIML_API_KEY:", process.env.AIML_API_KEY ? "SET" : "NOT SET");
-    console.log(
-      "OPENROUTER_API_KEY:",
-      process.env.OPENROUTER_API_KEY ? "SET" : "NOT SET"
-    );
+    // Validate and sanitize input
+    try {
+      aiRequest.prompt = InputValidator.validatePrompt(aiRequest.prompt);
+      aiRequest.framework = InputValidator.validateFramework(
+        aiRequest.framework
+      );
+      aiRequest.styling = InputValidator.validateStyling(aiRequest.styling);
+      aiRequest.interactivity = InputValidator.validateInteractivity(
+        aiRequest.interactivity
+      );
+      aiRequest.theme = InputValidator.validateTheme(aiRequest.theme);
+    } catch (error) {
+      return NextResponse.json(
+        {
+          error: "Invalid input data",
+          details:
+            error instanceof Error ? error.message : "Unknown validation error",
+        },
+        { status: 400 }
+      );
+    }
 
     const { provider, model } = config || {};
 
     // For OpenRouter, we need to handle streaming
     if (provider === "openrouter") {
-      console.log("Using OpenRouter provider with streaming...");
-
       // Make the OpenRouter API call
       const OPENROUTER_API_URL =
         process.env.OPENROUTER_API_URL || "https://openrouter.ai/api/v1";
@@ -39,6 +102,8 @@ export async function POST(request: NextRequest) {
       }
 
       const systemPrompt = `
+Be the more concise.
+
 You are an expert web developer specializing in creating component trees from user prompts.
 Your task is to generate a JSON object representing the component structure based on the user's request.
 The JSON object must have three top-level keys: "components", "layout", and "componentDetails".
@@ -190,21 +255,51 @@ Generate a component tree for the following request:
 
     // For other providers, use the existing approach
     let result;
+    debug.log("Generating component tree with provider:", provider);
 
     switch (provider) {
       case "aiml":
-        console.log("Using AIML provider...");
-        result = await aimlCodeGen.create(aiRequest, model);
+        try {
+          result = await aimlCodeGen.create(aiRequest, model);
+        } catch (error) {
+          debug.log("Error in generate API:", error);
+          return NextResponse.json(
+            { error: "Failed to generate component tree" },
+            { status: 500 }
+          );
+        }
         break;
 
       case "openai":
-      default:
-        console.log("Using OpenAI provider...");
-        result = await aiCodeGen.create(aiRequest, model);
+        try {
+          result = await openAiCodeGen.create(aiRequest, model);
+        } catch (error) {
+          debug.log("Error in generate API:", error);
+          return NextResponse.json(
+            { error: "Failed to generate component tree" },
+            { status: 500 }
+          );
+        }
         break;
     }
 
-    return NextResponse.json({ success: true, ...result });
+    return NextResponse.json(
+      {
+        success: true,
+        ...result,
+        rateLimit: {
+          remaining: rateLimitResult.remaining,
+          resetTime: rateLimitResult.resetTime,
+        },
+      },
+      {
+        headers: {
+          "X-RateLimit-Limit": "10",
+          "X-RateLimit-Remaining": rateLimitResult.remaining.toString(),
+          "X-RateLimit-Reset": rateLimitResult.resetTime.toString(),
+        },
+      }
+    );
   } catch (error) {
     console.error("Error in generate API:", error);
     return NextResponse.json(
