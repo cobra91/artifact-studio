@@ -4,8 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
 // Rate limiting configuration
-const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-const RATE_LIMIT_MAX_REQUESTS = 3; // 10 requests per minute
+const RATE_LIMIT_WINDOW = process.env.RATE_LIMIT_WINDOW || 60 * 1000; // 1 minute
+const RATE_LIMIT_MAX_REQUESTS = process.env.RATE_LIMIT_MAX_REQUESTS || 10; // 10 requests per minute
 
 // API keys validation
 const VALID_API_KEYS = new Set(
