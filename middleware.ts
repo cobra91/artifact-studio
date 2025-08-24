@@ -5,7 +5,7 @@ const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
 // Rate limiting configuration
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
-const RATE_LIMIT_MAX_REQUESTS = 10; // 10 requests per minute
+const RATE_LIMIT_MAX_REQUESTS = 3; // 10 requests per minute
 
 // API keys validation
 const VALID_API_KEYS = new Set(
@@ -19,7 +19,8 @@ const ALLOWED_ORIGINS = [
 ];
 
 // Protected API routes that require authentication
-const PROTECTED_ROUTES = ["/api/generate", "/api/deploy", "/api/providers"];
+const PROTECTED_ROUTES = ["/api/generate", "/api/deploy"];
+// Note: /api/providers removed - endpoint only returns public information about AI providers
 
 // Routes that require API key authentication
 const API_KEY_ROUTES = ["/api/webhooks", "/api/admin"];
