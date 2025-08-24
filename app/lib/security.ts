@@ -1,25 +1,25 @@
 import crypto from "crypto";
 import { NextRequest } from "next/server";
 
-// Security configuration
+// Security configuration with environment variables
 export const SECURITY_CONFIG = {
   // Rate limiting
-  RATE_LIMIT_WINDOW: 60 * 1000, // 1 minute
-  RATE_LIMIT_MAX_REQUESTS: 10,
+  RATE_LIMIT_WINDOW: parseInt(process.env.RATE_LIMIT_WINDOW || "60000"), // 1 minute by default
+  RATE_LIMIT_MAX_REQUESTS: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || "10"),
 
   // API key rotation
-  API_KEY_ROTATION_DAYS: 30,
+  API_KEY_ROTATION_DAYS: parseInt(process.env.API_KEY_ROTATION_DAYS || "30"),
 
   // Session management
-  SESSION_TIMEOUT: 24 * 60 * 60 * 1000, // 24 hours
+  SESSION_TIMEOUT: parseInt(process.env.SESSION_TIMEOUT || "86400000"), // 24 hours by default
 
   // Input validation
-  MAX_INPUT_LENGTH: 10000,
-  MAX_PROMPT_LENGTH: 2000,
+  MAX_INPUT_LENGTH: parseInt(process.env.MAX_INPUT_LENGTH || "10000"),
+  MAX_PROMPT_LENGTH: parseInt(process.env.MAX_PROMPT_LENGTH || "2000"),
 
   // Allowed file types for uploads
-  ALLOWED_FILE_TYPES: ["image/jpeg", "image/png", "image/gif", "image/webp"],
-  MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
+  ALLOWED_FILE_TYPES: (process.env.ALLOWED_FILE_TYPES || "image/jpeg,image/png,image/gif,image/webp").split(","),
+  MAX_FILE_SIZE: parseInt(process.env.MAX_FILE_SIZE || "5242880"), // 5MB by default
 } as const;
 
 // Rate limiting store (in production, use Redis)
